@@ -16,7 +16,7 @@ def get_datetime():
 
 class FabricBase(SQLModel):
     fabricName: Optional[str] = Field(default="BAD_FABRIC", primary_key=True)
-    asn: Optional[str] = Field(default=None, index=True)
+    asn: str = Field(index=True)
     templateName: Optional[str] = Field(default=None)
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4)

@@ -30,21 +30,8 @@ def create_fabric(*, session: Session = Depends(get_session), fabric_name: str, 
     session.refresh(db_fabric)
     return db_fabric
 
-# @app.post("/fabrics/", response_model=FabricPublic)
-# def create_fabric(*, session: Session = Depends(get_session), fabric: FabricCreate):
-#     db_fabric = Fabric.model_validate(fabric)
-#     print(f"db_fabric: {db_fabric}")
-#     print(f"db_fabric.fabricName: {db_fabric.fabricName}")
-#     session.add(db_fabric)
-#     try:
-#         session.commit()
-#     except Exception as error:
-#         raise HTTPException(status_code=404, detail=error)
-#     session.refresh(db_fabric)
-#     return db_fabric
 
-
-@app.get("/fabrics/", response_model=List[FabricPublic])
+@app.get("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/", response_model=List[FabricPublic])
 def read_fabrics(
     *,
     session: Session = Depends(get_session),
@@ -55,9 +42,9 @@ def read_fabrics(
     return fabrics
 
 
-@app.get("/fabrics/{fabric_id}", response_model=FabricPublic)
-def read_fabric(*, session: Session = Depends(get_session), fabric_id: uuid.UUID):
-    fabric = session.get(Fabric, fabric_id)
+@app.get("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}", response_model=FabricPublic)
+def read_fabric(*, session: Session = Depends(get_session), fabric_name: str):
+    fabric = session.get(Fabric, fabric_name)
     if not fabric:
         raise HTTPException(status_code=404, detail="Fabric not found")
     return fabric
@@ -95,11 +82,11 @@ def update_fabric(
     return db_fabric
 
 
-@app.delete("/fabrics/{fabric_id}")
-def delete_fabric(*, session: Session = Depends(get_session), fabric_id: uuid.UUID):
-    fabric = session.get(Fabric, fabric_id)
+@app.delete("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}")
+def delete_fabric(*, session: Session = Depends(get_session), fabric_name: str):
+    fabric = session.get(Fabric, fabric_name)
     if not fabric:
-        raise HTTPException(status_code=404, detail=f"ID {fabric_id} not found")
+        raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
     session.delete(fabric)
     session.commit()
     return {"ok": True}

@@ -19,7 +19,7 @@ def on_startup():
     "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/{template_name}",
     response_model=FabricPublic,
 )
-def create_fabric(
+def post_fabric(
     *,
     session: Session = Depends(get_session),
     fabric_name: str,
@@ -43,7 +43,7 @@ def create_fabric(
     "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/",
     response_model=List[FabricPublic],
 )
-def read_fabrics(
+def get_fabrics(
     *,
     session: Session = Depends(get_session),
     offset: int = 0,
@@ -57,10 +57,10 @@ def read_fabrics(
     "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}",
     response_model=FabricPublic,
 )
-def read_fabric(*, session: Session = Depends(get_session), fabric_name: str):
+def get_fabric_by_fabric_name(*, session: Session = Depends(get_session), fabric_name: str):
     fabric = session.get(Fabric, fabric_name)
     if not fabric:
-        raise HTTPException(status_code=404, detail="Fabric not found")
+        raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
     return fabric
 
 
@@ -68,7 +68,7 @@ def read_fabric(*, session: Session = Depends(get_session), fabric_name: str):
     "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/{template_name}",
     response_model=FabricPublic,
 )
-def update_fabric(
+def put_fabric(
     *,
     session: Session = Depends(get_session),
     fabric_name: str,

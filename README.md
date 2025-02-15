@@ -64,3 +64,11 @@ sending requests to the uvicorn site.
 
 Note: Running outside of a container will result in
 database.db being created in the ./app directory.
+
+## Acknowledgements
+
+This work would not be possible without the following.
+
+1. [FastApi](https://fastapi.tiangolo.com)
+2. [SQLModel](https://sqlmodel.tiangolo.com)
+3. [Pydantic](https://docs.pydantic.dev/latest/)

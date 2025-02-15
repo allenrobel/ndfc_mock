@@ -50,7 +50,7 @@ cd app
 fastapi run main.py
 # Comment out 'fastapi run main.py' above
 # and uncomment 'fastapi dev main.py' below
-# to run the uvicorn server in debug mode.
+# to run fastapi in debug mode.
 #fastapi dev main.py
 ```
 
@@ -66,8 +66,14 @@ Point your browser at
 for the API documentation.  You can use e.g. Postman for
 sending requests to the uvicorn site.
 
-Note: Running outside of a container will result in
-database.db being created in the ./app directory.
+- Note: Running outside of a container will result in database.db being created in the ./app directory.
+- Note: When starting with `fastapi dev main.py` the last two lines will not
+  contain the ouput shown above, since debugging output will appear after these
+  lines. In this case, scroll back up about 25 or so lines to view:
+
+```bash
+      INFO   Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+```
 
 ## Acknowledgements
 

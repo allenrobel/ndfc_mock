@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 from typing import List
-import uuid
 
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Session, select
+
 from .db import create_db_and_tables, get_session
 from .models import Fabric, FabricCreate, FabricPublic, FabricUpdate
-
 
 app = FastAPI()
 
@@ -16,8 +15,17 @@ def on_startup():
     create_db_and_tables()
 
 
-@app.post("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/{template_name}", response_model=FabricPublic)
-def create_fabric(*, session: Session = Depends(get_session), fabric_name: str, template_name: str, fabric: FabricCreate):
+@app.post(
+    "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/{template_name}",
+    response_model=FabricPublic,
+)
+def create_fabric(
+    *,
+    session: Session = Depends(get_session),
+    fabric_name: str,
+    template_name: str,
+    fabric: FabricCreate,
+):
     db_fabric = Fabric.model_validate(fabric)
     print(f"db_fabric: {db_fabric}")
     setattr(db_fabric, "fabricName", fabric_name)
@@ -26,12 +34,15 @@ def create_fabric(*, session: Session = Depends(get_session), fabric_name: str, 
     try:
         session.commit()
     except Exception as error:
-        raise HTTPException(status_code=404, detail=error)
+        raise HTTPException(status_code=404, detail=error) from error
     session.refresh(db_fabric)
     return db_fabric
 
 
-@app.get("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/", response_model=List[FabricPublic])
+@app.get(
+    "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/",
+    response_model=List[FabricPublic],
+)
 def read_fabrics(
     *,
     session: Session = Depends(get_session),
@@ -42,7 +53,10 @@ def read_fabrics(
     return fabrics
 
 
-@app.get("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}", response_model=FabricPublic)
+@app.get(
+    "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}",
+    response_model=FabricPublic,
+)
 def read_fabric(*, session: Session = Depends(get_session), fabric_name: str):
     fabric = session.get(Fabric, fabric_name)
     if not fabric:
@@ -50,9 +64,15 @@ def read_fabric(*, session: Session = Depends(get_session), fabric_name: str):
     return fabric
 
 
-@app.put("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/{template_name}", response_model=FabricPublic)
+@app.put(
+    "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/{template_name}",
+    response_model=FabricPublic,
+)
 def update_fabric(
-    *, session: Session = Depends(get_session), fabric_name: str, template_name: str, fabric: FabricUpdate
+    *,
+    session: Session = Depends(get_session),
+    fabric_name: str,
+    fabric: FabricUpdate,
 ):
     db_fabric = session.get(Fabric, fabric_name)
     if not db_fabric:
@@ -66,23 +86,9 @@ def update_fabric(
     return db_fabric
 
 
-@app.patch("/fabrics/{fabric_id}", response_model=FabricPublic)
-def update_fabric(
-    *, session: Session = Depends(get_session), fabric_id: uuid.UUID, fabric: FabricUpdate
-):
-    db_fabric = session.get(Fabric, fabric_id)
-    if not db_fabric:
-        raise HTTPException(status_code=404, detail="Fabric not found")
-    fabric_data = fabric.model_dump(exclude_unset=True)
-    for key, value in fabric_data.items():
-        setattr(db_fabric, key, value)
-    session.add(db_fabric)
-    session.commit()
-    session.refresh(db_fabric)
-    return db_fabric
-
-
-@app.delete("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}")
+@app.delete(
+    "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}"
+)
 def delete_fabric(*, session: Session = Depends(get_session), fabric_name: str):
     fabric = session.get(Fabric, fabric_name)
     if not fabric:

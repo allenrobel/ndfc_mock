@@ -27,7 +27,7 @@ To run ndfc_mock within a container.
 ```bash
 git clone https://github.com/allenrobel/ndfc_mock.git
 cd ndfc_mock
-podman build -t ndfc .
+podman build -t ndfc_mock .
 podman run --detach -p 8080:80 ndfc_mock
 ```
 

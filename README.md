@@ -48,6 +48,10 @@ source .venv/bin/activate
 pip install -r requirements.txt
 cd app
 fastapi run main.py
+# Comment out 'fastapi run main.py' above
+# and uncomment 'fastapi dev main.py' below
+# to run the uvicorn server in debug mode.
+#fastapi dev main.py
 ```
 
 You'll see the uvicorn server startup.  The last two lines will look like:

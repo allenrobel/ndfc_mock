@@ -195,7 +195,7 @@ def test_get_fabrics(session: Session, client: TestClient):
     7. Verify the created_at field
         -   created_at field has 0 delta between step 2 version
             and retrieved version.
-    8. Verify the updadted_at field
+    8. Verify the updated_at field
         -   updated_at field is present and the step 2 version
             timestamp differs from the retrieved version timestamp.
     """

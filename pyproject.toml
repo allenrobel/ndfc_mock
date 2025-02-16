@@ -27,3 +27,6 @@ disable = ["duplicate-code", "fixme", "invalid-name", "import-error", "missing-m
 
 [tool.pylint.format]
 max-line-length = 180
+
+[tool.ruff.lint]
+ignore = ["F401"]

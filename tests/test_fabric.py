@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+# See the following regarding *_fixture imports
+# https://pylint.pycqa.org/en/latest/user_guide/messages/warning/redefined-outer-name.html
+# Due to the above, we also need to disable unused-import
+# Also, fixtures need to use *args to match the signature of the function they are mocking
+# pylint: disable=unused-import
+# pylint: disable=redefined-outer-name
+# pylint: disable=protected-access
+# pylint: disable=unused-argument
+# pylint: disable=invalid-name
 
 from time import sleep
 
@@ -6,7 +15,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session
 
 from ..app.models.fabric import Fabric
-from .common import client_fixture, convert_db_date_to_timestamp, convert_model_date_to_timestamp, session_fixture, timestamps_within_delta  # pylint: disable=unused-import
+from .common import client_fixture, convert_db_date_to_timestamp, convert_model_date_to_timestamp, session_fixture, timestamps_within_delta
 
 
 def test_post_fabric(client: TestClient):

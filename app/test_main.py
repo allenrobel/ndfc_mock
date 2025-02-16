@@ -10,7 +10,7 @@ from sqlmodel.pool import StaticPool
 
 from .db import get_session
 from .main import app
-from .models import Fabric
+from .models.fabric import Fabric
 
 
 def get_timestamp_from_tz_aware_datetime_string(date_str):

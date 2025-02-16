@@ -1,0 +1,29 @@
+[tool.black]
+line-length = 180
+
+[tool.flake8]
+# E123, E125 skipped as they are invalid PEP-8.
+show-source = true
+ignore = "E123,E125,E203,E402,E501,E741,F401,F811,F841,W503"
+max-line-length = 180
+
+[tool.isort]
+ensure_newline_before_comments = true
+extend_skip = [".md", ".json", ".yaml", ".txt"]
+force_grid_wrap = false
+line_length = 180
+multi_line_output = 7
+skip_glob = ["docs/*"]
+use_parentheses = false
+
+[tool.mypy]
+disable_error_code = "assignment,import,import-not-found"
+
+[tool.pyink]
+line-length = 180
+
+[tool.pylint."messages control"]
+disable = ["duplicate-code", "fixme", "invalid-name", "import-error", "missing-module-docstring", "too-few-public-methods", "too-many-instance-attributes", "too-many-lines", "too-many-public-methods", "too-many-statements"]
+
+[tool.pylint.format]
+max-line-length = 180

@@ -15,6 +15,7 @@ class ReplicationModeEnum(str, Enum):
 
     Defines choices for REPLICATION_MODE
     """
+
     Ingress = "Ingress"
     Multicast = "Multicast"
 
@@ -25,6 +26,7 @@ class FFEnum(str, Enum):
 
     Defines choices for FF
     """
+
     Easy_Fabric = "Easy_Fabric"
 
 
@@ -34,6 +36,7 @@ class NvPairs(SQLModel):
 
     Not currently used
     """
+
     REPLICATION_MODE: ReplicationModeEnum
     BGP_AS: str
 

@@ -2,7 +2,6 @@
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 from sqlmodel import Field, SQLModel
 
@@ -48,15 +47,15 @@ class FabricBase(SQLModel):
     Base class for all other fabric classes.
     """
 
-    FABRIC_NAME: Optional[str] = Field(default="BAD_FABRIC", primary_key=True)
+    FABRIC_NAME: str | None = Field(default=None, primary_key=True)
     BGP_AS: str = Field(index=True)
     REPLICATION_MODE: ReplicationModeEnum = Field(default="Multicast")
     FF: FFEnum = Field(default="Easy_Fabric")
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
-    created_at: Optional[datetime] = Field(default_factory=get_datetime)
+    created_at: datetime | None = Field(default_factory=get_datetime)
 
-    updated_at: Optional[datetime] = Field(
+    updated_at: datetime | None = Field(
         default_factory=get_datetime,
         sa_column_kwargs={"onupdate": get_datetime},
     )
@@ -95,7 +94,7 @@ class FabricUpdate(SQLModel):
     Used to validate PUT requests.
     """
 
-    FABRIC_NAME: Optional[str] = None
-    BGP_AS: Optional[str] = None
-    REPLICATION_MODE: Optional[str] = None
-    FF: Optional[str] = None
+    FABRIC_NAME: str | None = None
+    BGP_AS: str | None = None
+    REPLICATION_MODE: str | None = None
+    FF: str | None = None

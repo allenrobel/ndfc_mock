@@ -4,9 +4,9 @@ from typing import List
 from fastapi import Depends, HTTPException, Query
 from sqlmodel import Session, select
 
+from ..app import app
 from ..db import get_session
 from ..models.fabric import Fabric, FabricCreate, FabricPublic, FabricUpdate
-from ..app import app
 
 
 @app.post(
@@ -20,10 +20,15 @@ def post_fabric(
     template_name: str,
     fabric: FabricCreate,
 ):
+    """
+    # Summary
+
+    POST request handler
+    """
     db_fabric = Fabric.model_validate(fabric)
     print(f"db_fabric: {db_fabric}")
-    setattr(db_fabric, "fabricName", fabric_name)
-    setattr(db_fabric, "templateName", template_name)
+    setattr(db_fabric, "FABRIC_NAME", fabric_name)
+    setattr(db_fabric, "FF", template_name)
     session.add(db_fabric)
     try:
         session.commit()
@@ -43,6 +48,11 @@ def get_fabrics(
     offset: int = 0,
     limit: int = Query(default=100, le=100),
 ):
+    """
+    # Summary
+
+    GET request handler with limit and offset query parameters.
+    """
     fabrics = session.exec(select(Fabric).offset(offset).limit(limit)).all()
     return fabrics
 
@@ -52,6 +62,11 @@ def get_fabrics(
     response_model=FabricPublic,
 )
 def get_fabric_by_fabric_name(*, session: Session = Depends(get_session), fabric_name: str):
+    """
+    # Summary
+
+    GET request handler with fabric_name as path parameter.
+    """
     fabric = session.get(Fabric, fabric_name)
     if not fabric:
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
@@ -68,6 +83,11 @@ def put_fabric(
     fabric_name: str,
     fabric: FabricUpdate,
 ):
+    """
+    # Summary
+
+    PUT request handler
+    """
     db_fabric = session.get(Fabric, fabric_name)
     if not db_fabric:
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
@@ -80,10 +100,13 @@ def put_fabric(
     return db_fabric
 
 
-@app.delete(
-    "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}"
-)
+@app.delete("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}")
 def delete_fabric(*, session: Session = Depends(get_session), fabric_name: str):
+    """
+    # Summary
+
+    DELETE request handler
+    """
     fabric = session.get(Fabric, fabric_name)
     if not fabric:
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")

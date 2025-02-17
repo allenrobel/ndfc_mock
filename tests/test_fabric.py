@@ -18,7 +18,7 @@ from ..app.models.fabric import Fabric
 from .common import client_fixture, convert_db_date_to_timestamp, convert_model_date_to_timestamp, session_fixture, timestamps_within_delta
 
 
-def test_post_fabric(client: TestClient):
+def test_fabric_post_success(client: TestClient):
     """
     # Summary
 
@@ -26,24 +26,24 @@ def test_post_fabric(client: TestClient):
     """
     response = client.post(
         "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/f1/Easy_Fabric",
-        json={"asn": "65001"},
+        json={"BGP_AS": "65001"},
     )
     data = response.json()
 
     assert response.status_code == 200
-    assert data["fabricName"] == "f1"
-    assert data["asn"] == "65001"
+    assert data["FABRIC_NAME"] == "f1"
+    assert data["BGP_AS"] == "65001"
     assert data["created_at"] is not None
     assert data["updated_at"] is not None
 
 
-def test_post_fabric_incomplete(client: TestClient):
+def test_fabric_post_missing_bgp_as(client: TestClient):
     """
     # Summary
 
     Verify an unsuccessful POST request.
 
-    A 422 status_code is returned when the asn is missing from the body
+    A 422 status_code is returned when BGP_AS is missing from the body
     of the POST request.
     """
     response = client.post(
@@ -53,23 +53,23 @@ def test_post_fabric_incomplete(client: TestClient):
     assert response.status_code == 422
 
 
-def test_post_fabric_invalid(client: TestClient):
+def test_fabric_post_invalid_bgp_as_type(client: TestClient):
     """
     # Summary
 
     Verify an unsuccessful POST request.
 
-    A 422 status_code is returned when the asn is an invalid type in the body
+    A 422 status_code is returned when BGP_AS is an invalid type in the body
     of the POST request.
     """
     response = client.post(
         "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/f1/Easy_Fabric",
-        json={"asn": 65001},
+        json={"BGP_AS": 65001},
     )
     assert response.status_code == 422
 
 
-def test_get_fabrics(session: Session, client: TestClient):
+def test_fabric_get_fabrics(session: Session, client: TestClient):
     """
     # Summary
 
@@ -81,8 +81,8 @@ def test_get_fabrics(session: Session, client: TestClient):
     4. Send a GET request to retrieve all fabrics.
     5. Verify response
         -   status_code == 200
-        -   asn == expected asn
-        -   fabricName == expected fabricName
+        -   BGP_AS == expected BGP_AS
+        -   FABRIC_NAME == expected FABRIC_NAME
     6. Convert the created_at and updated_at fields to timestamps.
     7. Verify the created_at field
         -   created_at field has 0 delta between step 2 version
@@ -91,8 +91,8 @@ def test_get_fabrics(session: Session, client: TestClient):
         -   updated_at field is present and the step 2 version
             timestamp differs from the retrieved version timestamp.
     """
-    f1 = Fabric(fabricName="f1", asn="65001")
-    f2 = Fabric(fabricName="f2", asn="65002")
+    f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
+    f2 = Fabric(FABRIC_NAME="f2", BGP_AS="65002")
 
     # Convert naive (timezone unaware) data model dates to
     # unix timestamps for comparison with dates in the database
@@ -112,11 +112,11 @@ def test_get_fabrics(session: Session, client: TestClient):
     # Compare the easy stuff first
     assert response.status_code == 200
     assert len(data) == 2
-    assert data[0]["fabricName"] == f1.fabricName
-    assert data[0]["asn"] == f1.asn
+    assert data[0]["FABRIC_NAME"] == f1.FABRIC_NAME
+    assert data[0]["BGP_AS"] == f1.BGP_AS
 
-    assert data[1]["fabricName"] == f2.fabricName
-    assert data[1]["asn"] == f2.asn
+    assert data[1]["FABRIC_NAME"] == f2.FABRIC_NAME
+    assert data[1]["BGP_AS"] == f2.BGP_AS
 
     # Convert timezone aware dates from the database to
     # unix timestamps for comparison with data model dates
@@ -132,7 +132,7 @@ def test_get_fabrics(session: Session, client: TestClient):
     assert timestamps_within_delta(model_updated_at_ts_f2, db_updated_at_ts_f2)
 
 
-def test_get_fabric_by_name(session: Session, client: TestClient):
+def test_fabric_get_by_name(session: Session, client: TestClient):
     """
     # Summary
 
@@ -142,36 +142,36 @@ def test_get_fabric_by_name(session: Session, client: TestClient):
     2. Send GET request with fabric_name in the path.
     3. Verify the response
         -   status_code == 200
-        -   asn == expected asn
+        -   BGP_AS == expected BGP_AS
         -   created_at field is present and not None
         -   updated_at field is present and not None
     """
-    f1 = Fabric(fabricName="f1", asn="65001")
+    f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
     session.add(f1)
     session.commit()
 
-    response = client.get(f"/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{f1.fabricName}")
+    response = client.get(f"/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{f1.FABRIC_NAME}")
     data = response.json()
 
     assert response.status_code == 200
-    assert data["fabricName"] == f1.fabricName
-    assert data["asn"] == f1.asn
+    assert data["FABRIC_NAME"] == f1.FABRIC_NAME
+    assert data["BGP_AS"] == f1.BGP_AS
     assert data["created_at"] is not None
     assert data["updated_at"] is not None
 
 
-def test_put_fabric(session: Session, client: TestClient):
+def test_fabric_put_bgp_as(session: Session, client: TestClient):
     """
     # Summary
 
-    Verify PUT request.
+    Verify PUT request updates BGP_AS.
 
-    1. asn is updated
+    1. BGP_AS is updated
     2. updated_at is updated with new timestamp
        2a. updated_at pre-update is not identical to post-update (delta=0)
        2b. updated_at post-update is <= 2 seconds later than pre-update
     """
-    f1 = Fabric(fabricName="f1", asn="65001")
+    f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
     session.add(f1)
     model_updated_at_ts = convert_model_date_to_timestamp(f1.updated_at)
     session.commit()
@@ -179,13 +179,13 @@ def test_put_fabric(session: Session, client: TestClient):
 
     response = client.put(
         "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/f1/Easy_Fabric",
-        json={"asn": "65111"},
+        json={"BGP_AS": "65111"},
     )
     data = response.json()
 
     assert response.status_code == 200
-    assert data["fabricName"] == "f1"
-    assert data["asn"] == "65111"
+    assert data["FABRIC_NAME"] == "f1"
+    assert data["BGP_AS"] == "65111"
     assert data["created_at"] is not None
     assert data["updated_at"] is not None
     db_updated_at_ts = convert_db_date_to_timestamp(data["updated_at"])
@@ -194,7 +194,42 @@ def test_put_fabric(session: Session, client: TestClient):
     assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=2000000) is True
 
 
-def test_delete_fabric(session: Session, client: TestClient):
+def test_fabric_put_replication_mode(session: Session, client: TestClient):
+    """
+    # Summary
+
+    Verify PUT request updates REPLICATION_MODE.
+
+    1. REPLICATION_MODE is updated
+    2. updated_at is updated with new timestamp
+       2a. updated_at pre-update is not identical to post-update (delta=0)
+       2b. updated_at post-update is <= 2 seconds later than pre-update
+    """
+    f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
+    session.add(f1)
+    model_updated_at_ts = convert_model_date_to_timestamp(f1.updated_at)
+    session.commit()
+    sleep(1)
+
+    response = client.put(
+        "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/f1/Easy_Fabric",
+        json={"REPLICATION_MODE": "Ingress"},
+    )
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["FABRIC_NAME"] == "f1"
+    assert data["BGP_AS"] == "65001"
+    assert data["REPLICATION_MODE"] == "Ingress"
+    assert data["created_at"] is not None
+    assert data["updated_at"] is not None
+    db_updated_at_ts = convert_db_date_to_timestamp(data["updated_at"])
+
+    assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=0) is False
+    assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=2000000) is True
+
+
+def test_fabric_delete(session: Session, client: TestClient):
     """
     # Summary
 
@@ -203,12 +238,12 @@ def test_delete_fabric(session: Session, client: TestClient):
 
     Verify that fabric is deleted with 200 status_code.
     """
-    f1 = Fabric(fabricName="f1", asn="65001")
+    f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
     session.add(f1)
     session.commit()
 
-    response = client.delete(f"/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{f1.fabricName}")
-    fabric_in_db = session.get(Fabric, f1.fabricName)
+    response = client.delete(f"/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{f1.FABRIC_NAME}")
+    fabric_in_db = session.get(Fabric, f1.FABRIC_NAME)
 
     assert response.status_code == 200
 

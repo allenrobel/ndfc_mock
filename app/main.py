@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from .db import create_db_and_tables
 from .app import app
+from .db import create_db_and_tables
 from .endpoints.fabric import *
 
 

@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# TODO: If SQLModel is ever fixed, remove the mypy directive below.
+# https://github.com/fastapi/sqlmodel/discussions/732
+# mypy: allow-call-arg
 import uuid
 from datetime import datetime
 from enum import Enum
@@ -65,7 +68,6 @@ class Fabric(FabricBase, table=True):
 
     Define the fabric table in the database.
     """
-
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     created_at: datetime | None = Field(default_factory=get_datetime)
 

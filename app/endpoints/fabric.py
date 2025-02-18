@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import copy
+import datetime
 from typing import List
 
 from fastapi import Depends, HTTPException, Query
@@ -6,12 +8,47 @@ from sqlmodel import Session, select
 
 from ..app import app
 from ..db import get_session
-from ..models.fabric import Fabric, FabricCreate, FabricPublic, FabricUpdate
+from ..models.fabric import Fabric, FabricCreate, FabricResponseModel, FabricUpdate
+
+
+def build_response(fabric):
+    """
+    # Summary
+
+    Build a fabric response that aligns with FabricResponseModel
+
+    ## Notes
+
+    1. If FabricResponseModel is changed, this function must also be updated
+    """
+    response = {}
+    response["id"] = fabric.id
+    response["nvPairs"] = build_nv_pairs(fabric)
+    return copy.deepcopy(response)
+
+
+def build_nv_pairs(fabric):
+    """
+    # Summary
+
+    Build the nvPairs object in a fabric response.
+
+    ## Notes
+
+    1.  If app.models.fabric.NvPairs() is changed, this function must also
+        be updated
+    """
+    nv_pairs = {}
+    nv_pairs["BGP_AS"] = fabric.BGP_AS
+    nv_pairs["REPLICATION_MODE"] = fabric.REPLICATION_MODE
+    nv_pairs["FABRIC_NAME"] = fabric.FABRIC_NAME
+    nv_pairs["FF"] = fabric.FF
+    return copy.deepcopy(nv_pairs)
 
 
 @app.post(
     "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/{template_name}",
-    response_model=FabricPublic,
+    response_model=FabricResponseModel,
 )
 def post_fabric(
     *,
@@ -26,21 +63,22 @@ def post_fabric(
     POST request handler
     """
     db_fabric = Fabric.model_validate(fabric)
-    print(f"db_fabric: {db_fabric}")
     setattr(db_fabric, "FABRIC_NAME", fabric_name)
     setattr(db_fabric, "FF", template_name)
+
     session.add(db_fabric)
     try:
         session.commit()
     except Exception as error:
         raise HTTPException(status_code=404, detail=error) from error
     session.refresh(db_fabric)
-    return db_fabric
+    response = build_response(db_fabric)
+    return response
 
 
 @app.get(
     "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/",
-    response_model=List[FabricPublic],
+    response_model=List[FabricResponseModel],
 )
 def get_fabrics(
     *,
@@ -54,12 +92,17 @@ def get_fabrics(
     GET request handler with limit and offset query parameters.
     """
     fabrics = session.exec(select(Fabric).offset(offset).limit(limit)).all()
-    return fabrics
+    response = []
+    response_fabric = {}
+    for fabric in fabrics:
+        response_fabric = build_response(fabric)
+        response.append(copy.deepcopy(response_fabric))
+    return response
 
 
 @app.get(
     "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}",
-    response_model=FabricPublic,
+    response_model=FabricResponseModel,
 )
 def get_fabric_by_fabric_name(*, session: Session = Depends(get_session), fabric_name: str):
     """
@@ -70,12 +113,13 @@ def get_fabric_by_fabric_name(*, session: Session = Depends(get_session), fabric
     fabric = session.get(Fabric, fabric_name)
     if not fabric:
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
-    return fabric
+    response = build_response(fabric)
+    return response
 
 
 @app.put(
     "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/{template_name}",
-    response_model=FabricPublic,
+    response_model=FabricResponseModel,
 )
 def put_fabric(
     *,
@@ -97,7 +141,8 @@ def put_fabric(
     session.add(db_fabric)
     session.commit()
     session.refresh(db_fabric)
-    return db_fabric
+    response = build_response(db_fabric)
+    return response
 
 
 @app.delete("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}")
@@ -106,10 +151,20 @@ def delete_fabric(*, session: Session = Depends(get_session), fabric_name: str):
     # Summary
 
     DELETE request handler
+
+    ## NDFC Response
+
+    {
+        "timestamp": 1739842602937,
+        "status": 404,
+        "error": "Not Found",
+        "path": "/rest/control/fabrics/f2"
+    }
     """
     fabric = session.get(Fabric, fabric_name)
     if not fabric:
-        raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
+        detail = {"timestamp": int(datetime.datetime.now().timestamp()), "status": 404, "error": "Not Found", "path": f"/rest/control/fabrics/{fabric_name}"}
+        raise HTTPException(status_code=404, detail=detail)
     session.delete(fabric)
     session.commit()
-    return {"ok": True}
+    return {f"Fabric '{fabric_name}' is deleted successfully!"}

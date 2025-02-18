@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
+from pydantic import BaseModel
 from sqlmodel import Field, SQLModel
 
 from .common import get_datetime
@@ -36,8 +37,13 @@ class NvPairs(SQLModel):
     Not currently used
     """
 
-    REPLICATION_MODE: ReplicationModeEnum
     BGP_AS: str
+    FABRIC_NAME: str
+    FF: str
+    REPLICATION_MODE: str
+    # id: uuid.UUID | None
+    # created_at: datetime | None
+    # updated_at: datetime | None
 
 
 class FabricBase(SQLModel):
@@ -47,10 +53,18 @@ class FabricBase(SQLModel):
     Base class for all other fabric classes.
     """
 
-    FABRIC_NAME: str | None = Field(default=None, primary_key=True)
     BGP_AS: str = Field(index=True)
-    REPLICATION_MODE: ReplicationModeEnum = Field(default="Multicast")
+    FABRIC_NAME: str | None = Field(default=None, primary_key=True)
     FF: FFEnum = Field(default="Easy_Fabric")
+    REPLICATION_MODE: ReplicationModeEnum | None = Field(default="Multicast")
+
+
+class Fabric(FabricBase, table=True):
+    """
+    # Summary
+
+    Define the fabric table in the database.
+    """
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     created_at: datetime | None = Field(default_factory=get_datetime)
@@ -61,14 +75,6 @@ class FabricBase(SQLModel):
     )
 
 
-class Fabric(FabricBase, table=True):
-    """
-    # Summary
-
-    Import to pick up all FabricBase behaviors.
-    """
-
-
 class FabricCreate(FabricBase):
     """
     # Summary
@@ -77,14 +83,15 @@ class FabricCreate(FabricBase):
     """
 
 
-class FabricPublic(FabricBase):
+class FabricResponseModel(BaseModel):
     """
     # Summary
 
-    Returned to clients.
+    Describes what is returned to clients.
     """
 
     id: uuid.UUID
+    nvPairs: NvPairs
 
 
 class FabricUpdate(SQLModel):

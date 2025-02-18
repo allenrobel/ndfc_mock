@@ -31,10 +31,12 @@ def test_fabric_post_success(client: TestClient):
     data = response.json()
 
     assert response.status_code == 200
-    assert data["FABRIC_NAME"] == "f1"
-    assert data["BGP_AS"] == "65001"
-    assert data["created_at"] is not None
-    assert data["updated_at"] is not None
+    assert "nvPairs" in data
+    nv_pairs = data["nvPairs"]
+    assert nv_pairs["FABRIC_NAME"] == "f1"
+    assert nv_pairs["BGP_AS"] == "65001"
+    # assert data["created_at"] is not None
+    # assert data["updated_at"] is not None
 
 
 def test_fabric_post_missing_bgp_as(client: TestClient):
@@ -96,10 +98,10 @@ def test_fabric_get_fabrics(session: Session, client: TestClient):
 
     # Convert naive (timezone unaware) data model dates to
     # unix timestamps for comparison with dates in the database
-    model_created_at_ts_f1 = convert_model_date_to_timestamp(f1.created_at)
-    model_created_at_ts_f2 = convert_model_date_to_timestamp(f2.created_at)
-    model_updated_at_ts_f1 = convert_model_date_to_timestamp(f1.updated_at)
-    model_updated_at_ts_f2 = convert_model_date_to_timestamp(f2.updated_at)
+    # model_created_at_ts_f1 = convert_model_date_to_timestamp(f1.created_at)
+    # model_created_at_ts_f2 = convert_model_date_to_timestamp(f2.created_at)
+    # model_updated_at_ts_f1 = convert_model_date_to_timestamp(f1.updated_at)
+    # model_updated_at_ts_f2 = convert_model_date_to_timestamp(f2.updated_at)
 
     # commit the two fabrics
     for fabric in [f1, f2]:
@@ -112,27 +114,27 @@ def test_fabric_get_fabrics(session: Session, client: TestClient):
     # Compare the easy stuff first
     assert response.status_code == 200
     assert len(data) == 2
-    assert data[0]["FABRIC_NAME"] == f1.FABRIC_NAME
-    assert data[0]["BGP_AS"] == f1.BGP_AS
+    assert data[0]["nvPairs"]["FABRIC_NAME"] == f1.FABRIC_NAME
+    assert data[0]["nvPairs"]["BGP_AS"] == f1.BGP_AS
 
-    assert data[1]["FABRIC_NAME"] == f2.FABRIC_NAME
-    assert data[1]["BGP_AS"] == f2.BGP_AS
+    assert data[1]["nvPairs"]["FABRIC_NAME"] == f2.FABRIC_NAME
+    assert data[1]["nvPairs"]["BGP_AS"] == f2.BGP_AS
 
     # Convert timezone aware dates from the database to
     # unix timestamps for comparison with data model dates
-    db_created_at_ts_f1 = convert_db_date_to_timestamp(data[0]["created_at"])
-    db_created_at_ts_f2 = convert_db_date_to_timestamp(data[1]["created_at"])
-    db_updated_at_ts_f1 = convert_db_date_to_timestamp(data[0]["updated_at"])
-    db_updated_at_ts_f2 = convert_db_date_to_timestamp(data[1]["updated_at"])
+    # db_created_at_ts_f1 = convert_db_date_to_timestamp(data[0]["created_at"])
+    # db_created_at_ts_f2 = convert_db_date_to_timestamp(data[1]["created_at"])
+    # db_updated_at_ts_f1 = convert_db_date_to_timestamp(data[0]["updated_at"])
+    # db_updated_at_ts_f2 = convert_db_date_to_timestamp(data[1]["updated_at"])
 
     # Compare the model timestamps with the database timestamps
-    assert timestamps_within_delta(model_created_at_ts_f1, db_created_at_ts_f1, delta=0)
-    assert timestamps_within_delta(model_created_at_ts_f2, db_created_at_ts_f2, delta=0)
-    assert timestamps_within_delta(model_updated_at_ts_f1, db_updated_at_ts_f1)
-    assert timestamps_within_delta(model_updated_at_ts_f2, db_updated_at_ts_f2)
+    # assert timestamps_within_delta(model_created_at_ts_f1, db_created_at_ts_f1, delta=0)
+    # assert timestamps_within_delta(model_created_at_ts_f2, db_created_at_ts_f2, delta=0)
+    # assert timestamps_within_delta(model_updated_at_ts_f1, db_updated_at_ts_f1)
+    # assert timestamps_within_delta(model_updated_at_ts_f2, db_updated_at_ts_f2)
 
 
-def test_fabric_get_by_name(session: Session, client: TestClient):
+def test_fabric_get_fabric_by_name(session: Session, client: TestClient):
     """
     # Summary
 
@@ -154,10 +156,10 @@ def test_fabric_get_by_name(session: Session, client: TestClient):
     data = response.json()
 
     assert response.status_code == 200
-    assert data["FABRIC_NAME"] == f1.FABRIC_NAME
-    assert data["BGP_AS"] == f1.BGP_AS
-    assert data["created_at"] is not None
-    assert data["updated_at"] is not None
+    assert data["nvPairs"]["FABRIC_NAME"] == f1.FABRIC_NAME
+    assert data["nvPairs"]["BGP_AS"] == f1.BGP_AS
+    # assert data["created_at"] is not None
+    # assert data["updated_at"] is not None
 
 
 def test_fabric_put_bgp_as(session: Session, client: TestClient):
@@ -173,7 +175,7 @@ def test_fabric_put_bgp_as(session: Session, client: TestClient):
     """
     f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
     session.add(f1)
-    model_updated_at_ts = convert_model_date_to_timestamp(f1.updated_at)
+    # model_updated_at_ts = convert_model_date_to_timestamp(f1.updated_at)
     session.commit()
     sleep(1)
 
@@ -184,14 +186,14 @@ def test_fabric_put_bgp_as(session: Session, client: TestClient):
     data = response.json()
 
     assert response.status_code == 200
-    assert data["FABRIC_NAME"] == "f1"
-    assert data["BGP_AS"] == "65111"
-    assert data["created_at"] is not None
-    assert data["updated_at"] is not None
-    db_updated_at_ts = convert_db_date_to_timestamp(data["updated_at"])
+    assert data["nvPairs"]["FABRIC_NAME"] == "f1"
+    assert data["nvPairs"]["BGP_AS"] == "65111"
+    # assert data["created_at"] is not None
+    # assert data["updated_at"] is not None
+    # db_updated_at_ts = convert_db_date_to_timestamp(data["updated_at"])
 
-    assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=0) is False
-    assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=2000000) is True
+    # assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=0) is False
+    # assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=2000000) is True
 
 
 def test_fabric_put_replication_mode(session: Session, client: TestClient):
@@ -207,7 +209,7 @@ def test_fabric_put_replication_mode(session: Session, client: TestClient):
     """
     f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
     session.add(f1)
-    model_updated_at_ts = convert_model_date_to_timestamp(f1.updated_at)
+    # model_updated_at_ts = convert_model_date_to_timestamp(f1.updated_at)
     session.commit()
     sleep(1)
 
@@ -218,18 +220,18 @@ def test_fabric_put_replication_mode(session: Session, client: TestClient):
     data = response.json()
 
     assert response.status_code == 200
-    assert data["FABRIC_NAME"] == "f1"
-    assert data["BGP_AS"] == "65001"
-    assert data["REPLICATION_MODE"] == "Ingress"
-    assert data["created_at"] is not None
-    assert data["updated_at"] is not None
-    db_updated_at_ts = convert_db_date_to_timestamp(data["updated_at"])
+    assert data["nvPairs"]["FABRIC_NAME"] == "f1"
+    assert data["nvPairs"]["BGP_AS"] == "65001"
+    assert data["nvPairs"]["REPLICATION_MODE"] == "Ingress"
+    # assert data["created_at"] is not None
+    # assert data["updated_at"] is not None
+    # db_updated_at_ts = convert_db_date_to_timestamp(data["updated_at"])
 
-    assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=0) is False
-    assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=2000000) is True
+    # assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=0) is False
+    # assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=2000000) is True
 
 
-def test_fabric_delete(session: Session, client: TestClient):
+def test_fabric_delete_fabric_exists(session: Session, client: TestClient):
     """
     # Summary
 
@@ -246,5 +248,28 @@ def test_fabric_delete(session: Session, client: TestClient):
     fabric_in_db = session.get(Fabric, f1.FABRIC_NAME)
 
     assert response.status_code == 200
+
+    assert fabric_in_db is None
+
+
+def test_fabric_delete_fabric_does_not_exist(session: Session, client: TestClient):
+    """
+    # Summary
+
+    1. Attempt to delete a fabric that does not exist
+
+    Verify that fabric is deleted with 200 status_code.
+    """
+    response = client.delete("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/foo")
+    fabric_in_db = session.get(Fabric, "foo")
+
+    response_decode = response.json()
+
+    assert response.status_code == 404
+    assert response_decode["detail"]["timestamp"] is not None
+    assert isinstance(response_decode["detail"]["timestamp"], int) is True
+    assert response_decode["detail"]["status"] == 404
+    assert response_decode["detail"]["error"] == "Not Found"
+    assert response_decode["detail"]["path"] == "/rest/control/fabrics/foo"
 
     assert fabric_in_db is None

@@ -1,9 +1,12 @@
 #!/usr/bin/env python
+# TODO: If SQLModel is ever fixed, remove the mypy directive below.
+# https://github.com/fastapi/sqlmodel/discussions/732
+# mypy: disable-error-code=call-arg
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
+from pydantic import BaseModel
 from sqlmodel import Field, SQLModel
 
 from .common import get_datetime
@@ -37,8 +40,13 @@ class NvPairs(SQLModel):
     Not currently used
     """
 
-    REPLICATION_MODE: ReplicationModeEnum
     BGP_AS: str
+    FABRIC_NAME: str
+    FF: str
+    REPLICATION_MODE: str
+    # id: uuid.UUID | None
+    # created_at: datetime | None
+    # updated_at: datetime | None
 
 
 class FabricBase(SQLModel):
@@ -48,26 +56,26 @@ class FabricBase(SQLModel):
     Base class for all other fabric classes.
     """
 
-    FABRIC_NAME: Optional[str] = Field(default="BAD_FABRIC", primary_key=True)
     BGP_AS: str = Field(index=True)
-    REPLICATION_MODE: ReplicationModeEnum = Field(default="Multicast")
+    FABRIC_NAME: str | None = Field(default=None, primary_key=True)
     FF: FFEnum = Field(default="Easy_Fabric")
-
-    id: uuid.UUID = Field(default_factory=uuid.uuid4)
-    created_at: Optional[datetime] = Field(default_factory=get_datetime)
-
-    updated_at: Optional[datetime] = Field(
-        default_factory=get_datetime,
-        sa_column_kwargs={"onupdate": get_datetime},
-    )
+    REPLICATION_MODE: ReplicationModeEnum | None = Field(default="Multicast")
 
 
 class Fabric(FabricBase, table=True):
     """
     # Summary
 
-    Import to pick up all FabricBase behaviors.
+    Define the fabric table in the database.
     """
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    created_at: datetime | None = Field(default_factory=get_datetime)
+
+    updated_at: datetime | None = Field(
+        default_factory=get_datetime,
+        sa_column_kwargs={"onupdate": get_datetime},
+    )
 
 
 class FabricCreate(FabricBase):
@@ -78,14 +86,15 @@ class FabricCreate(FabricBase):
     """
 
 
-class FabricPublic(FabricBase):
+class FabricResponseModel(BaseModel):
     """
     # Summary
 
-    Returned to clients.
+    Describes what is returned to clients.
     """
 
     id: uuid.UUID
+    nvPairs: NvPairs
 
 
 class FabricUpdate(SQLModel):
@@ -95,7 +104,7 @@ class FabricUpdate(SQLModel):
     Used to validate PUT requests.
     """
 
-    FABRIC_NAME: Optional[str] = None
-    BGP_AS: Optional[str] = None
-    REPLICATION_MODE: Optional[str] = None
-    FF: Optional[str] = None
+    FABRIC_NAME: str | None = None
+    BGP_AS: str | None = None
+    REPLICATION_MODE: str | None = None
+    FF: str | None = None

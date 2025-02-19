@@ -64,7 +64,7 @@ podman build -t ndfc_mock .
 podman run --detach -p 8080:8080 ndfc_mock
 ```
 
-After the container starts, point your browser at 
+After the container starts, point your browser at
 [http://localhost:8080/docs](http://localhost:8080/docs)
 for the API documentation.  You can use e.g. Postman for
 sending requests to the mock NDFC instance.
@@ -103,10 +103,9 @@ You'll see the uvicorn server startup.  The last two lines will look like:
       INFO   Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 ```
 
-Point your browser at 
-[http://localhost:8000/docs](http://localhost:8000/docs)
-for the API documentation.  You can use e.g. Postman for
-sending requests to the uvicorn site.
+Point your browser at [http://localhost:8000/docs](http://localhost:8000/docs)
+for the API documentation.  You can use e.g. Postman for sending requests to
+the uvicorn site.
 
 - Note: Running outside of a container will result in database.db being created in the ./app directory.
 - Note: When starting with `fastapi dev main.py` the last two lines will not

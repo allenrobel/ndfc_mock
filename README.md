@@ -2,7 +2,7 @@
 
 Work in progress!
 
-When finished, this will (hopefully) allow for minor development 
+When finished, this will (hopefully) allow for minor development
 and testing of [ansible-dcnm](https://github.com/CiscoDevNet/ansible-dcnm)
 modules (and other REST API-based applications) without requiring a
 real ND/NDFC instance.
@@ -125,4 +125,3 @@ This work would not be possible without the following.
 2. [SQLModel](https://sqlmodel.tiangolo.com)
 3. [Pydantic](https://docs.pydantic.dev/latest/)
 4. [Podman](https://podman.io)
-

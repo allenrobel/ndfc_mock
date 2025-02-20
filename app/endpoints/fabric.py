@@ -40,9 +40,10 @@ def build_nv_pairs(fabric):
     """
     nv_pairs = {}
     nv_pairs["BGP_AS"] = fabric.BGP_AS
-    nv_pairs["REPLICATION_MODE"] = fabric.REPLICATION_MODE
+    nv_pairs["ENABLE_PBR"] = fabric.ENABLE_PBR
     nv_pairs["FABRIC_NAME"] = fabric.FABRIC_NAME
     nv_pairs["FF"] = fabric.FF
+    nv_pairs["REPLICATION_MODE"] = fabric.REPLICATION_MODE
     return copy.deepcopy(nv_pairs)
 
 

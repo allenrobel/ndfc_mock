@@ -34,6 +34,31 @@ class BgpAuthKeyTypeEnum(str, Enum):
     Seven = "7"
 
 
+class CoppPolicyEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for COPP_POLICY
+    """
+
+    dense = "dense"
+    lenient = "lenient"
+    moderate = "moderate"
+    strict = "strict"
+    manual = "manual"
+
+
+class DhcpIpv6EnableEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for DHCP_IPV6_ENABLE
+    """
+
+    DHCPv4 = "DHCPv4"
+    DHCPv6 = "DHCPv6"
+
+
 class FFEnum(str, Enum):
     """
     # Summary
@@ -224,12 +249,180 @@ class Descriptions:
         return desc
 
     @property
+    def brfield_debug_flag(self):
+        desc = "!!! Only for brf debugging purpose !!! "
+        desc += "Dont' use until you are aware about it."
+        return desc
+
+    @property
+    def brownfield_skip_overlay_network_attachments(self):
+        desc = "Skip Overlay Network Interface Attachments. "
+        desc += "Enable to skip overlay network interface attachments "
+        desc += "for Brownfield and Host Port Resync cases."
+        return desc
+
+    @property
+    def cdp_enable(self):
+        desc = "Enable CDP for Bootstrapped Switch. "
+        desc += "Enable CDP on management interface."
+        return desc
+
+    @property
+    def copp_policy(self):
+        desc = "Fabric Wide CoPP Policy. Customized CoPP policy should be "
+        desc += "provided when 'manual' is selected."
+        return desc
+
+    @property
     def dci_subnet_range(self):
         return "Address range to assign P2P Interfabric Connections."
 
     @property
+    def default_network(self):
+        desc = "Default Overlay Network Template For Leafs."
+        return desc
+
+    @property
+    def default_pvlan_sec_network(self):
+        desc = "Default PVLAN Secondary Network Template."
+        return desc
+
+    @property
+    def default_queuing_policy_cloudscale(self):
+        desc = "N9K Cloud Scale Platform Queuing Policy. "
+        desc += "Queuing Policy for all 92xx, -EX, -FX, -FX2, -FX3, -GX "
+        desc += "series switches in the fabric."
+        return desc
+
+    @property
+    def default_queuing_policy_other(self):
+        desc = "Other N9K Platform Queuing Policy. "
+        desc += "Queuing Policy for all other switches in the fabric."
+        return desc
+
+    @property
+    def default_queuing_policy_r_series(self):
+        desc = "N9K R-Series Platform Queuing Policy. "
+        desc += "Queuing Policy for all R-Series switches in the fabric."
+        return desc
+
+    @property
+    def default_vrf(self):
+        return "Default Overlay VRF Template For Leafs."
+
+    @property
+    def default_vrf_redis_bgp_rmap(self):
+        desc = "Redistribute BGP Route-map Name. "
+        desc += "Route Map used to redistribute BGP routes to IGP in default "
+        desc += "vrf in auto created VRF Lite IFC links."
+        return desc
+
+    @property
+    def deployment_freeze(self):
+        return "Disable all deployments in this fabric."
+
+    @property
+    def dhcp_enable(self):
+        desc = "Enable Local DHCP Server. "
+        desc += "Automatic IP Assignment For POAP From Local DHCP Server."
+        return desc
+
+    @property
+    def dhcp_end(self):
+        desc = "DHCP Scope End Address. "
+        desc += "End Address For Switch POAP."
+        return desc
+
+    @property
+    def dhcp_ipv6_enable(self):
+        desc = "DHCP Version. "
+        desc += "One of DHCPv4 or DHCPv6."
+        return desc
+
+    @property
+    def dhcp_start(self):
+        desc = "DHCP Scope Start Address. "
+        desc += "Start Address For Switch POAP."
+        return desc
+
+    @property
+    def dns_server_ip_list(self):
+        desc = "DNS Server IPs. "
+        desc += "Comma separated list of IP Addresses(v4/v6)."
+        return desc
+
+    @property
+    def dns_server_vrf(self):
+        desc = "DNS Server VRFs. "
+        desc += "One VRF for all DNS servers or a comma separated list of VRFs, one per DNS server."
+        return desc
+
+    @property
+    def enable_aaa(self):
+        desc = "Include AAA configs from Manageability tab during device bootup."
+        return desc
+
+    @property
+    def enable_agent(self):
+        return "Enable Agent (developmet purpose only)."
+
+    @property
+    def enable_default_queuing_policy(self):
+        return "Enable Default Queuing Policies."
+
+    @property
+    def enable_evpn(self):
+        return "Enable EVPN (extensible virtual private network)."
+
+    @property
+    def enable_fabric_vpc_domain_id(self):
+        desc = "Enable the same vPC Domain Id <br />for all vPC Pairs. "
+        desc += "(Not Recommended)."
+        return desc
+
+    @property
+    def enable_macsec(self):
+        return "Enable MACsec in the fabric."
+
+    @property
+    def enable_netflow(self):
+        return "Enable Netflow on VTEPs."
+
+    @property
+    def enable_ngoam(self):
+        desc = "Enable VXLAN OAM. "
+        desc += "Enable the Next Generation (NG) OAM feature for all switches "
+        desc += "in the fabric to aid in trouble-shooting VXLAN EVPN fabrics."
+        return desc
+
+    @property
     def enable_nxapi(self):
         return "Enable HTTPS NX-API"
+
+    @property
+    def enable_nxapi_http(self):
+        return "Enable HTTP NX-API."
+
+    @property
+    def enable_pvlan(self):
+        desc = "Enable Private VLAN (PVLAN). "
+        desc += "Enable PVLAN on switches except spines and super spines."
+        return desc
+
+    @property
+    def enable_tenant_dhcp(self):
+        return "Enable Tenant DHCP."
+
+    @property
+    def enable_trm(self):
+        desc = "Enable Tenant Routed Multicast (TRM). "
+        desc += "For Overlay Multicast Support In VXLAN Fabrics."
+        return desc
+
+    @property
+    def enable_vpc_peer_link_native_vlan(self):
+        desc = "Make vPC Peer Link VLAN as Native VLAN."
+        return desc
 
     @property
     def extra_conf_tor(self):
@@ -392,6 +585,10 @@ class FabricBase(SQLModel):
     abstract_vlan_interface: str | None = Field(default="int_fabric_vlan_11_1")
     abstract_vpc_domain: str | None = Field(default="base_vpc_domain_11_1")
 
+    default_network: str | None = Field(default="Default_Network_Universal", description=Descriptions().default_network)
+    default_pvlan_sec_network: str | None = Field(default="Pvlan_Secondary_Network", description=Descriptions().default_pvlan_sec_network)
+    default_vrf: str | None = Field(default="Default_VRF_Universal", description=Descriptions().default_vrf)
+
     temp_vpc_peer_link: str | None = Field(default="int_vpc_peer_link_po")
 
     AAA_REMOTE_IP_ENABLED: bool | None = Field(default=False, description=Descriptions().aaa_remote_ip_enabled)
@@ -433,16 +630,55 @@ class FabricBase(SQLModel):
     BOOTSTRAP_MULTISUBNET_INTERNAL: str | None = Field(default=None)
     BOOTSTRAP_MULTISUBNET: str | None = Field(default=Defaults().bootstrap_multisubnet, description=Descriptions().bootstrap_multisubnet)
 
+    BRFIELD_DEBUG_FLAG: EnableDisableEnum | None = Field(default=EnableDisableEnum("Disable"), description=Descriptions().brfield_debug_flag)
     BROWNFIELD_NETWORK_NAME_FORMAT: str | None = Field(default="Auto_Net_VNI$$VNI$$_VLAN$$VLAN_ID$$")
+    BROWNFIELD_SKIP_OVERLAY_NETWORK_ATTACHMENTS: bool | None = Field(default=False, description=Descriptions().brownfield_skip_overlay_network_attachments)
+
+    CDP_ENABLE: bool | None = Field(default=False, description=Descriptions().cdp_enable)
+
+    COPP_POLICY: CoppPolicyEnum | None = Field(default=CoppPolicyEnum("strict"), description=Descriptions().copp_policy)
+
     DCI_SUBNET_RANGE: str | None = Field(default="10.33.0.0/16")
     DCI_SUBNET_TARGET_MASK: int | None = Field(default=30, ge=8, le=31)
-    DEAFULT_QUEUING_POLICY_OTHER: str | None = Field(default="queuing_policy_default_other")
-    DEAFULT_QUEUING_POLICY_R_SERIES: str | None = Field(default="queuing_policy_default_r_series")
-    DHCP_END: str | None = Field(default=None)
+
+    # Yes, NDFC mispells these.
+    DEAFULT_QUEUING_POLICY_CLOUDSCALE: str | None = Field(default="queuing_policy_default_8q_cloudscale", description=Descriptions().default_queuing_policy_cloudscale)
+    DEAFULT_QUEUING_POLICY_OTHER: str | None = Field(default="queuing_policy_default_other", description=Descriptions().default_queuing_policy_other)
+    DEAFULT_QUEUING_POLICY_R_SERIES: str | None = Field(default="queuing_policy_default_r_series", description=Descriptions().default_queuing_policy_r_series)
+    DEFAULT_VRF_REDIS_BGP_RMAP: str | None = Field(default="extcon-rmap-filter", description=Descriptions().default_vrf_redis_bgp_rmap)
+
+    DEPLOYMENT_FREEZE: bool | None = Field(default=False, description=Descriptions().deployment_freeze)
+
+    DHCP_ENABLE: bool | None = Field(default=False, description=Descriptions().dhcp_enable)
+    DHCP_END: str | None = Field(default=None, description=Descriptions().dhcp_end)
+    DHCP_END_INTERNAL: str | None = Field(default=None)
+    DHCP_IPV6_ENABLE_INTERNAL: str | None = Field(default=None)
+    DHCP_IPV6_ENABLE: DhcpIpv6EnableEnum | None = Field(default=DhcpIpv6EnableEnum("DHCPv4"), description=Descriptions().dhcp_ipv6_enable)
+    DHCP_START: str | None = Field(default=None, description=Descriptions().dhcp_start)
     DHCP_START_INTERNAL: str | None = Field(default=None)
-    ENABLE_FABRIC_VPC_DOMAIN_ID: bool | None = Field(default=False)
-    ENABLE_MACSEC: bool | None = Field(default=False)
-    ENABLE_NETFLOW: bool | None = Field(default=False)
+
+    DNS_SERVER_IP_LIST: str | None = Field(default=None, description=Descriptions().dns_server_ip_list)
+    DNS_SERVER_VRF: str | None = Field(default=None, description=Descriptions().dns_server_vrf)
+
+    ENABLE_AAA: bool | None = Field(default=False, description=Descriptions().enable_aaa)
+    ENABLE_AGENT: bool | None = Field(default=False, description=Descriptions().enable_agent)
+    ENABLE_DEFAULT_QUEUING_POLICY: bool | None = Field(default=False, description=Descriptions().enable_default_queuing_policy)
+    ENABLE_EVPN: bool | None = Field(default=True, description=Descriptions().enable_evpn)
+    ENABLE_FABRIC_VPC_DOMAIN_ID: bool | None = Field(default=False, description=Descriptions().enable_fabric_vpc_domain_id)
+    ENABLE_FABRIC_VPC_DOMAIN_ID_PREV: bool | None = Field(default=False)
+
+    ENABLE_MACSEC: bool | None = Field(default=False, description=Descriptions().enable_macsec)
+    ENABLE_NETFLOW: bool | None = Field(default=False, description=Descriptions().enable_netflow)
+    ENABLE_NETFLOW_PREV: bool | None = Field(default=False)
+    ENABLE_NGOAM: bool | None = Field(default=True, description=Descriptions().enable_ngoam)
+    ENABLE_NXAPI_HTTP: bool | None = Field(default=True, description=Descriptions().enable_nxapi_http)
+
+    ENABLE_PVLAN_PREV: bool | None = Field(default=False)
+    ENABLE_PVLAN: bool | None = Field(default=False, description=Descriptions().enable_pvlan)
+    ENABLE_TENANT_DHCP: bool | None = Field(default=True, description=Descriptions().enable_tenant_dhcp)
+    ENABLE_TRM: bool | None = Field(default=False, description=Descriptions().enable_trm)
+    ENABLE_VPC_PEER_LINK_NATIVE_VLAN: bool | None = Field(default=False, description=Descriptions().enable_vpc_peer_link_native_vlan)
+
     ENABLE_NXAPI: bool | None = Field(default=True, description=Descriptions().enable_nxapi)
     ENABLE_PBR: bool | None = Field(default=False)
     FABRIC_NAME: str | None = Field(default=None, primary_key=True)

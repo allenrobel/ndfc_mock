@@ -59,6 +59,17 @@ class DhcpIpv6EnableEnum(str, Enum):
     DHCPv6 = "DHCPv6"
 
 
+class FabricInterfaceTypeEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for FABRIC_INTERFACE_TYPE
+    """
+
+    p2p = "p2p"
+    unnumbered = "unnumbered"
+
+
 class FFEnum(str, Enum):
     """
     # Summary
@@ -425,11 +436,70 @@ class Descriptions:
         return desc
 
     @property
+    def extra_conf_intra_links(self):
+        return "Additional CLIs For All Intra-Fabric Links."
+
+    @property
+    def extra_conf_leaf(self):
+        desc = "Leaf Freeform Config. "
+        desc += "Additional CLIs For All Leafs As Captured From "
+        desc += "Show Running Configuration."
+        return desc
+
+    @property
+    def extra_conf_spine(self):
+        desc = "Spine Freeform Config. "
+        desc += "Additional CLIs For All Spines As Captured From "
+        desc += "Show Running Configuration."
+        return desc
+
+    @property
     def extra_conf_tor(self):
         desc = "ToR Freeform Config. "
-        desc += "Additional CLIs For All ToRs As Captured From Show Running "
-        desc += "Configuration"
+        desc += "Additional CLIs For All ToRs As Captured From "
+        desc += "Show Running Configuration."
         return desc
+
+    @property
+    def fabric_interface_type(self):
+        desc = "Fabric Interface Numbering. "
+        desc += "ptp (Numbered Point-to-Point) or unnumbered."
+        return desc
+
+    @property
+    def fabric_mtu(self):
+        desc = "Intra Fabric Interface MTU. "
+        desc += "(Min:576, Max:9216). Must be an even number."
+        return desc
+
+    @property
+    def fabric_name(self):
+        desc = "Fabric Name. "
+        desc += "Maximum length, 32 characters."
+        return desc
+
+    @property
+    def fabric_vpc_domain_id(self):
+        return "vPC Domain Id to be used on all vPC pairs in the fabric."
+
+    @property
+    def fabric_vpc_domain_id_prev(self):
+        return "Internal Fabric Wide vPC Domain Id."
+
+    @property
+    def fabric_vpc_qos(self):
+        desc = "Enable Qos for Fabric vPC-Peering. "
+        desc += "Qos on spines for guaranteed delivery of vPC Fabric Peering "
+        desc += "communication."
+        return desc
+
+    @property
+    def feature_ptp(self):
+        return "Enable Precision Time Protocol (PTP)."
+
+    @property
+    def ff(self):
+        return "Template Family."
 
     @property
     def grfield_debug_flag(self):
@@ -672,22 +742,34 @@ class FabricBase(SQLModel):
     ENABLE_NETFLOW_PREV: bool | None = Field(default=False)
     ENABLE_NGOAM: bool | None = Field(default=True, description=Descriptions().enable_ngoam)
     ENABLE_NXAPI_HTTP: bool | None = Field(default=True, description=Descriptions().enable_nxapi_http)
+    ENABLE_NXAPI: bool | None = Field(default=True, description=Descriptions().enable_nxapi)
 
+    ENABLE_PBR: bool | None = Field(default=False)
     ENABLE_PVLAN_PREV: bool | None = Field(default=False)
     ENABLE_PVLAN: bool | None = Field(default=False, description=Descriptions().enable_pvlan)
     ENABLE_TENANT_DHCP: bool | None = Field(default=True, description=Descriptions().enable_tenant_dhcp)
     ENABLE_TRM: bool | None = Field(default=False, description=Descriptions().enable_trm)
     ENABLE_VPC_PEER_LINK_NATIVE_VLAN: bool | None = Field(default=False, description=Descriptions().enable_vpc_peer_link_native_vlan)
 
-    ENABLE_NXAPI: bool | None = Field(default=True, description=Descriptions().enable_nxapi)
-    ENABLE_PBR: bool | None = Field(default=False)
-    FABRIC_NAME: str | None = Field(default=None, primary_key=True)
-    FABRIC_MTU_PREV: int | None = Field(default=9216, ge=576, le=9216)
-    FABRIC_VPC_DOMAIN_ID: int | None = Field(default=1, ge=1, le=1000)
-    FABRIC_VPC_QOS_POLICY_NAME: str | None = Field(default="spine_qos_for_fabric_vpc_peering")
-    FEATURE_PTP: bool | None = Field(default=False)
-    FF: FFEnum = Field(default="Easy_Fabric")
+    EXTRA_CONF_INTRA_LINKS: str | None = Field(default=None, description=Descriptions().extra_conf_intra_links)
+    EXTRA_CONF_LEAF: str | None = Field(default=None, description=Descriptions().extra_conf_leaf)
+    EXTRA_CONF_SPINE: str | None = Field(default=None, description=Descriptions().extra_conf_spine)
     EXTRA_CONF_TOR: str | None = Field(default=None, description=Descriptions().extra_conf_tor)
+
+    FABRIC_INTERFACE_TYPE: FabricInterfaceTypeEnum | None = Field(default=FabricInterfaceTypeEnum("p2p"), description=Descriptions().fabric_interface_type)
+    FABRIC_NAME: str | None = Field(default=None, primary_key=True, min_length=1, max_length=32, description=Descriptions().fabric_name)
+    FABRIC_MTU: int | None = Field(default=9216, ge=576, le=9216, description=Descriptions().fabric_mtu)
+    FABRIC_MTU_PREV: int | None = Field(default=9216, ge=576, le=9216)
+    FABRIC_TYPE: str | None = Field(default="Switch_Fabric")
+    FABRIC_VPC_QOS: bool | None = Field(default=False, description=Descriptions().fabric_vpc_qos)
+    FABRIC_VPC_DOMAIN_ID: int | None = Field(default=1, ge=1, le=1000, description=Descriptions().fabric_vpc_domain_id)
+    FABRIC_VPC_DOMAIN_ID_PREV: int | None = Field(default=1, ge=1, le=1000, description=Descriptions().fabric_vpc_domain_id_prev)
+    FABRIC_VPC_QOS_POLICY_NAME: str | None = Field(default="spine_qos_for_fabric_vpc_peering")
+
+    FEATURE_PTP: bool | None = Field(default=False, description=Descriptions().feature_ptp)
+    FEATURE_PTP_INTERNAL: bool | None = Field(default=False)
+    FF: FFEnum = Field(default="Easy_Fabric", description=Descriptions().ff)
+
     GRFIELD_DEBUG_FLAG: EnableDisableEnum | None = Field(default=EnableDisableEnum("Disable"), description=Descriptions().grfield_debug_flag)
     HD_TIME: int | None = Field(default=180, ge=1, le=1500, description=Descriptions().hd_time)
     IBGP_PEER_TEMPLATE: str | None = Field(default=None, description=Descriptions().ibgp_peer_template)

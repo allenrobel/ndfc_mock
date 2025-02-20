@@ -103,6 +103,17 @@ class IsisLevelEnum(str, Enum):
     level_2 = "level-2"
 
 
+class LinkStateRoutingEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for LINK_STATE_ROUTING
+    """
+
+    isis = "is-is"
+    ospf = "ospf"
+
+
 class MacsecAlgorithmEnum(str, Enum):
     """
     # Summary
@@ -114,6 +125,42 @@ class MacsecAlgorithmEnum(str, Enum):
     AES_256_CMAC = "AES_256_CMAC"
 
 
+class MacsecCipherSuiteEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for MACSEC_CIPHER_SUITE
+    """
+
+    GCM_AES_128 = "GCM-AES-128"
+    GCM_AES_256 = "GCM-AES-256"
+    GCM_AES_XPN_128 = "GCM-AES-XPN-128"
+    GCM_AES_XPN_256 = "GCM-AES-XPN-256"
+
+
+class OverlayModeEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for OVERLAY_MODE
+    """
+
+    cli = "cli"
+    config_profile = "config-profile"
+
+
+class PowerRedundancyModeEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for POWER_REDUNDANCY_MODE
+    """
+
+    combined = "combined"
+    insrc_redundant = "insrc-redundant"
+    ps_redundant = "ps-redundant"
+
+
 class ReplicationModeEnum(str, Enum):
     """
     # Summary
@@ -123,6 +170,39 @@ class ReplicationModeEnum(str, Enum):
 
     Ingress = "Ingress"
     Multicast = "Multicast"
+
+
+class RpCountEnum(int, Enum):
+    """
+    # Summary
+
+    Defines choices for RP_COUNT
+    """
+
+    Two = 2
+    Four = 4
+
+
+class RpModeEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for RP_COUNT
+    """
+
+    asm = "asm"
+    bidir = "bidir"
+
+
+class RrCountEnum(int, Enum):
+    """
+    # Summary
+
+    Defines choices for RR_COUNT
+    """
+
+    Two = 2
+    Four = 4
 
 
 class VrfLiteAutoconfigEnum(str, Enum):
@@ -421,6 +501,19 @@ class Descriptions:
         return desc
 
     @property
+    def enable_realtime_backup(self):
+        desc = "Hourly Fabric Backup. "
+        desc += "Backup hourly only if there is any config deployment since "
+        desc += "last backup."
+        return desc
+
+    @property
+    def enable_scheduled_backup(self):
+        desc = "Scheduled Fabric Backup. "
+        desc += "Backup at the specified time."
+        return desc
+
+    @property
     def enable_tenant_dhcp(self):
         return "Enable Tenant DHCP."
 
@@ -513,6 +606,10 @@ class Descriptions:
         return desc
 
     @property
+    def host_intf_admin_state(self):
+        return "Unshut Host Interfaces by Default."
+
+    @property
     def ibgp_peer_template(self):
         desc = "Specifies the iBGP Peer-Template config used for RR and "
         desc += "spines with border role."
@@ -527,12 +624,93 @@ class Descriptions:
         return desc
 
     @property
+    def inband_dhcp_servers(self):
+        desc = "External DHCP Server IP Addresses. "
+        desc += "Comma separated list of IPv4 Addresses (Max 3)."
+        return desc
+
+    @property
+    def inband_mgmt(self):
+        return "Bootstrap Seed Switch Loopback Interface ID"
+
+    @property
+    def isis_auth_key(self):
+        desc = "IS-IS Authentication Key. "
+        desc += "Cisco Type 7 Encrypted."
+        return desc
+
+    @property
+    def isis_auth_keychain_key_id(self):
+        desc = "IS-IS Authentication Key ID. "
+        desc += "(Min:0, Max:65535)."
+        return desc
+
+    @property
     def isis_auth_keychain_name(self):
         return "IS-IS Authentication Keychain Name."
 
     @property
     def isis_level(self):
         return "Supported IS levels: level-1, level-2."
+
+    @property
+    def isis_overload_elapse_time(self):
+        desc = "IS-IS Overload Bit Elapsed Time. "
+        desc += "Clear the overload bit after an elapsed time in seconds."
+        return desc
+
+    @property
+    def isis_overload_enable(self):
+        desc = "Set IS-IS Overload Bit. "
+        desc += "When enabled, set the overload bit for an elapsed time "
+        desc += "after a reload."
+        return desc
+
+    @property
+    def isis_p2p_enable(self):
+        desc = "Enable IS-IS Network Point-to-Point. "
+        desc += "This will enable network point-to-point on fabric interfaces "
+        desc += "which are numbered."
+        return desc
+
+    @property
+    def l2_host_intf_mtu(self):
+        desc = "Layer 2 Host Interface MTU. "
+        desc += "(Min:1500, Max:9216). Must be an even number."
+        return desc
+
+    @property
+    def l2_segment_id_range(self):
+        desc = "Layer 2 VXLAN VNI Range. "
+        desc += "Overlay Network Identifier Range (Min:1, Max:16777214)."
+        return desc
+
+    @property
+    def l3vni_mcast_group(self):
+        desc = "Default MDT Address for TRM VRFs. "
+        desc += "Default Underlay Multicast group IP assigned for every "
+        desc += "overlay VRF."
+        return desc
+
+    @property
+    def link_state_routing(self):
+        return "Underlay Routing Protocol Used for Spine-Leaf Connectivity."
+
+    @property
+    def link_state_routing_tag(self):
+        return "Underlay Routing Protocol Tag."
+
+    @property
+    def loopback0_ip_range(self):
+        desc = "Underlay Routing Loopback IP Range. "
+        desc += "Typically Loopback0 IP Address Range."
+        return desc
+
+    @property
+    def loopback0_ipv6_range(self):
+        desc = "Underlay Routing Loopback IPv6 Range. "
+        desc += "Typically Loopback0 IPv6 Address Range."
+        return desc
 
     @property
     def loopback1_ip_range(self):
@@ -553,12 +731,224 @@ class Descriptions:
         return desc
 
     @property
+    def macsec_cipher_suite(self):
+        desc = "MACsec Cipher Suite. "
+        desc += "Configure Cipher Suite."
+        return desc
+
+    @property
+    def macsec_fallback_algorithm(self):
+        return "MACsec Fallback Cryptographic Algorithm."
+
+    @property
+    def macsec_fallback_key_string(self):
+        desc = "MACsec Fallback Key String. "
+        desc += "Cisco Type 7 Encrypted Octet String."
+        return desc
+
+    @property
+    def macsec_key_string(self):
+        desc = "MACsec Primary Key String. "
+        desc += "Cisco Type 7 Encrypted Octet String."
+        return desc
+
+    @property
+    def macsec_report_timer(self):
+        desc = "MACsec Status Report Timer. "
+        desc += "MACsec Operational Status periodic report timer in minutes."
+        return desc
+
+    @property
+    def mgmt_gw(self):
+        desc = "Switch Mgmt Default Gateway. "
+        desc += "Default Gateway For Management VRF On The Switch."
+        return desc
+
+    @property
+    def mgmt_prefix(self):
+        desc = "Switch Mgmt IP Subnet Prefix. "
+        desc += "(Min:8, Max:30)."
+        return desc
+
+    @property
+    def mgmt_v6prefix(self):
+        desc = "Switch Mgmt IPv6 Subnet Prefix. "
+        desc += "(Min:64, Max:126)."
+        return desc
+
+    @property
+    def mpls_handoff(self):
+        return "Enable MPLS Handoff"
+
+    @property
+    def mpls_lb_id(self):
+        desc = "Underlay MPLS Loopback Id. "
+        desc += "Used for VXLAN to MPLS SR/LDP Handoff (Min:0, Max:1023)."
+        return desc
+
+    @property
+    def mpls_loopback_ip_range(self):
+        desc = "Underlay MPLS Loopback IP Range. "
+        desc += "Used for VXLAN to MPLS SR/LDP Handoff."
+        return desc
+
+    @property
+    def mst_instance_range(self):
+        desc = "MST Instance Range. "
+        desc += "Example: 0-3,5,7-9, Default is 0."
+        return desc
+
+    @property
+    def multicast_group_subnet(self):
+        desc = "Multicast Group Subnet. "
+        desc += "Multicast pool prefix between 8 to 30. "
+        desc += "A multicast group IP from this pool is used for BUM traffic "
+        desc += "for each overlay network."
+        return desc
+
+    @property
+    def netflow_exporter_list(self):
+        desc = "Netflow Exporter. "
+        desc += "One or Multiple Netflow Exporters."
+        return desc
+
+    @property
+    def netflow_monitor_list(self):
+        desc = "Netflow Monitor. "
+        desc += "One or Multiple Netflow Monitors."
+        return desc
+
+    @property
+    def netflow_record_list(self):
+        desc = "Netflow Record. "
+        desc += "One or Multiple Netflow Records."
+        return desc
+
+    @property
+    def network_extension_template(self):
+        desc = "Network Extension Template. "
+        desc += "Default Overlay Network Template For Borders."
+        return desc
+
+    @property
+    def network_vlan_range(self):
+        desc = "Network VLAN Range. "
+        desc += "Per Switch Overlay Network VLAN Range (Min:2, Max:4094). "
+        desc += "Example: '2300-2999'."
+        return desc
+
+    @property
+    def ntp_server_ip_list(self):
+        desc = "NTP Server IPs. "
+        desc += "Comma separated list of IP Addresses(v4/v6). "
+        desc += "Example: '1.1.1.1,2001:1:1::1'."
+        return desc
+
+    @property
+    def ntp_server_vrf(self):
+        desc = "NTP Server VRFs. "
+        desc += "One VRF for all NTP servers or a comma-separated list of VRFs, "
+        desc += "one per NTP server.  If a comma-separated list, must have the "
+        desc += "same number of items as NTP_SERVER_IP_LIST. "
+        desc += "Example: 'management,default'."
+        return desc
+
+    @property
+    def nve_lb_id(self):
+        desc = "Underlay VTEP Loopback Id. "
+        desc += "(Min:0, Max:1023, Default: 1)."
+        return desc
+
+    @property
+    def ospf_area_id(self):
+        desc = "OSPF Area Id in IP address format. "
+        desc += "Default: '0.0.0.0'"
+        return desc
+
+    @property
+    def ospf_auth_enable(self):
+        return "Enable OSPF Authentication."
+
+    @property
+    def ospf_auth_key(self):
+        return "OSPF Authentication Key. 3DES Encrypted."
+
+    @property
+    def ospf_auth_key_id(self):
+        return "OSPF Authentication Key ID. (Min:0, Max:255)."
+
+    @property
+    def overlay_mode(self):
+        desc = "Overlay Mode. "
+        desc += "VRF/Network configuration using config-profile or CLI. "
+        desc += "Valid values: 'cli', 'config-profile'."
+        return desc
+
+    @property
     def pim_hello_auth_enable(self):
         return "Enable PIM Hello Authentication."
 
     @property
+    def pim_hello_auth_key(self):
+        return "PIM Hello Authentication Key. 3DES Encrypted."
+
+    @property
+    def pm_enable(self):
+        return "Enable Performance Monitoring."
+
+    @property
+    def power_redundancy_mode(self):
+        return "Default Power Supply Mode For The Fabric."
+
+    @property
+    def ptp_lb_id(self):
+        desc = "PTP Source Loopback Id. "
+        desc += "(Min:0, Max:1023, Default: 0)."
+        return desc
+
+    @property
+    def replication_mode(self):
+        desc = "Replication Mode for BUM Traffic. "
+        desc += "Default: 'Multicast', "
+        desc += "Valid values: Ingress, Multicast."
+        return desc
+
+    @property
     def router_id_range(self):
-        desc = "BGP Router ID Range for IPv6 Underlay."
+        desc = "BGP Router ID Range for IPv6 Underlay. "
+        desc += "Default: '10.2.0.0/23'"
+        return desc
+
+    @property
+    def route_map_sequence_number_range(self):
+        desc = "Route Map Sequence Number Range. "
+        desc += "Default: '1-65534'"
+        return desc
+
+    @property
+    def rp_count(self):
+        desc = "Number of spines acting as Rendezvous-Point (RP). "
+        desc += "Default: 2, "
+        desc += "Valid values: 2, 4."
+        return desc
+
+    @property
+    def rp_lb_id(self):
+        desc = "Underlay RP Loopback Id. "
+        desc += "(Min:0, Max:1023, Default: 254)."
+        return desc
+
+    @property
+    def rp_mode(self):
+        desc = "Multicast RP Mode. "
+        desc += "Valid values: asm, bidir, Default: asm)."
+        return desc
+
+    @property
+    def rr_count(self):
+        desc = "Number of spines acting as Route-Reflectors. "
+        desc += "Default: 2, "
+        desc += "Valid values: 2, 4."
         return desc
 
     @property
@@ -568,7 +958,8 @@ class Descriptions:
     @property
     def service_network_vlan_range(self):
         desc = "Per Switch Overlay Service Network VLAN Range "
-        desc += "(Min:2, Max:4094)."
+        desc += "(Min:2, Max:4094). "
+        desc += "Example: '3000-3199'"
         return desc
 
     @property
@@ -659,6 +1050,8 @@ class FabricBase(SQLModel):
     default_pvlan_sec_network: str | None = Field(default="Pvlan_Secondary_Network", description=Descriptions().default_pvlan_sec_network)
     default_vrf: str | None = Field(default="Default_VRF_Universal", description=Descriptions().default_vrf)
 
+    enableRealTimeBackup: bool | None = Field(default=False, description=Descriptions().enable_realtime_backup)
+    enableScheduledBackup: bool | None = Field(default=False, description=Descriptions().enable_scheduled_backup)
     temp_vpc_peer_link: str | None = Field(default="int_vpc_peer_link_po")
 
     AAA_REMOTE_IP_ENABLED: bool | None = Field(default=False, description=Descriptions().aaa_remote_ip_enabled)
@@ -690,7 +1083,7 @@ class FabricBase(SQLModel):
     BGP_AS: str = Field(index=True, description=Descriptions().bgp_as)
     BGP_AS_PREV: str | None = Field(default=None)
     BGP_AUTH_ENABLE: bool | None = Field(default=False, description=Descriptions().bgp_auth_enable)
-    BGP_AUTH_KEY_TYPE: BgpAuthKeyTypeEnum | None = Field(default=BgpAuthKeyTypeEnum("3"), description=Descriptions().bgp_auth_key_type)
+    BGP_AUTH_KEY_TYPE: BgpAuthKeyTypeEnum | None = Field(default=BgpAuthKeyTypeEnum.Three, description=Descriptions().bgp_auth_key_type)
     BGP_AUTH_KEY: str | None = Field(default=None, min_length=1, max_length=256, description=Descriptions().bgp_auth_key)
     BGP_LB_ID: int | None = Field(default=0, ge=0, le=1023)
 
@@ -700,13 +1093,13 @@ class FabricBase(SQLModel):
     BOOTSTRAP_MULTISUBNET_INTERNAL: str | None = Field(default=None)
     BOOTSTRAP_MULTISUBNET: str | None = Field(default=Defaults().bootstrap_multisubnet, description=Descriptions().bootstrap_multisubnet)
 
-    BRFIELD_DEBUG_FLAG: EnableDisableEnum | None = Field(default=EnableDisableEnum("Disable"), description=Descriptions().brfield_debug_flag)
+    BRFIELD_DEBUG_FLAG: EnableDisableEnum | None = Field(default=EnableDisableEnum.Disable, description=Descriptions().brfield_debug_flag)
     BROWNFIELD_NETWORK_NAME_FORMAT: str | None = Field(default="Auto_Net_VNI$$VNI$$_VLAN$$VLAN_ID$$")
     BROWNFIELD_SKIP_OVERLAY_NETWORK_ATTACHMENTS: bool | None = Field(default=False, description=Descriptions().brownfield_skip_overlay_network_attachments)
 
     CDP_ENABLE: bool | None = Field(default=False, description=Descriptions().cdp_enable)
 
-    COPP_POLICY: CoppPolicyEnum | None = Field(default=CoppPolicyEnum("strict"), description=Descriptions().copp_policy)
+    COPP_POLICY: CoppPolicyEnum | None = Field(default=CoppPolicyEnum.strict, description=Descriptions().copp_policy)
 
     DCI_SUBNET_RANGE: str | None = Field(default="10.33.0.0/16")
     DCI_SUBNET_TARGET_MASK: int | None = Field(default=30, ge=8, le=31)
@@ -723,7 +1116,7 @@ class FabricBase(SQLModel):
     DHCP_END: str | None = Field(default=None, description=Descriptions().dhcp_end)
     DHCP_END_INTERNAL: str | None = Field(default=None)
     DHCP_IPV6_ENABLE_INTERNAL: str | None = Field(default=None)
-    DHCP_IPV6_ENABLE: DhcpIpv6EnableEnum | None = Field(default=DhcpIpv6EnableEnum("DHCPv4"), description=Descriptions().dhcp_ipv6_enable)
+    DHCP_IPV6_ENABLE: DhcpIpv6EnableEnum | None = Field(default=DhcpIpv6EnableEnum.DHCPv4, description=Descriptions().dhcp_ipv6_enable)
     DHCP_START: str | None = Field(default=None, description=Descriptions().dhcp_start)
     DHCP_START_INTERNAL: str | None = Field(default=None)
 
@@ -756,7 +1149,7 @@ class FabricBase(SQLModel):
     EXTRA_CONF_SPINE: str | None = Field(default=None, description=Descriptions().extra_conf_spine)
     EXTRA_CONF_TOR: str | None = Field(default=None, description=Descriptions().extra_conf_tor)
 
-    FABRIC_INTERFACE_TYPE: FabricInterfaceTypeEnum | None = Field(default=FabricInterfaceTypeEnum("p2p"), description=Descriptions().fabric_interface_type)
+    FABRIC_INTERFACE_TYPE: FabricInterfaceTypeEnum | None = Field(default=FabricInterfaceTypeEnum.p2p, description=Descriptions().fabric_interface_type)
     FABRIC_NAME: str | None = Field(default=None, primary_key=True, min_length=1, max_length=32, description=Descriptions().fabric_name)
     FABRIC_MTU: int | None = Field(default=9216, ge=576, le=9216, description=Descriptions().fabric_mtu)
     FABRIC_MTU_PREV: int | None = Field(default=9216, ge=576, le=9216)
@@ -770,36 +1163,122 @@ class FabricBase(SQLModel):
     FEATURE_PTP_INTERNAL: bool | None = Field(default=False)
     FF: FFEnum = Field(default="Easy_Fabric", description=Descriptions().ff)
 
-    GRFIELD_DEBUG_FLAG: EnableDisableEnum | None = Field(default=EnableDisableEnum("Disable"), description=Descriptions().grfield_debug_flag)
+    GRFIELD_DEBUG_FLAG: EnableDisableEnum | None = Field(default=EnableDisableEnum.Disable, description=Descriptions().grfield_debug_flag)
+
     HD_TIME: int | None = Field(default=180, ge=1, le=1500, description=Descriptions().hd_time)
+    HOST_INTF_ADMIN_STATE: bool | None = Field(default=False, description=Descriptions().host_intf_admin_state)
+
     IBGP_PEER_TEMPLATE: str | None = Field(default=None, description=Descriptions().ibgp_peer_template)
     IBGP_PEER_TEMPLATE_LEAF: str | None = Field(default=None, description=Descriptions().ibgp_peer_template_leaf)
+
+    INBAND_DHCP_SERVERS: str | None = Field(default=None, description=Descriptions().inband_dhcp_servers)
+    INBAND_MGMT_PREV: bool | None = Field(default=False)
+    INBAND_MGMT: bool | None = Field(default=False, description=Descriptions().inband_mgmt)
+
     ISIS_AUTH_ENABLE: bool | None = Field(default=False)
-    ISIS_AUTH_KEYCHAIN_NAME: str | None = Field(default=None, description=Descriptions().isis_auth_keychain_name)
-    ISIS_LEVEL: IsisLevelEnum | None = Field(default=IsisLevelEnum("level-2"), description=Descriptions().isis_level)
+    ISIS_AUTH_KEY: str | None = Field(default=None, min_length=1, max_length=255, description=Descriptions().isis_auth_key)
+    ISIS_AUTH_KEYCHAIN_KEY_ID: int | None = Field(default=127, ge=0, le=65535, description=Descriptions().isis_auth_keychain_key_id)
+    ISIS_AUTH_KEYCHAIN_NAME: str | None = Field(default=None, min_length=1, max_length=63, description=Descriptions().isis_auth_keychain_name)
+    ISIS_LEVEL: IsisLevelEnum | None = Field(default=IsisLevelEnum.level_2, description=Descriptions().isis_level)
+    ISIS_OVERLOAD_ELAPSE_TIME: int | None = Field(default=60, ge=5, le=86400, description=Descriptions().isis_overload_elapse_time)
+    ISIS_OVERLOAD_ENABLE: bool | None = Field(default=True, description=Descriptions().isis_overload_enable)
+    ISIS_P2P_ENABLE: bool | None = Field(default=False, description=Descriptions().isis_p2p_enable)
+
+    L2_HOST_INTF_MTU_PREV: int | None = Field(default=9216, ge=1500, le=9216)
+    L2_HOST_INTF_MTU: int | None = Field(default=9216, ge=1500, le=9216, description=Descriptions().l2_host_intf_mtu)
+    L2_SEGMENT_ID_RANGE: str | None = Field(default="30000-49000", description=Descriptions().l2_segment_id_range)
+
     L3_PARTITION_ID_RANGE: str | None = Field(default="50000-59000")
+    L3VNI_MCAST_GROUP: str | None = Field(default="239.1.1.0", description=Descriptions().l3vni_mcast_group)
+
+    LINK_STATE_ROUTING_TAG_PREV: str | None = Field(default=None, description=Descriptions().loopback1_ip_range)
+    LINK_STATE_ROUTING_TAG: str | None = Field(default="UNDERLAY", min_length=1, max_length=20, description=Descriptions().link_state_routing_tag)
+    LINK_STATE_ROUTING: LinkStateRoutingEnum | None = Field(default=LinkStateRoutingEnum.ospf, description=Descriptions().link_state_routing)
+
+    LOOPBACK0_IP_RANGE: str | None = Field(default="10.2.0.0/22", description=Descriptions().loopback0_ip_range)
+    LOOPBACK0_IPV6_RANGE: str | None = Field(default="fd00::a02:0/119", description=Descriptions().loopback0_ipv6_range)
     LOOPBACK1_IP_RANGE: str | None = Field(default="10.3.0.0/22", description=Descriptions().loopback1_ip_range)
     LOOPBACK1_IPV6_RANGE: str | None = Field(default="fd00::a03:0/118", description=Descriptions().loopback1_ipv6_range)
-    MACSEC_ALGORITHM: MacsecAlgorithmEnum | None = Field(default=MacsecAlgorithmEnum("AES_128_CMAC"), description=Descriptions().macsec_algorithm)
-    MACSEC_REPORT_TIMER: int | None = Field(default=5, ge=5, le=60)
+
+    MACSEC_ALGORITHM: MacsecAlgorithmEnum | None = Field(default=MacsecAlgorithmEnum.AES_128_CMAC, description=Descriptions().macsec_algorithm)
+    MACSEC_CIPHER_SUITE: MacsecCipherSuiteEnum | None = Field(default=MacsecCipherSuiteEnum.GCM_AES_XPN_256, description=Descriptions().macsec_cipher_suite)
+    MACSEC_FALLBACK_ALGORITHM: MacsecAlgorithmEnum | None = Field(default=MacsecAlgorithmEnum.AES_128_CMAC, description=Descriptions().macsec_fallback_algorithm)
+    MACSEC_FALLBACK_KEY_STRING: str | None = Field(default=None, min_length=1, max_length=130, description=Descriptions().macsec_fallback_key_string)
+    MACSEC_KEY_STRING: str | None = Field(default=None, min_length=1, max_length=130, description=Descriptions().macsec_key_string)
+    MACSEC_REPORT_TIMER: int | None = Field(default=5, ge=5, le=60, description=Descriptions().macsec_report_timer)
+
     MGMT_GW_INTERNAL: str | None = Field(default=None)
+    MGMT_GW: str | None = Field(default=None, description=Descriptions().mgmt_gw)
+
+    MGMT_PREFIX_INTERNAL: int | None = Field(default=None)
+    MGMT_PREFIX: int | None = Field(default=24, ge=8, le=30, description=Descriptions().mgmt_prefix)
+
+    MGMT_V6PREFIX_INTERNAL: int | None = Field(default=None)
+    MGMT_V6PREFIX: int | None = Field(default=64, ge=64, le=126, description=Descriptions().mgmt_v6prefix)
+
+    MPLS_HANDOFF: bool | None = Field(default=False, description=Descriptions().mpls_handoff)
+    MPLS_LB_ID: int | None = Field(default=101, ge=0, le=1023, description=Descriptions().mpls_lb_id)
+    MPLS_LOOPBACK_IP_RANGE: str | None = Field(default="10.101.0.0/25", description=Descriptions().mpls_loopback_ip_range)
+
     MSO_CONNECTIVITY_DEPLOYED: str | None = Field(default=None)
+    # Yes, NDFC mispells this
+    MSO_CONTROLER_ID: str | None = Field(default=None)
+    MSO_SITE_GROUP_NAME: str | None = Field(default=None)
     MSO_SITE_ID: str | None = Field(default=None)
-    OSPF_AUTH_ENABLE: bool | None = Field(default=False)
-    OSPF_AUTH_KEY_ID: str | None = Field(default=None)
+
+    MST_INSTANCE_RANGE: str | None = Field(default="0", description=Descriptions().mst_instance_range)
+    MULTICAST_GROUP_SUBNET: str | None = Field(default="239.1.1.0/25", description=Descriptions().multicast_group_subnet)
+
+    NETFLOW_EXPORTER_LIST: str | None = Field(default=None, description=Descriptions().netflow_exporter_list)
+    NETFLOW_MONITOR_LIST: str | None = Field(default=None, description=Descriptions().netflow_monitor_list)
+    NETFLOW_RECORD_LIST: str | None = Field(default=None, description=Descriptions().netflow_record_list)
+
+    network_extension_template: str | None = Field(default="Default_Network_Extension_Universal", description=Descriptions().network_extension_template)
+    NETWORK_VLAN_RANGE: str | None = Field(default="2300-2999", description=Descriptions().network_vlan_range)
+
+    NTP_SERVER_IP_LIST: str | None = Field(default=None, description=Descriptions().ntp_server_ip_list)
+    NTP_SERVER_VRF: str | None = Field(default=None, description=Descriptions().ntp_server_vrf)
+
+    NVE_LB_ID: int | None = Field(default=1, ge=0, le=1023, description=Descriptions().nve_lb_id)
+
+    OSPF_AREA_ID: str | None = Field(default="0.0.0.0", description=Descriptions().ospf_area_id)
+    OSPF_AUTH_ENABLE: bool | None = Field(default=False, description=Descriptions().ospf_auth_enable)
+    OSPF_AUTH_KEY: str | None = Field(default=None, min_length=1, max_length=256, description=Descriptions().ospf_auth_key)
+    OSPF_AUTH_KEY_ID: int | None = Field(default=127, ge=0, le=255, description=Descriptions().ospf_auth_key_id)
+
+    OVERLAY_MODE_PREV: OverlayModeEnum | None = Field(default=OverlayModeEnum.cli)
+    OVERLAY_MODE: OverlayModeEnum | None = Field(default=OverlayModeEnum.cli, description=Descriptions().overlay_mode)
+
     PHANTOM_RP_LB_ID1: str | None = Field(default=None)
     PHANTOM_RP_LB_ID2: str | None = Field(default=None)
     PHANTOM_RP_LB_ID3: str | None = Field(default=None)
     PHANTOM_RP_LB_ID4: str | None = Field(default=None)
+
     PIM_HELLO_AUTH_ENABLE: bool | None = Field(default=False, description=Descriptions().pim_hello_auth_enable)
+    PIM_HELLO_AUTH_KEY: str | None = Field(default=None, min_length=1, max_length=256, description=Descriptions().pim_hello_auth_key)
+
+    PM_ENABLE_PREV: bool | None = Field(default=False)
+    PM_ENABLE: bool | None = Field(default=False, description=Descriptions().pm_enable)
+
+    POWER_REDUNDANCY_MODE: PowerRedundancyModeEnum | None = Field(default=PowerRedundancyModeEnum.ps_redundant, description=Descriptions().power_redundancy_mode)
+
     PREMSO_PARENT_FABRIC: str | None = Field(default=None)
     PTP_DOMAIN_ID: int | None = Field(default=0, ge=0, le=127)
-    REPLICATION_MODE: ReplicationModeEnum | None = Field(default="Multicast")
+    PTP_LB_ID: int | None = Field(default=0, ge=0, le=1023, description=Descriptions().ptp_lb_id)
+
+    REPLICATION_MODE: ReplicationModeEnum | None = Field(default=ReplicationModeEnum.Multicast, description=Descriptions().replication_mode)
     ROUTER_ID_RANGE: str | None = Field(default=None, description=Descriptions().router_id_range)
+    ROUTE_MAP_SEQUENCE_NUMBER_RANGE: str | None = Field(default=None, description=Descriptions().route_map_sequence_number_range)
+    RP_COUNT: RpCountEnum | None = Field(default=RpCountEnum.Two, description=Descriptions().rp_count)
+    RP_LB_ID: int | None = Field(default=254, ge=0, le=1023, description=Descriptions().rp_lb_id)
+    RP_MODE: RpModeEnum | None = Field(default=RpModeEnum.asm, description=Descriptions().rp_mode)
+
+    RR_COUNT: RrCountEnum | None = Field(default=RrCountEnum.Two, description=Descriptions().rr_count)
+
     SEED_SWITCH_CORE_INTERFACES: str | None = Field(default=None, description=Descriptions().seed_switch_core_interfaces)
     SERVICE_NETWORK_VLAN_RANGE: str | None = Field(default="3000-3199", description=Descriptions().service_network_vlan_range)
     SSPINE_COUNT: int | None = Field(default=0)
-    SSPINE_ADD_DEL_DEBUG_FLAG: EnableDisableEnum | None = Field(default=EnableDisableEnum("Disable"), description=Descriptions().sspine_add_del_debug_flag)
+    SSPINE_ADD_DEL_DEBUG_FLAG: EnableDisableEnum | None = Field(default=EnableDisableEnum.Disable, description=Descriptions().sspine_add_del_debug_flag)
     SUBNET_TARGET_MASK: int | None = Field(default=30, ge=30, le=31, description=Descriptions().subnet_target_mask)
     TCAM_ALLOCATION: bool | None = Field(default=True, description=Descriptions().tcam_allocation)
     UNDERLAY_IS_V6: bool | None = Field(default=False)
@@ -807,7 +1286,7 @@ class FabricBase(SQLModel):
     UNNUM_DHCP_END_INTERNAL: str | None = Field(default=None)
     USE_LINK_LOCAL: bool | None = Field(default=False)
     VPC_ENABLE_IPv6_ND_SYNC: bool | None = Field(default=True)
-    VRF_LITE_AUTOCONFIG: VrfLiteAutoconfigEnum | None = Field(default=VrfLiteAutoconfigEnum("Manual"), description=Descriptions().vrf_lite_autoconfig)
+    VRF_LITE_AUTOCONFIG: VrfLiteAutoconfigEnum | None = Field(default=VrfLiteAutoconfigEnum.Manual, description=Descriptions().vrf_lite_autoconfig)
     VPC_PEER_LINK_PO: str | None = Field(default="500", description=Descriptions().vpc_peer_link_po)
     VRF_VLAN_RANGE: str | None = Field(default="2000-2299", description=Descriptions().vrf_vlan_range)
 

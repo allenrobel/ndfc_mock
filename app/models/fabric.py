@@ -205,6 +205,84 @@ class RrCountEnum(int, Enum):
     Four = 4
 
 
+class StpBridgePriorityEnum(int, Enum):
+    """
+    # Summary
+
+    Defines choices for STP_BRIDGE_PRIORITY
+    """
+
+    STPP_0 = 0
+    STPP_4096 = 4096
+    STPP_8192 = 8192
+    STPP_12288 = 12288
+    STPP_16384 = 16384
+    STPP_20480 = 20480
+    STPP_24576 = 24576
+    STPP_28672 = 28672
+    STPP_32768 = 32768
+    STPP_36864 = 36864
+    STPP_40960 = 40960
+    STPP_45056 = 45056
+    STPP_49152 = 49152
+    STPP_53248 = 53248
+    STPP_57344 = 57344
+    STPP_61440 = 61440
+
+
+class StpRootOptionEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for STP_ROOT_OPTION
+    """
+
+    mst = "mst"
+    rpvst_plus = "rpvst+"
+    unmanaged = "unmanaged"
+
+
+class TempAnycastGatewayEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for temp_anycast_gateway
+    """
+
+    anycast_gateway = "anycast_gateway"
+
+
+class TempVpcDomainMgmtEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for temp_vpc_domain_mgmt
+    """
+
+    vpc_domain_mgmt = "vpc_domain_mgmt"
+
+
+class TempVpcPeerLinkEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for temp_vpc_peer_link
+    """
+
+    int_vpc_peer_link_po = "int_vpc_peer_link_po"
+
+
+class VpcPeerKeepAliveOptionEnum(str, Enum):
+    """
+    # Summary
+
+    Defines choices for VPC_PEER_KEEP_ALIVE_OPTION
+    """
+
+    loopback = "loopback"
+    management = "management"
+
+
 class VrfLiteAutoconfigEnum(str, Enum):
     """
     # Summary
@@ -952,6 +1030,12 @@ class Descriptions:
         return desc
 
     @property
+    def scheduled_time(self):
+        desc = "Scheduled Backup Time. "
+        desc += "Time (UTC) in 24hr format. (00:00 to 23:59)."
+        return desc
+
+    @property
     def seed_switch_core_interfaces(self):
         return "Seed Switch Fabric Interfaces."
 
@@ -963,13 +1047,111 @@ class Descriptions:
         return desc
 
     @property
+    def site_id(self):
+        desc = "Site Id. "
+        desc += "For EVPN Multi-Site Support (Min:1, Max: 281474976710655). "
+        desc += "Defaults to Fabric ASN."
+        return desc
+
+    @property
+    def snmp_server_host_trap(self):
+        desc = "Enable NDFC as Trap Host. "
+        desc += "Configure NDFC as a receiver for SNMP traps. "
+        desc += "Default: True."
+        return desc
+
+    @property
+    def spine_switch_core_interfaces(self):
+        desc = "Spine Switch Fabric Interfaces. "
+        desc += "Core-facing Interface list on all Spines (e.g. e1/1-30,e1/32)."
+        return desc
+
+    @property
     def sspine_add_del_debug_flag(self):
         desc = "Allow First Super Spine Add or Last Super Spine Delete "
         desc += "From Topology."
+        return desc
+
+    @property
+    def static_underlay_ip_alloc(self):
+        desc = "Manual Underlay IP Address Allocation. "
+        desc += "Enabling this will disable Dynamic Underlay IP Address "
+        desc += "Allocations."
+        return desc
+
+    @property
+    def stp_bridge_priority(self):
+        desc = "Spanning Tree Bridge Priority. "
+        desc += "Bridge priority for the spanning tree in increments of 4096. "
+        desc += "Valid values: 0,4096,8192,12288,16384,20480,24576,28672,"
+        desc += "32768,36864,40960,45056,49152,53248,57344,61440"
+        return desc
+
+    @property
+    def stp_root_option(self):
+        desc = "Spanning Tree Root Bridge Protocol. "
+        desc += "Which protocol to use for configuring root bridge. "
+        desc += "rpvst: Rapid Per-VLAN Spanning Tree, "
+        desc += "mst: Multiple Spanning Tree, "
+        desc += "unmanaged (default): STP Root not managed by NDFC."
+        return desc
+
+    @property
+    def stp_vlan_range(self):
+        desc = "Spanning Tree VLAN Range. "
+        desc += "Vlan range, Example: 1,3-5,7,9-11, Default:1-3967."
+        return desc
+
+    @property
+    def strict_cc_mode(self):
+        desc = "Enable Strict Config Compliance. "
+        desc += "Enable bi-directional compliance checks to flag additional "
+        desc += "configs in the running config that are not in the "
+        desc += "intent/expected config."
+        return desc
+
+    @property
+    def subinterface_range(self):
+        desc = "Subinterface Dot1q Range. "
+        desc += "Per Border Dot1q Range For VRF Lite Connectivity "
+        desc += "(MinRange:2, MaxRange:4093), "
+        desc += "Default: '2-511'."
+        return desc
+
+    @property
+    def subnet_range(self):
+        desc = "Underlay Subnet IP Range. "
+        desc += "Address range to assign Numbered and Peer Link SVI IPs. "
+        desc += "Default: '10.4.0.0/16'."
+        return desc
 
     @property
     def subnet_target_mask(self):
         return "Underlay Subnet IP Mask."
+
+    @property
+    def syslog_server_ip_list(self):
+        desc = "Syslog Server IPs. "
+        desc += "Comma separated list of IP Addresses(v4/v6)."
+        return desc
+
+    @property
+    def syslog_server_vrf(self):
+        desc = "Syslog Server VRFs. "
+        desc += "One VRF for all Syslog servers or a comma-separated list of "
+        desc += "VRFs, one per Syslog server.  If a comma-separated list of "
+        desc += "VRFs is used, the number of items in the list must equal the "
+        desc += "number of items in SYSLOG_SERVER_IP_LIST."
+        return desc
+
+    @property
+    def syslog_sev(self):
+        desc = "Syslog Server Severity. "
+        desc += "Comma separated list of Syslog severity values (Min:0, Max:7), "
+        desc += "one value per Syslog server. "
+        desc += "The number of items in the list must equal the number of "
+        desc += "items in SYSLOG_SERVER_IP_LIST."
+        return desc
 
     @property
     def tcam_allocation(self):
@@ -978,8 +1160,100 @@ class Descriptions:
         return desc
 
     @property
+    def temp_anycast_gateway(self):
+        desc = "Anycast Gateway MAC Configuration."
+        return desc
+
+    @property
+    def temp_vpc_domain_mgmt(self):
+        desc = "vPC Keep-alive Configuration using Management VRF."
+        return desc
+
+    @property
+    def temp_vpc_peer_link(self):
+        desc = "TCAM commands are automatically generated for VxLAN and vPC "
+        desc += "Fabric Peering when Enabled."
+        return desc
+
+    @property
+    def unnum_bootstrap_lb_id(self):
+        desc = "Bootstrap Seed Switch Loopback Interface ID. "
+        desc += "(Min:0, Max:1023, Default: 253)."
+        return desc
+
+    @property
+    def unnum_dhcp_end(self):
+        desc = "Switch Loopback DHCP Scope End Address. "
+        desc += "Must be a subset of IGP/BGP Loopback Prefix Pool."
+        return desc
+
+    @property
+    def unnum_dhcp_start(self):
+        desc = "Switch Loopback DHCP Scope Start Address. "
+        desc += "Must be a subset of IGP/BGP Loopback Prefix Pool."
+        return desc
+
+    @property
+    def v6_subnet_range(self):
+        desc = "Underlay Subnet IPv6 Range. "
+        desc += "IPv6 Address range to assign Numbered and Peer Link SVI IPs."
+        return desc
+
+    @property
+    def v6_subnet_target_mask(self):
+        desc = "Underlay Subnet IPv6 Mask. "
+        desc += "Mask for Underlay Subnet IPv6 Range. "
+        desc += "(Min: 126, Max: 127, Default: 126)."
+        return desc
+
+    @property
+    def vpc_auto_recovery_time(self):
+        desc = "vPC Auto Recovery Time (In Seconds). "
+        desc += "(Min: 1, Max: 3600, Default: 60)."
+        return desc
+
+    @property
+    def vpc_delay_restore_time(self):
+        desc = "vPC Delay Restore Time For vPC links (In seconds). "
+        desc += "(Min: 1, Max: 3600, Default: 60)."
+        return desc
+
+    @property
+    def vpc_delay_restore(self):
+        desc = "vPC Delay Restore Time (In Seconds). "
+        desc += "(Min: 1, Max: 3600, Default: 150)."
+        return desc
+
+    @property
+    def vpc_domain_id_range(self):
+        desc = "vPC Domain ID range to use for new pairings. "
+        desc += "Default: '1-1000'."
+        return desc
+
+    @property
+    def vpc_peer_keep_alive_option(self):
+        desc = "vPC Peer Keep Alive option. "
+        desc += "Use vPC Peer Keep Alive with Loopback or Management. "
+        desc += "Valid values: loopback, management."
+        return desc
+
+    @property
     def vpc_peer_link_po(self):
         return 'vPC Peer Link Port Channel ID. example: "1-40".'
+
+    @property
+    def vpc_peer_link_vlan(self):
+        desc = "vPC Peer Link VLAN Range. "
+        desc += "VLAN range for vPC Peer Link SVI "
+        desc += "(Min:2, Max:4094, Default: 3600)."
+        return desc
+
+    @property
+    def vrf_extension_template(self):
+        desc = "VRF Extension Template. "
+        desc = "Default Overlay VRF Template For Borders. "
+        desc += "Default value: Default_VRF_Extension_Universal."
+        return desc
 
     @property
     def vrf_lite_autoconfig(self):
@@ -1021,25 +1295,19 @@ class FabricBase(SQLModel):
     abstract_bgp_rr: str | None = Field(default="evpn_bgp_rr")
     abstract_bgp: str | None = Field(default="base_bgp")
     abstract_dhcp: str | None = Field(default="base_dhcp")
-
     abstract_extra_config_bootstrap: str | None = Field(default="extra_config_bootstrap_11_1")
     abstract_extra_config_leaf: str | None = Field(default="extra_config_leaf")
     abstract_extra_config_spine: str | None = Field(default="extra_config_spine")
     abstract_extra_config_tor: str | None = Field(default="extra_config_tor")
-
     abstract_feature_leaf: str | None = Field(default="base_feature_leaf_upg")
     abstract_feature_spine: str | None = Field(default="base_feature_spine_upg")
-
     abstract_isis: str | None = Field(default="base_isis_level2")
     abstract_isis_interface: str | None = Field(default="isis_interface")
-
     abstract_loopback_interface: str | None = Field(default="int_fabric_loopback_11_1")
     abstract_multicast: str | None = Field(default="base_multicast_11_1")
-
     abstract_ospf: str | None = Field(default="base_ospf")
     abstract_ospf_interface: str | None = Field(default="ospf_interface_11_1")
     abstract_pim_interface: str | None = Field(default="pim_interface")
-
     abstract_route_map: str | None = Field(default="route_map")
     abstract_routed_host: str | None = Field(default="int_routed_host")
     abstract_trunk_host: str | None = Field(default="int_trunk_host")
@@ -1050,9 +1318,15 @@ class FabricBase(SQLModel):
     default_pvlan_sec_network: str | None = Field(default="Pvlan_Secondary_Network", description=Descriptions().default_pvlan_sec_network)
     default_vrf: str | None = Field(default="Default_VRF_Universal", description=Descriptions().default_vrf)
 
+    temp_anycast_gateway: TempAnycastGatewayEnum | None = Field(default=TempAnycastGatewayEnum.anycast_gateway, description=Descriptions().temp_anycast_gateway)
+    temp_vpc_domain_mgmt: TempVpcDomainMgmtEnum | None = Field(default=TempVpcDomainMgmtEnum.vpc_domain_mgmt, description=Descriptions().temp_vpc_domain_mgmt)
+    temp_vpc_peer_link: TempVpcPeerLinkEnum | None = Field(default=TempVpcPeerLinkEnum.int_vpc_peer_link_po, description=Descriptions().temp_vpc_peer_link)
+
+    vrf_extension_template: str | None = Field(default="Default_VRF_Extension_Universal", description=Descriptions().vrf_extension_template)
+
     enableRealTimeBackup: bool | None = Field(default=False, description=Descriptions().enable_realtime_backup)
     enableScheduledBackup: bool | None = Field(default=False, description=Descriptions().enable_scheduled_backup)
-    temp_vpc_peer_link: str | None = Field(default="int_vpc_peer_link_po")
+    scheduledTime: str | None = Field(default="", description=Descriptions().scheduled_time)
 
     AAA_REMOTE_IP_ENABLED: bool | None = Field(default=False, description=Descriptions().aaa_remote_ip_enabled)
     AAA_SERVER_CONF: str | None = Field(default=None, description=Descriptions().aaa_server_conf)
@@ -1277,17 +1551,56 @@ class FabricBase(SQLModel):
 
     SEED_SWITCH_CORE_INTERFACES: str | None = Field(default=None, description=Descriptions().seed_switch_core_interfaces)
     SERVICE_NETWORK_VLAN_RANGE: str | None = Field(default="3000-3199", description=Descriptions().service_network_vlan_range)
+
+    SITE_ID: str | None = Field(default="", min_length=1, max_length=15, description=Descriptions().site_id)
+    SNMP_SERVER_HOST_TRAP: bool | None = Field(default=True, description=Descriptions().snmp_server_host_trap)
+
+    SPINE_COUNT: int | None = Field(default=0)
+    SPINE_SWITCH_CORE_INTERFACES: str | None = Field(default="", description=Descriptions().spine_switch_core_interfaces)
+
     SSPINE_COUNT: int | None = Field(default=0)
     SSPINE_ADD_DEL_DEBUG_FLAG: EnableDisableEnum | None = Field(default=EnableDisableEnum.Disable, description=Descriptions().sspine_add_del_debug_flag)
+
+    STATIC_UNDERLAY_IP_ALLOC: bool | None = Field(default=False, description=Descriptions().static_underlay_ip_alloc)
+    STP_BRIDGE_PRIORITY: StpBridgePriorityEnum | None = Field(default=StpBridgePriorityEnum.STPP_0, description=Descriptions().stp_bridge_priority)
+    STP_ROOT_OPTION: StpRootOptionEnum | None = Field(default=StpRootOptionEnum.unmanaged, description=Descriptions().stp_root_option)
+    SPT_VLAN_RANGE: str | None = Field(default="1-3967", description=Descriptions().stp_vlan_range)
+
+    STRICT_CC_MODE: bool | None = Field(default=False, description=Descriptions().strict_cc_mode)
+    SUBINTERFACE_RANGE: str | None = Field(default="2-511", description=Descriptions().subinterface_range)
+
+    SUBNET_RANGE: str | None = Field(default="10.4.0.0/16", description=Descriptions().subnet_range)
     SUBNET_TARGET_MASK: int | None = Field(default=30, ge=30, le=31, description=Descriptions().subnet_target_mask)
+
+    SYSLOG_SERVER_IP_LIST: str | None = Field(default="", description=Descriptions().syslog_server_ip_list)
+    SYSLOG_SERVER_VRF: str | None = Field(default="", description=Descriptions().syslog_server_vrf)
+    SYSLOG_SEV: str | None = Field(default="", description=Descriptions().syslog_sev)
+
     TCAM_ALLOCATION: bool | None = Field(default=True, description=Descriptions().tcam_allocation)
     UNDERLAY_IS_V6: bool | None = Field(default=False)
-    UNNUM_DHCP_START_INTERNAL: str | None = Field(default=None)
-    UNNUM_DHCP_END_INTERNAL: str | None = Field(default=None)
+
+    UNNUM_BOOTSTRAP_LB_ID: int | None = Field(default=253, ge=0, le=1023, description=Descriptions().unnum_bootstrap_lb_id)
+    UNNUM_DHCP_END: str | None = Field(default="", description=Descriptions().unnum_dhcp_end)
+    UNNUM_DHCP_END_INTERNAL: str | None = Field(default="")
+    UNNUM_DHCP_START: str | None = Field(default="", description=Descriptions().unnum_dhcp_start)
+    UNNUM_DHCP_START_INTERNAL: str | None = Field(default="")
+
     USE_LINK_LOCAL: bool | None = Field(default=False)
+
+    V6_SUBNET_RANGE: str | None = Field(default="fd00::a04:0/112", description=Descriptions().v6_subnet_range)
+    V6_SUBNET_TARGET_MASK: int | None = Field(default=126, ge=126, le=127, description=Descriptions().v6_subnet_target_mask)
+
+    VPC_AUTO_RECOVERY_TIME: int | None = Field(default=360, ge=240, le=3600, description=Descriptions().vpc_auto_recovery_time)
+    VPC_DELAY_RESTORE_TIME: int | None = Field(default=60, ge=1, le=3600, description=Descriptions().vpc_delay_restore_time)
+    VPC_DELAY_RESTORE: int | None = Field(default=150, ge=1, le=3600, description=Descriptions().vpc_delay_restore)
+
+    VPC_DOMAIN_ID_RANGE: str | None = Field(default="1-1000", description=Descriptions().vpc_domain_id_range)
     VPC_ENABLE_IPv6_ND_SYNC: bool | None = Field(default=True)
-    VRF_LITE_AUTOCONFIG: VrfLiteAutoconfigEnum | None = Field(default=VrfLiteAutoconfigEnum.Manual, description=Descriptions().vrf_lite_autoconfig)
+    VPC_PEER_KEEP_ALIVE_OPTION: VpcPeerKeepAliveOptionEnum | None = Field(default=VpcPeerKeepAliveOptionEnum.management, description=Descriptions().vpc_peer_keep_alive_option)
     VPC_PEER_LINK_PO: str | None = Field(default="500", description=Descriptions().vpc_peer_link_po)
+    VPC_PEER_LINK_VLAN: str | None = Field(default="3600", description=Descriptions().vpc_peer_link_vlan)
+
+    VRF_LITE_AUTOCONFIG: VrfLiteAutoconfigEnum | None = Field(default=VrfLiteAutoconfigEnum.Manual, description=Descriptions().vrf_lite_autoconfig)
     VRF_VLAN_RANGE: str | None = Field(default="2000-2299", description=Descriptions().vrf_vlan_range)
 
 

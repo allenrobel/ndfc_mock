@@ -18,7 +18,7 @@ def get_v1_configtemplate_by_name(template_name: str):
     GET request handler.
     """
     try:
-        with open(f"./templates/{template_name}.json", "r", encoding="utf-8") as template:
+        with open(f"app/templates/{template_name}.json", "r", encoding="utf-8") as template:
             response = json.load(template)
     except FileNotFoundError as error:
         raise HTTPException(status_code=404, detail=f"Template {template_name} not found.") from error

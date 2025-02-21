@@ -32,20 +32,8 @@ def build_nv_pairs(fabric):
     # Summary
 
     Build the nvPairs object in a fabric response.
-
-    ## Notes
-
-    1.  If app.models.fabric.NvPairs() is changed, this function must also
-        be updated
     """
-    nv_pairs = {}
-    nv_pairs["BGP_AS"] = fabric.BGP_AS
-    nv_pairs["ENABLE_PBR"] = fabric.ENABLE_PBR
-    nv_pairs["FABRIC_NAME"] = fabric.FABRIC_NAME
-    nv_pairs["FF"] = fabric.FF
-    nv_pairs["REPLICATION_MODE"] = fabric.REPLICATION_MODE
-    nv_pairs["SITE_ID"] = fabric.SITE_ID
-    return copy.deepcopy(nv_pairs)
+    return fabric.model_dump()
 
 
 @app.post(

@@ -1,9 +1,9 @@
 # Summary
 
-Work in progress!
+This is a work in progress with limited functionality.
 
-When finished, this will (hopefully) allow for minor development
-and testing of [ansible-dcnm](https://github.com/CiscoDevNet/ansible-dcnm)
+When finished, this will allow for minor development and testing of
+[ansible-dcnm](https://github.com/CiscoDevNet/ansible-dcnm)
 modules (and other REST API-based applications) without requiring a
 real ND/NDFC instance.
 
@@ -12,9 +12,9 @@ endpoints supported by NDFC and will return mock responses.
 
 ## Current status
 
-Running a basic merged-state dcnm_fabric playbook against the mock
-instance is working (it creates a fabric with the following very
-minimal configuration).
+Running basic merged,query,deleted-state dcnm_fabric playbook tasks against
+the mock instance is working (to create, modify, query, and delete fabrics)
+per the example playbook below.
 
 ```yaml
 ---
@@ -32,7 +32,35 @@ minimal configuration).
       register: result
     - debug:
         var: result
+    tasks:
+    - name: Query VXLAN Fabric
+      cisco.dcnm.dcnm_fabric:
+        state: query
+        config:
+        -   FABRIC_NAME: f1
+      register: result
+    - debug:
+        var: result
+    - name: Delete VXLAN Fabric
+      cisco.dcnm.dcnm_fabric:
+        state: deleted
+        config:
+        -   FABRIC_NAME: f1
+      register: result
+    - debug:
+        var: result
 ```
+
+For the deleted-state `dcnm_fabric` playbook task to return success, the fabric
+cannot contain any switches.  The `dcnm_fabric` Ansible module uses the
+following GET request to determine the number of switches in the fabric.
+
+`/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches/<fabric_name>/overview`
+
+For now, a stub handler is implemented which returns zero switches to
+allow the deleted-state playbook task to work.  This will be replaced
+soon with appropriate inventory handlers and database tables to support
+fabric switch addition/deletion.
 
 ## Configuration notes
 
@@ -82,18 +110,23 @@ ansible_httpapi_use_ssl: no
 ansible_httpapi_port: 8000
 ```
 
+To run outside of a container, you must start fastapi in the directory immediately
+above `app`.  This is because the endpoint handler that retrieves templates needs
+to use the container path to the template files (`./app/templates/*`).  To match
+this when running out-of-container, fastapi needs to be run one directory
+level above `app` (per the example below).
+
 ```bash
 git clone https://github.com/allenrobel/ndfc_mock.git
 cd ndfc_mock
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-cd app
-fastapi run main.py
+fastapi run app/main.py
 # Comment out 'fastapi run main.py' above
 # and uncomment 'fastapi dev main.py' below
 # to run fastapi in debug mode.
-#fastapi dev main.py
+#fastapi dev app/main.py
 ```
 
 You'll see the uvicorn server startup.  The last two lines will look like:

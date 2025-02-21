@@ -1552,7 +1552,7 @@ class FabricBase(SQLModel):
     SEED_SWITCH_CORE_INTERFACES: str | None = Field(default=None, description=Descriptions().seed_switch_core_interfaces)
     SERVICE_NETWORK_VLAN_RANGE: str | None = Field(default="3000-3199", description=Descriptions().service_network_vlan_range)
 
-    SITE_ID: str | None = Field(default="", min_length=1, max_length=15, description=Descriptions().site_id)
+    SITE_ID: str | None = Field(default=None, min_length=1, max_length=15, description=Descriptions().site_id)
     SNMP_SERVER_HOST_TRAP: bool | None = Field(default=True, description=Descriptions().snmp_server_host_trap)
 
     SPINE_COUNT: int | None = Field(default=0)

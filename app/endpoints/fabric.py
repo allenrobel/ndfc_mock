@@ -44,6 +44,7 @@ def build_nv_pairs(fabric):
     nv_pairs["FABRIC_NAME"] = fabric.FABRIC_NAME
     nv_pairs["FF"] = fabric.FF
     nv_pairs["REPLICATION_MODE"] = fabric.REPLICATION_MODE
+    nv_pairs["SITE_ID"] = fabric.SITE_ID
     return copy.deepcopy(nv_pairs)
 
 
@@ -66,6 +67,8 @@ def post_fabric(
     db_fabric = Fabric.model_validate(fabric)
     setattr(db_fabric, "FABRIC_NAME", fabric_name)
     setattr(db_fabric, "FF", template_name)
+    if db_fabric.SITE_ID is None:
+        setattr(db_fabric, "SITE_ID", db_fabric.BGP_AS)
 
     session.add(db_fabric)
     try:

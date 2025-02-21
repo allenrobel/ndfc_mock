@@ -9,6 +9,7 @@
 # pylint: disable=unused-argument
 # pylint: disable=invalid-name
 
+import json
 from time import sleep
 
 from fastapi.testclient import TestClient
@@ -18,11 +19,13 @@ from ..app.models.fabric import Fabric
 from .common import client_fixture, convert_db_date_to_timestamp, convert_model_date_to_timestamp, session_fixture, timestamps_within_delta
 
 
-def test_fabric_post_success(client: TestClient):
+def test_fabric_post_100(client: TestClient):
     """
     # Summary
 
     Verify a successful POST request.
+
+    SITE_ID is not set in the request body, so assumes the same value as BGP_AS
     """
     response = client.post(
         "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/f1/Easy_Fabric",
@@ -35,11 +38,39 @@ def test_fabric_post_success(client: TestClient):
     nv_pairs = data["nvPairs"]
     assert nv_pairs["FABRIC_NAME"] == "f1"
     assert nv_pairs["BGP_AS"] == "65001"
+    assert nv_pairs["SITE_ID"] == "65001"
     # assert data["created_at"] is not None
     # assert data["updated_at"] is not None
+    print(f"nvPairs: {json.dumps(nv_pairs, indent=4)}")
 
 
-def test_fabric_post_missing_bgp_as(client: TestClient):
+def test_fabric_post_110(client: TestClient):
+    """
+    # Summary
+
+    Verify a successful POST request.
+
+    SITE_ID is set in the request body, so assumes a unique value apart
+    from BGP_AS.
+    """
+    response = client.post(
+        "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/f1/Easy_Fabric",
+        json={"BGP_AS": "65001", "SITE_ID": "65444"},
+    )
+    data = response.json()
+
+    assert response.status_code == 200
+    assert "nvPairs" in data
+    nv_pairs = data["nvPairs"]
+    assert nv_pairs["FABRIC_NAME"] == "f1"
+    assert nv_pairs["BGP_AS"] == "65001"
+    assert nv_pairs["SITE_ID"] == "65444"
+    # assert data["created_at"] is not None
+    # assert data["updated_at"] is not None
+    print(f"nvPairs: {json.dumps(nv_pairs, indent=4)}")
+
+
+def test_fabric_post_200(client: TestClient):
     """
     # Summary
 
@@ -55,7 +86,7 @@ def test_fabric_post_missing_bgp_as(client: TestClient):
     assert response.status_code == 422
 
 
-def test_fabric_post_invalid_bgp_as_type(client: TestClient):
+def test_fabric_post_210(client: TestClient):
     """
     # Summary
 
@@ -71,7 +102,7 @@ def test_fabric_post_invalid_bgp_as_type(client: TestClient):
     assert response.status_code == 422
 
 
-def test_fabric_get_fabrics(session: Session, client: TestClient):
+def test_fabric_get_100(session: Session, client: TestClient):
     """
     # Summary
 
@@ -134,7 +165,7 @@ def test_fabric_get_fabrics(session: Session, client: TestClient):
     # assert timestamps_within_delta(model_updated_at_ts_f2, db_updated_at_ts_f2)
 
 
-def test_fabric_get_fabric_by_name(session: Session, client: TestClient):
+def test_fabric_get_110(session: Session, client: TestClient):
     """
     # Summary
 
@@ -162,7 +193,7 @@ def test_fabric_get_fabric_by_name(session: Session, client: TestClient):
     # assert data["updated_at"] is not None
 
 
-def test_fabric_put_bgp_as(session: Session, client: TestClient):
+def test_fabric_put_100(session: Session, client: TestClient):
     """
     # Summary
 
@@ -196,7 +227,7 @@ def test_fabric_put_bgp_as(session: Session, client: TestClient):
     # assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=2000000) is True
 
 
-def test_fabric_put_replication_mode(session: Session, client: TestClient):
+def test_fabric_put_110(session: Session, client: TestClient):
     """
     # Summary
 
@@ -231,7 +262,7 @@ def test_fabric_put_replication_mode(session: Session, client: TestClient):
     # assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=2000000) is True
 
 
-def test_fabric_delete_fabric_exists(session: Session, client: TestClient):
+def test_fabric_delete_100(session: Session, client: TestClient):
     """
     # Summary
 
@@ -252,7 +283,7 @@ def test_fabric_delete_fabric_exists(session: Session, client: TestClient):
     assert fabric_in_db is None
 
 
-def test_fabric_delete_fabric_does_not_exist(session: Session, client: TestClient):
+def test_fabric_delete_110(session: Session, client: TestClient):
     """
     # Summary
 

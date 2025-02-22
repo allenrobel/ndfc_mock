@@ -92,6 +92,47 @@ podman build -t ndfc_mock .
 podman run --detach -p 8080:8080 ndfc_mock
 ```
 
+## Uninstall - Container
+
+To delete the container and image afterwards, do the following.
+
+```bash
+podman ps
+```
+
+From the above output, use the randomly-assigned name in the NAMES column
+for the next couple commands to stop and remove the container.
+
+```bash
+podman stop randomly_assigned_container_name
+podman rm randomly_assigned_container_name
+```
+
+Then delete the image.
+
+```bash
+podman rmi ndfc_mock
+```
+
+### Example
+
+```bash
+(py312) AROBEL-M-G793% podman ps
+CONTAINER ID  IMAGE                       COMMAND               CREATED         STATUS         PORTS                   NAMES
+6ef724456379  localhost/ndfc_mock:latest  fastapi run app/m...  19 minutes ago  Up 19 minutes  0.0.0.0:8080->8080/tcp  inspiring_villani
+(py312) AROBEL-M-G793% podman stop inspiring_villani
+inspiring_villani
+(py312) AROBEL-M-G793% podman rm inspiring_villani
+inspiring_villani
+(py312) AROBEL-M-G793% podman rmi ndfc_mock
+Untagged: localhost/ndfc_mock:latest
+Deleted: c4d64f101f97baa2a9ebe5984ffae3eab15f8477ee72817cea5ff499c1caa554
+Deleted: bbad8f9629050572ebdf128bb851d433ddc50d8585444fe380bba7c9170c72a5
+(py312) AROBEL-M-G793%
+```
+
+### Usage
+
 After the container starts, point your browser at
 [http://localhost:8080/docs](http://localhost:8080/docs)
 for the API documentation.  You can use e.g. Postman for

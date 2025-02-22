@@ -1,0 +1,11 @@
+ansible_connection: ansible.netcommon.httpapi
+ansible_network_os: cisco.dcnm.dcnm
+ansible_httpapi_validate_certs: no
+ansible_httpapi_use_ssl: no
+ansible_httpapi_port: 8080
+ansible_user: admin
+ansible_port: 8080
+remote_port: 8080
+device_username: admin
+device_password: dummy_password
+ansible_password: dummy_password

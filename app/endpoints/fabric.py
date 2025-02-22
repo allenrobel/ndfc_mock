@@ -55,8 +55,6 @@ def post_fabric(
     db_fabric = Fabric.model_validate(fabric)
     setattr(db_fabric, "FABRIC_NAME", fabric_name)
     setattr(db_fabric, "FF", template_name)
-    if db_fabric.SITE_ID is None:
-        setattr(db_fabric, "SITE_ID", db_fabric.BGP_AS)
 
     session.add(db_fabric)
     try:
@@ -129,16 +127,8 @@ def put_fabric(
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
     fabric_data = fabric.model_dump(exclude_unset=True)
 
-    keys = fabric_data.keys()
     for key, value in fabric_data.items():
         setattr(db_fabric, key, value)
-        # For now, update SITE_ID to equal BGP_AS if the user is not
-        # explicitely setting SITE_ID.  This is not ideal since the user
-        # may have already intentionally set SITE_ID != BGP_AS in the database,
-        # and the code below will reset it.  But, for now, this serves our
-        # immediate purpose.  TODO: Revisit later.
-        if key == "BGP_AS" and "SITE_ID" not in keys:
-            setattr(db_fabric, "SITE_ID", value)
 
     session.add(db_fabric)
     session.commit()

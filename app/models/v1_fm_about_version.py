@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-# TODO: If SQLModel is ever fixed, remove the mypy directive below.
-# https://github.com/fastapi/sqlmodel/discussions/732
-# mypy: disable-error-code=call-arg
 import uuid
 
 from pydantic import BaseModel

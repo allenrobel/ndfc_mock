@@ -1,5 +1,10 @@
 __pycache__
-.venv
+id_ed25519
+id_rsa
+*.db
+*.pem
+**/logs
 .pytest_cache
-database.db
+.ssh
+.venv
 .vscode

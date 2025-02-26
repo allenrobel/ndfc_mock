@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlmodel import Field, SQLModel
 
 from .common import get_datetime
@@ -1290,6 +1290,8 @@ class FabricBase(SQLModel):
     Base class for all other fabric classes.
     """
 
+    model_config = ConfigDict(use_enum_values=True, validate_default=True)
+
     abstract_anycast_rp: str | None = Field(default="anycast_rp")
     abstract_bgp_neighbor: str | None = Field(default="evpn_bgp_rr_neighbor")
     abstract_bgp_rr: str | None = Field(default="evpn_bgp_rr")
@@ -1636,7 +1638,6 @@ class NvPairs(FabricBase):
     response.
     """
 
-    # id: uuid.UUID | None
     # created_at: datetime | None
     # updated_at: datetime | None
 
@@ -1659,7 +1660,12 @@ class FabricUpdate(SQLModel):
     Used to validate PUT requests.
     """
 
-    FABRIC_NAME: str | None = None
     BGP_AS: str | None = None
-    REPLICATION_MODE: str | None = None
+    FABRIC_NAME: str | None = None
     FF: str | None = None
+    REPLICATION_MODE: str | None = None
+    RP_COUNT: RpCountEnum | None = None
+    RR_COUNT: RrCountEnum | None = None
+    SITE_ID: str | None = None
+    STP_BRIDGE_PRIORITY: StpBridgePriorityEnum | None = None
+    TCAM_ALLOCATION: bool | None = None

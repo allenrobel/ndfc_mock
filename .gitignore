@@ -4,6 +4,7 @@ id_rsa
 *.db
 *.pem
 **/logs
+.cache_ggshield
 .pytest_cache
 .ssh
 .venv

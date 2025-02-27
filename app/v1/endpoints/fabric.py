@@ -6,8 +6,8 @@ from typing import List
 from fastapi import Depends, HTTPException, Query
 from sqlmodel import Session, select
 
-from ..app import app
-from ..db import get_session
+from ...app import app
+from ...db import get_session
 from ..models.fabric import Fabric, FabricCreate, FabricResponseModel, FabricUpdate
 
 

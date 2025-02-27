@@ -3,8 +3,8 @@ import copy
 import json
 import uuid
 
-from ..app import app
-from ..models.v1_fm_about_version import V1FmAboutVersionResponseModel
+from ...app import app
+from ..models.fm_about_version import V1FmAboutVersionResponseModel
 
 
 def build_response():

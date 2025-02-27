@@ -3,8 +3,8 @@ import json
 
 from fastapi import HTTPException
 
-from ..app import app
-from ..models.v1_configtemplate_easy_fabric import V1ConfigtemplateEasyFabricResponseModel
+from ...app import app
+from ..models.configtemplate_easy_fabric import V1ConfigtemplateEasyFabricResponseModel
 
 
 @app.get(
@@ -18,7 +18,7 @@ def get_v1_configtemplate_by_name(template_name: str):
     GET request handler.
     """
     try:
-        with open(f"app/templates/{template_name}.json", "r", encoding="utf-8") as template:
+        with open(f"app/v1/templates/{template_name}.json", "r", encoding="utf-8") as template:
             response = json.load(template)
     except FileNotFoundError as error:
         raise HTTPException(status_code=404, detail=f"Template {template_name} not found.") from error

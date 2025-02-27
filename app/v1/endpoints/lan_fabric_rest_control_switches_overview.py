@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import copy
 
-from ..app import app
-from ..models.v1_lan_fabric_rest_control_switches_overview import V1LanFabricRestControlSwitchesOverviewResponseModel
+from ...app import app
+from ..models.lan_fabric_rest_control_switches_overview import V1LanFabricRestControlSwitchesOverviewResponseModel
 
 
 def build_response():

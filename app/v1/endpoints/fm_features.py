@@ -2,8 +2,8 @@
 import copy
 import json
 
-from ..app import app
-from ..models.v1_fm_features import V1FmFeaturesResponseModel
+from ...app import app
+from ..models.fm_features import V1FmFeaturesResponseModel
 
 
 def build_change_mgmt():

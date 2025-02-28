@@ -1339,7 +1339,6 @@ class FabricBase(SQLModel):
     ANYCAST_BGW_ADVERTISE_PIP: bool | None = Field(default=False, description=Descriptions().anycast_bgw_advertise_pip)
     ANYCAST_GW_MAC: str | None = Field(default="2020.0000.00aa", description=Descriptions().anycast_gw_mac)
     ANYCAST_LB_ID: int | None = Field(default=10, ge=0, le=1023, description=Descriptions().anycast_lb_id)
-
     ANYCAST_RP_IP_RANGE: str | None = Field(default="10.254.254.0/24", description=Descriptions().anycast_rp_ip_range)
     ANYCAST_RP_IP_RANGE_INTERNAL: str | None = Field(default=None)
 
@@ -1416,8 +1415,10 @@ class FabricBase(SQLModel):
     ENABLE_PBR: bool | None = Field(default=False)
     ENABLE_PVLAN_PREV: bool | None = Field(default=False)
     ENABLE_PVLAN: bool | None = Field(default=False, description=Descriptions().enable_pvlan)
+
     ENABLE_TENANT_DHCP: bool | None = Field(default=True, description=Descriptions().enable_tenant_dhcp)
     ENABLE_TRM: bool | None = Field(default=False, description=Descriptions().enable_trm)
+
     ENABLE_VPC_PEER_LINK_NATIVE_VLAN: bool | None = Field(default=False, description=Descriptions().enable_vpc_peer_link_native_vlan)
 
     EXTRA_CONF_INTRA_LINKS: str | None = Field(default=None, description=Descriptions().extra_conf_intra_links)
@@ -1430,9 +1431,9 @@ class FabricBase(SQLModel):
     FABRIC_MTU: int | None = Field(default=9216, ge=576, le=9216, description=Descriptions().fabric_mtu)
     FABRIC_MTU_PREV: int | None = Field(default=9216, ge=576, le=9216)
     FABRIC_TYPE: str | None = Field(default="Switch_Fabric")
-    FABRIC_VPC_QOS: bool | None = Field(default=False, description=Descriptions().fabric_vpc_qos)
     FABRIC_VPC_DOMAIN_ID: int | None = Field(default=1, ge=1, le=1000, description=Descriptions().fabric_vpc_domain_id)
     FABRIC_VPC_DOMAIN_ID_PREV: int | None = Field(default=1, ge=1, le=1000, description=Descriptions().fabric_vpc_domain_id_prev)
+    FABRIC_VPC_QOS: bool | None = Field(default=False, description=Descriptions().fabric_vpc_qos)
     FABRIC_VPC_QOS_POLICY_NAME: str | None = Field(default="spine_qos_for_fabric_vpc_peering")
 
     FEATURE_PTP: bool | None = Field(default=False, description=Descriptions().feature_ptp)
@@ -1485,10 +1486,8 @@ class FabricBase(SQLModel):
 
     MGMT_GW_INTERNAL: str | None = Field(default=None)
     MGMT_GW: str | None = Field(default=None, description=Descriptions().mgmt_gw)
-
     MGMT_PREFIX_INTERNAL: int | None = Field(default=None)
     MGMT_PREFIX: int | None = Field(default=24, ge=8, le=30, description=Descriptions().mgmt_prefix)
-
     MGMT_V6PREFIX_INTERNAL: int | None = Field(default=None)
     MGMT_V6PREFIX: int | None = Field(default=64, ge=64, le=126, description=Descriptions().mgmt_v6prefix)
 
@@ -1539,6 +1538,7 @@ class FabricBase(SQLModel):
     POWER_REDUNDANCY_MODE: PowerRedundancyModeEnum | None = Field(default=PowerRedundancyModeEnum.ps_redundant, description=Descriptions().power_redundancy_mode)
 
     PREMSO_PARENT_FABRIC: str | None = Field(default=None)
+
     PTP_DOMAIN_ID: int | None = Field(default=0, ge=0, le=127)
     PTP_LB_ID: int | None = Field(default=0, ge=0, le=1023, description=Descriptions().ptp_lb_id)
 
@@ -1548,12 +1548,10 @@ class FabricBase(SQLModel):
     RP_COUNT: RpCountEnum | None = Field(default=RpCountEnum.Two, description=Descriptions().rp_count)
     RP_LB_ID: int | None = Field(default=254, ge=0, le=1023, description=Descriptions().rp_lb_id)
     RP_MODE: RpModeEnum | None = Field(default=RpModeEnum.asm, description=Descriptions().rp_mode)
-
     RR_COUNT: RrCountEnum | None = Field(default=RrCountEnum.Two, description=Descriptions().rr_count)
 
     SEED_SWITCH_CORE_INTERFACES: str | None = Field(default=None, description=Descriptions().seed_switch_core_interfaces)
     SERVICE_NETWORK_VLAN_RANGE: str | None = Field(default="3000-3199", description=Descriptions().service_network_vlan_range)
-
     SITE_ID: str | None = Field(default=None, min_length=1, max_length=15, description=Descriptions().site_id)
     SNMP_SERVER_HOST_TRAP: bool | None = Field(default=True, description=Descriptions().snmp_server_host_trap)
 
@@ -1564,13 +1562,14 @@ class FabricBase(SQLModel):
     SSPINE_ADD_DEL_DEBUG_FLAG: EnableDisableEnum | None = Field(default=EnableDisableEnum.Disable, description=Descriptions().sspine_add_del_debug_flag)
 
     STATIC_UNDERLAY_IP_ALLOC: bool | None = Field(default=False, description=Descriptions().static_underlay_ip_alloc)
+
     STP_BRIDGE_PRIORITY: StpBridgePriorityEnum | None = Field(default=StpBridgePriorityEnum.STPP_0, description=Descriptions().stp_bridge_priority)
     STP_ROOT_OPTION: StpRootOptionEnum | None = Field(default=StpRootOptionEnum.unmanaged, description=Descriptions().stp_root_option)
     SPT_VLAN_RANGE: str | None = Field(default="1-3967", description=Descriptions().stp_vlan_range)
 
     STRICT_CC_MODE: bool | None = Field(default=False, description=Descriptions().strict_cc_mode)
-    SUBINTERFACE_RANGE: str | None = Field(default="2-511", description=Descriptions().subinterface_range)
 
+    SUBINTERFACE_RANGE: str | None = Field(default="2-511", description=Descriptions().subinterface_range)
     SUBNET_RANGE: str | None = Field(default="10.4.0.0/16", description=Descriptions().subnet_range)
     SUBNET_TARGET_MASK: int | None = Field(default=30, ge=30, le=31, description=Descriptions().subnet_target_mask)
 
@@ -1595,7 +1594,6 @@ class FabricBase(SQLModel):
     VPC_AUTO_RECOVERY_TIME: int | None = Field(default=360, ge=240, le=3600, description=Descriptions().vpc_auto_recovery_time)
     VPC_DELAY_RESTORE_TIME: int | None = Field(default=60, ge=1, le=3600, description=Descriptions().vpc_delay_restore_time)
     VPC_DELAY_RESTORE: int | None = Field(default=150, ge=1, le=3600, description=Descriptions().vpc_delay_restore)
-
     VPC_DOMAIN_ID_RANGE: str | None = Field(default="1-1000", description=Descriptions().vpc_domain_id_range)
     VPC_ENABLE_IPv6_ND_SYNC: bool | None = Field(default=True)
     VPC_PEER_KEEP_ALIVE_OPTION: VpcPeerKeepAliveOptionEnum | None = Field(default=VpcPeerKeepAliveOptionEnum.management, description=Descriptions().vpc_peer_keep_alive_option)
@@ -1660,12 +1658,247 @@ class FabricUpdate(SQLModel):
     Used to validate PUT requests.
     """
 
+    AAA_REMOTE_IP_ENABLED: bool | None = None
+    AAA_SERVER_CONF: str | None = None
+    ACTIVE_MIGRATION: bool | None = None
+    ADVERTISE_PIP_BGP: bool | None = None
+    AGENT_INTF: AgentIntfEnum | None = None
+
+    ANYCAST_BGW_ADVERTISE_PIP: bool | None = None
+    ANYCAST_GW_MAC: str | None = None
+    ANYCAST_LB_ID: int | None = None
+    ANYCAST_RP_IP_RANGE: str | None = None
+
+    AUTO_SYMMETRIC_DEFAULT_VRF: bool | None = None
+    AUTO_SYMMETRIC_VRF_LITE: bool | None = None
+    AUTO_VRFLITE_IFC_DEFAULT_VRF: bool | None = None
+
+    BFD_AUTH_ENABLE: bool | None = None
+    BFD_AUTH_KEY_ID: int | None = None
+    BFD_AUTH_KEY: str | None = None
+    BFD_ENABLE: bool | None = None
+    BFD_IBGP_ENABLE: bool | None = None
+    BFD_OSPF_ENABLE: bool | None = None
+    BFD_ISIS_ENABLE: bool | None = None
+    BFD_PIM_ENABLE: bool | None = None
+
     BGP_AS: str | None = None
+    BGP_AUTH_ENABLE: bool | None = None
+    BGP_AUTH_KEY_TYPE: BgpAuthKeyTypeEnum | None = None
+    BGP_AUTH_KEY: str | None = None
+    BGP_LB_ID: int | None = None
+
+    BOOTSTRAP_CONF: str | None = None
+    BOOTSTRAP_ENABLE: bool | None = None
+    BOOTSTRAP_MULTISUBNET: str | None = None
+
+    BRFIELD_DEBUG_FLAG: EnableDisableEnum | None = None
+    BROWNFIELD_NETWORK_NAME_FORMAT: str | None = None
+    BROWNFIELD_SKIP_OVERLAY_NETWORK_ATTACHMENTS: bool | None = None
+
+    CDP_ENABLE: bool | None = None
+
+    COPP_POLICY: CoppPolicyEnum | None = None
+
+    DCI_SUBNET_RANGE: str | None = None
+    DCI_SUBNET_TARGET_MASK: int | None = None
+
+    # Yes, NDFC mispells these.
+    DEAFULT_QUEUING_POLICY_CLOUDSCALE: str | None = None
+    DEAFULT_QUEUING_POLICY_OTHER: str | None = None
+    DEAFULT_QUEUING_POLICY_R_SERIES: str | None = None
+    DEFAULT_VRF_REDIS_BGP_RMAP: str | None = None
+
+    DEPLOYMENT_FREEZE: bool | None = None
+
+    DHCP_ENABLE: bool | None = None
+    DHCP_END: str | None = None
+    DHCP_IPV6_ENABLE: DhcpIpv6EnableEnum | None = None
+    DHCP_START: str | None = None
+
+    DNS_SERVER_IP_LIST: str | None = None
+    DNS_SERVER_VRF: str | None = None
+
+    ENABLE_AAA: bool | None = None
+    ENABLE_AGENT: bool | None = None
+    ENABLE_DEFAULT_QUEUING_POLICY: bool | None = None
+    ENABLE_EVPN: bool | None = None
+    ENABLE_FABRIC_VPC_DOMAIN_ID: bool | None = None
+
+    ENABLE_MACSEC: bool | None = None
+    ENABLE_NETFLOW: bool | None = None
+    ENABLE_NGOAM: bool | None = None
+    ENABLE_NXAPI_HTTP: bool | None = None
+    ENABLE_NXAPI: bool | None = None
+
+    ENABLE_PBR: bool | None = None
+    ENABLE_PVLAN: bool | None = None
+
+    ENABLE_TENANT_DHCP: bool | None = None
+    ENABLE_TRM: bool | None = None
+
+    ENABLE_VPC_PEER_LINK_NATIVE_VLAN: bool | None = None
+
+    EXTRA_CONF_INTRA_LINKS: str | None = None
+    EXTRA_CONF_LEAF: str | None = None
+    EXTRA_CONF_SPINE: str | None = None
+    EXTRA_CONF_TOR: str | None = None
+
+    FABRIC_INTERFACE_TYPE: FabricInterfaceTypeEnum | None = None
     FABRIC_NAME: str | None = None
-    FF: str | None = None
-    REPLICATION_MODE: str | None = None
+    FABRIC_MTU: int | None = None
+    FABRIC_TYPE: str | None = None
+    FABRIC_VPC_DOMAIN_ID: int | None = None
+    FABRIC_VPC_QOS: bool | None = None
+    FABRIC_VPC_QOS_POLICY_NAME: str | None = None
+
+    FEATURE_PTP: bool | None = None
+
+    GRFIELD_DEBUG_FLAG: EnableDisableEnum | None = None
+
+    HD_TIME: int | None = None
+    HOST_INTF_ADMIN_STATE: bool | None = None
+
+    IBGP_PEER_TEMPLATE: str | None = None
+    IBGP_PEER_TEMPLATE_LEAF: str | None = None
+
+    INBAND_DHCP_SERVERS: str | None = None
+    INBAND_MGMT: bool | None = None
+
+    ISIS_AUTH_ENABLE: bool | None = None
+    ISIS_AUTH_KEY: str | None = None
+    ISIS_AUTH_KEYCHAIN_KEY_ID: int | None = None
+    ISIS_AUTH_KEYCHAIN_NAME: str | None = None
+    ISIS_LEVEL: IsisLevelEnum | None = None
+    ISIS_OVERLOAD_ELAPSE_TIME: int | None = None
+    ISIS_OVERLOAD_ENABLE: bool | None = None
+    ISIS_P2P_ENABLE: bool | None = None
+
+    L2_HOST_INTF_MTU: int | None = None
+    L2_SEGMENT_ID_RANGE: str | None = None
+
+    L3_PARTITION_ID_RANGE: str | None = None
+    L3VNI_MCAST_GROUP: str | None = None
+
+    LINK_STATE_ROUTING: LinkStateRoutingEnum | None = None
+    LINK_STATE_ROUTING_TAG: str | None = None
+
+    LOOPBACK0_IP_RANGE: str | None = None
+    LOOPBACK0_IPV6_RANGE: str | None = None
+    LOOPBACK1_IP_RANGE: str | None = None
+    LOOPBACK1_IPV6_RANGE: str | None = None
+
+    MACSEC_ALGORITHM: MacsecAlgorithmEnum | None = None
+    MACSEC_CIPHER_SUITE: MacsecCipherSuiteEnum | None = None
+    MACSEC_FALLBACK_ALGORITHM: MacsecAlgorithmEnum | None = None
+    MACSEC_FALLBACK_KEY_STRING: str | None = None
+    MACSEC_KEY_STRING: str | None = None
+    MACSEC_REPORT_TIMER: int | None = None
+
+    MGMT_GW: str | None = None
+    MGMT_PREFIX: int | None = None
+    MGMT_V6PREFIX: int | None = None
+
+    MPLS_HANDOFF: bool | None = None
+    MPLS_LB_ID: int | None = None
+    MPLS_LOOPBACK_IP_RANGE: str | None = None
+
+    MSO_CONNECTIVITY_DEPLOYED: str | None = None
+    # Yes, NDFC mispells this
+    MSO_CONTROLER_ID: str | None = None
+    MSO_SITE_GROUP_NAME: str | None = None
+    MSO_SITE_ID: str | None = None
+
+    MST_INSTANCE_RANGE: str | None = None
+    MULTICAST_GROUP_SUBNET: str | None = None
+
+    NETFLOW_EXPORTER_LIST: str | None = None
+    NETFLOW_MONITOR_LIST: str | None = None
+    NETFLOW_RECORD_LIST: str | None = None
+
+    network_extension_template: str | None = None
+    NETWORK_VLAN_RANGE: str | None = None
+
+    NTP_SERVER_IP_LIST: str | None = None
+    NTP_SERVER_VRF: str | None = None
+
+    NVE_LB_ID: int | None = None
+
+    OSPF_AREA_ID: str | None = None
+    OSPF_AUTH_ENABLE: bool | None = None
+    OSPF_AUTH_KEY: str | None = None
+    OSPF_AUTH_KEY_ID: int | None = None
+
+    OVERLAY_MODE: OverlayModeEnum | None = None
+
+    PHANTOM_RP_LB_ID1: str | None = None
+    PHANTOM_RP_LB_ID2: str | None = None
+    PHANTOM_RP_LB_ID3: str | None = None
+    PHANTOM_RP_LB_ID4: str | None = None
+
+    PIM_HELLO_AUTH_ENABLE: bool | None = None
+    PIM_HELLO_AUTH_KEY: str | None = None
+
+    PM_ENABLE: bool | None = None
+
+    POWER_REDUNDANCY_MODE: PowerRedundancyModeEnum | None = None
+
+    PTP_DOMAIN_ID: int | None = None
+    PTP_LB_ID: int | None = None
+
+    REPLICATION_MODE: ReplicationModeEnum | None = None
+    ROUTER_ID_RANGE: str | None = None
+    ROUTE_MAP_SEQUENCE_NUMBER_RANGE: str | None = None
     RP_COUNT: RpCountEnum | None = None
+    RP_LB_ID: int | None = None
+    RP_MODE: RpModeEnum | None = None
     RR_COUNT: RrCountEnum | None = None
+
+    SEED_SWITCH_CORE_INTERFACES: str | None = None
+    SERVICE_NETWORK_VLAN_RANGE: str | None = None
     SITE_ID: str | None = None
+    SNMP_SERVER_HOST_TRAP: bool | None = None
+
+    SPINE_SWITCH_CORE_INTERFACES: str | None = None
+
+    SSPINE_ADD_DEL_DEBUG_FLAG: EnableDisableEnum | None = None
+
+    STATIC_UNDERLAY_IP_ALLOC: bool | None = None
+
     STP_BRIDGE_PRIORITY: StpBridgePriorityEnum | None = None
+    STP_ROOT_OPTION: StpRootOptionEnum | None = None
+    SPT_VLAN_RANGE: str | None = None
+
+    STRICT_CC_MODE: bool | None = None
+
+    SUBINTERFACE_RANGE: str | None = None
+    SUBNET_RANGE: str | None = None
+    SUBNET_TARGET_MASK: int | None = None
+
+    SYSLOG_SERVER_IP_LIST: str | None = None
+    SYSLOG_SERVER_VRF: str | None = None
+    SYSLOG_SEV: str | None = None
+
     TCAM_ALLOCATION: bool | None = None
+    UNDERLAY_IS_V6: bool | None = None
+
+    UNNUM_BOOTSTRAP_LB_ID: int | None = None
+    UNNUM_DHCP_END: str | None = None
+    UNNUM_DHCP_START: str | None = None
+
+    USE_LINK_LOCAL: bool | None = None
+
+    V6_SUBNET_RANGE: str | None = None
+    V6_SUBNET_TARGET_MASK: int | None = None
+
+    VPC_AUTO_RECOVERY_TIME: int | None = None
+    VPC_DELAY_RESTORE_TIME: int | None = None
+    VPC_DELAY_RESTORE: int | None = None
+    VPC_DOMAIN_ID_RANGE: str | None = None
+    VPC_ENABLE_IPv6_ND_SYNC: bool | None = None
+    VPC_PEER_KEEP_ALIVE_OPTION: VpcPeerKeepAliveOptionEnum | None = None
+    VPC_PEER_LINK_PO: str | None = None
+    VPC_PEER_LINK_VLAN: str | None = None
+
+    VRF_LITE_AUTOCONFIG: VrfLiteAutoconfigEnum | None = None
+    VRF_VLAN_RANGE: str | None = None

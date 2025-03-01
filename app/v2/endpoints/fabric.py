@@ -57,7 +57,7 @@ def build_db_fabric(fabric):
 
 
 @app.post("/api/v1/manage/fabrics", response_model=FabricResponseModel)
-async def post_fabric(*, session: Session = Depends(get_session), fabric: FabricResponseModel):
+async def v2_post_fabric(*, session: Session = Depends(get_session), fabric: FabricResponseModel):
     """
     # Summary
 

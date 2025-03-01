@@ -1,3 +1,6 @@
+# TODO: If SQLModel is ever fixed, remove the mypy directive below.
+# https://github.com/fastapi/sqlmodel/discussions/732
+# mypy: disable-error-code=call-arg
 from enum import Enum
 
 from pydantic import BaseModel, ConfigDict

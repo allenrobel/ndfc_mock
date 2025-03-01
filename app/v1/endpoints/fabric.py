@@ -60,7 +60,10 @@ def post_fabric(
     try:
         session.commit()
     except Exception as error:
-        raise HTTPException(status_code=404, detail=error) from error
+        # print(f"Error: {error}")
+        session.rollback()
+        msg = f"ND Site with name {fabric_name} already exists."
+        raise HTTPException(status_code=500, detail=msg) from error
     session.refresh(db_fabric)
     response = build_response(db_fabric)
     return response

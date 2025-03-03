@@ -63,7 +63,7 @@
             "testcase": "test_v2_fabric_post_200",
             "description": [
                 "Fabric POST API.",
-                "400 response when bgpAsn is missing."
+                "400 response when management.bgpAsn is missing."
             ],
             "tags": [
                 "fabric",

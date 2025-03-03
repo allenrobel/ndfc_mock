@@ -68,8 +68,8 @@ def test_v2_fabric_post_200(client: TestClient):
 
     Verify an unsuccessful POST request.
 
-    A 40 status_code is returned when BGP_AS is missing from the body
-    of the POST request.
+    A 400 status_code is returned when management.bgpAsn is missing
+    from the body of the POST request.
     """
     test_name = inspect.currentframe().f_code.co_name
     response = client.post(
@@ -85,8 +85,8 @@ def test_v2_fabric_post_210(client: TestClient):
 
     Verify an unsuccessful POST request.
 
-    A 400 status_code is returned when BGP_AS is an invalid type in the body
-    of the POST request.
+    A 400 status_code is returned when management.bgpAsn is an
+    invalid type in the body of the POST request.
     """
     test_name = inspect.currentframe().f_code.co_name
     response = client.post(
@@ -107,8 +107,10 @@ def test_v2_fabric_get_100(session: Session, client: TestClient):
     4. Send a GET request to retrieve all fabrics.
     5. Verify response
         -   status_code == 200
-        -   bgpAsn == expected BGP AS
+        -   management.bgpAsn == expected BGP AS
         -   name == expected fabric name
+        -   location.lataitude == expected latitude
+        -   location.longitude == expected longitude
     """
     f1 = FabricDbModel(
         bgpAsn="65001",
@@ -167,9 +169,10 @@ def test_v2_fabric_get_110(session: Session, client: TestClient):
     2. Send GET request with fabric_name in the path.
     3. Verify the response
         -   status_code == 200
-        -   BGP_AS == expected BGP_AS
-        -   created_at field is present and not None
-        -   updated_at field is present and not None
+        -   management.bgpAsn == expected BGP AS
+        -   name == expected fabric name
+        -   location.lataitude == expected latitude
+        -   location.longitude == expected longitude
     """
     f1 = FabricDbModel(
         bgpAsn="65001",
@@ -265,41 +268,6 @@ def test_v2_fabric_put_100(session: Session, client: TestClient):
     assert data.get("location", {}).get("longitude") == 62.1
     assert data.get("telemetryCollectionType") == "outOfBand"
     assert data.get("telemetryStreamingProtocol") == "ipv6"
-
-
-# def test_v2_fabric_put_110(session: Session, client: TestClient):
-#     """
-#     # Summary
-
-#     Verify PUT request updates REPLICATION_MODE.
-
-#     1. REPLICATION_MODE is updated
-#     2. updated_at is updated with new timestamp
-#        2a. updated_at pre-update is not identical to post-update (delta=0)
-#        2b. updated_at post-update is <= 2 seconds later than pre-update
-#     """
-#     f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
-#     session.add(f1)
-#     # model_updated_at_ts = convert_model_date_to_timestamp(f1.updated_at)
-#     session.commit()
-#     sleep(1)
-
-#     response = client.put(
-#         "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/f1/Easy_Fabric",
-#         json={"REPLICATION_MODE": "Ingress"},
-#     )
-#     data = response.json()
-
-#     assert response.status_code == 200
-#     assert data["nvPairs"]["FABRIC_NAME"] == "f1"
-#     assert data["nvPairs"]["BGP_AS"] == "65001"
-#     assert data["nvPairs"]["REPLICATION_MODE"] == "Ingress"
-#     # assert data["created_at"] is not None
-#     # assert data["updated_at"] is not None
-#     # db_updated_at_ts = convert_db_date_to_timestamp(data["updated_at"])
-
-#     # assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=0) is False
-#     # assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=2000000) is True
 
 
 def test_v2_fabric_delete_100(session: Session, client: TestClient):

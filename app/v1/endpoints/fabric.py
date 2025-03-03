@@ -36,11 +36,77 @@ def build_nv_pairs(fabric):
     return fabric.model_dump()
 
 
+@app.delete("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}")
+def v1_delete_fabric(*, session: Session = Depends(get_session), fabric_name: str):
+    """
+    # Summary
+
+    DELETE request handler
+
+    ## NDFC Response
+
+    {
+        "timestamp": 1739842602937,
+        "status": 404,
+        "error": "Not Found",
+        "path": "/rest/control/fabrics/f2"
+    }
+    """
+    fabric = session.get(Fabric, fabric_name)
+    if not fabric:
+        detail = {"timestamp": int(datetime.datetime.now().timestamp()), "status": 404, "error": "Not Found", "path": f"/rest/control/fabrics/{fabric_name}"}
+        raise HTTPException(status_code=404, detail=detail)
+    session.delete(fabric)
+    session.commit()
+    return {f"Fabric '{fabric_name}' is deleted successfully!"}
+
+
+@app.get(
+    "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/",
+    response_model=List[FabricResponseModel],
+)
+def v1_get_fabrics(
+    *,
+    session: Session = Depends(get_session),
+    offset: int = 0,
+    limit: int = Query(default=100, le=100),
+):
+    """
+    # Summary
+
+    GET request handler with limit and offset query parameters.
+    """
+    fabrics = session.exec(select(Fabric).offset(offset).limit(limit)).all()
+    response = []
+    response_fabric = {}
+    for fabric in fabrics:
+        response_fabric = build_response(fabric)
+        response.append(copy.deepcopy(response_fabric))
+    return response
+
+
+@app.get(
+    "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}",
+    response_model=FabricResponseModel,
+)
+def v1_get_fabric_by_fabric_name(*, session: Session = Depends(get_session), fabric_name: str):
+    """
+    # Summary
+
+    GET request handler with fabric_name as path parameter.
+    """
+    fabric = session.get(Fabric, fabric_name)
+    if not fabric:
+        raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
+    response = build_response(fabric)
+    return response
+
+
 @app.post(
     "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/{template_name}",
     response_model=FabricResponseModel,
 )
-def post_fabric(
+def v1_post_fabric(
     *,
     session: Session = Depends(get_session),
     fabric_name: str,
@@ -69,52 +135,11 @@ def post_fabric(
     return response
 
 
-@app.get(
-    "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/",
-    response_model=List[FabricResponseModel],
-)
-def get_fabrics(
-    *,
-    session: Session = Depends(get_session),
-    offset: int = 0,
-    limit: int = Query(default=100, le=100),
-):
-    """
-    # Summary
-
-    GET request handler with limit and offset query parameters.
-    """
-    fabrics = session.exec(select(Fabric).offset(offset).limit(limit)).all()
-    response = []
-    response_fabric = {}
-    for fabric in fabrics:
-        response_fabric = build_response(fabric)
-        response.append(copy.deepcopy(response_fabric))
-    return response
-
-
-@app.get(
-    "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}",
-    response_model=FabricResponseModel,
-)
-def get_fabric_by_fabric_name(*, session: Session = Depends(get_session), fabric_name: str):
-    """
-    # Summary
-
-    GET request handler with fabric_name as path parameter.
-    """
-    fabric = session.get(Fabric, fabric_name)
-    if not fabric:
-        raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
-    response = build_response(fabric)
-    return response
-
-
 @app.put(
     "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/{template_name}",
     response_model=FabricResponseModel,
 )
-def put_fabric(
+def v1_put_fabric(
     *,
     session: Session = Depends(get_session),
     fabric_name: str,
@@ -138,28 +163,3 @@ def put_fabric(
     session.refresh(db_fabric)
     response = build_response(db_fabric)
     return response
-
-
-@app.delete("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}")
-def delete_fabric(*, session: Session = Depends(get_session), fabric_name: str):
-    """
-    # Summary
-
-    DELETE request handler
-
-    ## NDFC Response
-
-    {
-        "timestamp": 1739842602937,
-        "status": 404,
-        "error": "Not Found",
-        "path": "/rest/control/fabrics/f2"
-    }
-    """
-    fabric = session.get(Fabric, fabric_name)
-    if not fabric:
-        detail = {"timestamp": int(datetime.datetime.now().timestamp()), "status": 404, "error": "Not Found", "path": f"/rest/control/fabrics/{fabric_name}"}
-        raise HTTPException(status_code=404, detail=detail)
-    session.delete(fabric)
-    session.commit()
-    return {f"Fabric '{fabric_name}' is deleted successfully!"}

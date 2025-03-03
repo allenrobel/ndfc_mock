@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import copy
+from typing import List
 
-from fastapi import Depends, HTTPException
-from sqlmodel import Session
+from fastapi import Depends, HTTPException, Query
+from sqlmodel import Session, select
 
 from ...app import app
 from ...db import get_session
@@ -56,6 +57,73 @@ def build_db_fabric(fabric):
     return db_fabric
 
 
+@app.delete("/api/v1/manage/fabrics/{fabric_name}", status_code=204)
+async def v2_delete_fabric(*, session: Session = Depends(get_session), fabric_name: str):
+    """
+    # Summary
+
+    DELETE request handler
+
+    ## NDFC 404 Response (4.0 LA)
+
+    ```json
+    {
+        "code": 404,
+        "description": "",
+        "message": f"Fabric f1 not found"
+    }
+    ```
+    """
+    fabric = session.get(FabricDbModel, fabric_name)
+    if not fabric:
+        detail = {"code": 404, "description": "", "message": f"Fabric {fabric_name} not found"}
+        raise HTTPException(status_code=404, detail=detail)
+    session.delete(fabric)
+    session.commit()
+    return {}
+
+
+@app.get(
+    "/api/v1/manage/fabrics",
+    response_model=List[FabricResponseModel],
+)
+def v2_get_fabrics(
+    *,
+    session: Session = Depends(get_session),
+    offset: int = 0,
+    limit: int = Query(default=100, le=100),
+):
+    """
+    # Summary
+
+    GET request handler with limit and offset query parameters.
+    """
+    fabrics = session.exec(select(FabricDbModel).offset(offset).limit(limit)).all()
+    response = []
+    response_fabric = {}
+    for fabric in fabrics:
+        response_fabric = build_response(fabric)
+        response.append(copy.deepcopy(response_fabric))
+    return response
+
+
+@app.get(
+    "/api/v1/manage/fabrics/{fabric_name}",
+    response_model=FabricResponseModel,
+)
+def v2_get_fabric_by_fabric_name(*, session: Session = Depends(get_session), fabric_name: str):
+    """
+    # Summary
+
+    GET request handler with fabric_name as path parameter.
+    """
+    fabric = session.get(FabricDbModel, fabric_name)
+    if not fabric:
+        raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
+    response = build_response(fabric)
+    return response
+
+
 @app.post("/api/v1/manage/fabrics", response_model=FabricResponseModel)
 async def v2_post_fabric(*, session: Session = Depends(get_session), fabric: FabricResponseModel):
     """
@@ -80,6 +148,47 @@ async def v2_post_fabric(*, session: Session = Depends(get_session), fabric: Fab
         error_response["description"] = ""
         error_response["message"] = msg
         raise HTTPException(status_code=status_code, detail=error_response) from error
+    session.refresh(db_fabric)
+    response = build_response(db_fabric)
+    return response
+
+
+@app.put(
+    "/api/v1/manage/fabrics/{fabric_name}",
+    response_model=FabricResponseModel,
+)
+def v2_put_fabric(
+    *,
+    session: Session = Depends(get_session),
+    fabric_name: str,
+    fabric: FabricResponseModel,
+):
+    """
+    # Summary
+
+    PUT request handler
+
+    ## Notes to future self
+
+    -   Nested key handling below will break when we add
+        nested keys under management to the model, e.g.
+        .netflowSettings, .leafTorVpcPortChannelIdRange, etc.
+    """
+    db_fabric = session.get(FabricDbModel, fabric_name)
+    if not db_fabric:
+        raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
+    fabric_data = fabric.model_dump(exclude_unset=True)
+
+    nested_keys = ["management", "location"]
+    for key, value in fabric_data.items():
+        if key in nested_keys:
+            for nested_key, nested_value in value.items():
+                setattr(db_fabric, nested_key, nested_value)
+        else:
+            setattr(db_fabric, key, value)
+
+    session.add(db_fabric)
+    session.commit()
     session.refresh(db_fabric)
     response = build_response(db_fabric)
     return response

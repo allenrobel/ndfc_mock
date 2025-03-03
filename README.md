@@ -1,6 +1,7 @@
 # Summary
 
-This is a work in progress with limited functionality.
+This is a work in progress with limited functionality as described
+below.
 
 When finished, this will allow for minor development and testing of
 [ansible-dcnm](https://github.com/CiscoDevNet/ansible-dcnm)
@@ -8,13 +9,30 @@ modules (and other REST API-based applications) without requiring a
 real ND/NDFC instance.
 
 Basically, it will accept GET/POST/PUT/DELETE requests to
-endpoints supported by NDFC and will return mock responses.
+endpoints supported by ND/NDFC and will return responses that
+align, as closely as possible, with real ND/NDFC responses i.e.,
+POST and PUT requests update an in-memory SQLlite database;
+GET requests retrieve from this database; and DELETE requests
+remove items from the database.
 
 ## Current status
 
-Running basic merged,query,deleted-state dcnm_fabric playbook tasks against
-the mock instance is working (to create, modify, query, and delete fabrics)
-per the example playbook below.
+### ND 3.2.1
+
+- Basic merged, query, deleted-state ND 3.2.x dcnm_fabric playbook
+  tasks run against the mock instance are working (to create, modify,
+  query, and delete fabrics) per the example playbook below.
+  
+#### Supported endpoints
+
+- `/appcenter/cisco/ndfc/api/v1/configtemplate/rest/config/templates/{template_name}`
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}`
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/`
+- `/appcenter/cisco/ndfc/api/v1/fm/about/version`
+- `/appcenter/cisco/ndfc/api/v1/fm/features`
+- `/login`
+
+#### Example playbook
 
 ```yaml
 ---
@@ -55,18 +73,28 @@ For the deleted-state `dcnm_fabric` playbook task to return success, the fabric
 cannot contain any switches.  The `dcnm_fabric` Ansible module uses the
 following GET request to determine the number of switches in the fabric.
 
-`/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches/<fabric_name>/overview`
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches/<fabric_name>/overview`
 
 For now, a stub handler is implemented which returns zero switches to
 allow the deleted-state playbook task to work.  This will be replaced
 soon with appropriate inventory handlers and database tables to support
 fabric switch addition/deletion.
 
+### ND 4.0
+
+- REST API DELETE, GET, POST, PUT requests against the following
+  ND 4.0 endpoints are working.
+
+#### Supported endpoints
+
+- `/api/v1/manage/fabrics`
+- `/api/v1/manage/fabrics/{fabric_name}`
+
 ## Configuration notes
 
 In order for Ansible to send to http port 8080 (rather than https port 443),
 the following needs to be added either to your ansible.cfg, or to your
-inventory group_vars:
+inventory group_vars.
 
 ```yaml
 ansible_httpapi_use_ssl: no

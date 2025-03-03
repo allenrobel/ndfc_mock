@@ -17,13 +17,13 @@ remove items from the database.
 
 ## Current status
 
-### ND 3.2.1
+### ND 3.x
 
 - Basic merged, query, deleted-state ND 3.2.x dcnm_fabric playbook
   tasks run against the mock instance are working (to create, modify,
   query, and delete fabrics) per the example playbook below.
-  
-#### Supported endpoints
+
+#### Supported endpoints (ND 3.x)
 
 - `/appcenter/cisco/ndfc/api/v1/configtemplate/rest/config/templates/{template_name}`
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}`
@@ -32,7 +32,7 @@ remove items from the database.
 - `/appcenter/cisco/ndfc/api/v1/fm/features`
 - `/login`
 
-#### Example playbook
+#### Example playbook (ND 3.x)
 
 ```yaml
 ---
@@ -85,7 +85,7 @@ fabric switch addition/deletion.
 - REST API DELETE, GET, POST, PUT requests against the following
   ND 4.0 endpoints are working.
 
-#### Supported endpoints
+#### Supported endpoints (ND 4.0)
 
 - `/api/v1/manage/fabrics`
 - `/api/v1/manage/fabrics/{fabric_name}`

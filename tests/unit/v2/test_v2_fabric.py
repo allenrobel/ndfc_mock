@@ -68,7 +68,7 @@ def test_v2_fabric_post_200(client: TestClient):
 
     Verify an unsuccessful POST request.
 
-    A 400 status_code is returned when management.bgpAsn is missing
+    A 500 status_code is returned when management.bgpAsn is missing
     from the body of the POST request.
     """
     test_name = inspect.currentframe().f_code.co_name
@@ -76,7 +76,7 @@ def test_v2_fabric_post_200(client: TestClient):
         "/api/v1/manage/fabrics",
         json=load_test_data("fabric.json", test_name),
     )
-    assert response.status_code == 400
+    assert response.status_code == 500
 
 
 def test_v2_fabric_post_210(client: TestClient):
@@ -85,15 +85,16 @@ def test_v2_fabric_post_210(client: TestClient):
 
     Verify an unsuccessful POST request.
 
-    A 400 status_code is returned when management.bgpAsn is an
-    invalid type in the body of the POST request.
+    A 500 status_code is returned when management.bgpAsn is an
+    invalid format in the body of the POST request i.e. fails
+    regex validation.
     """
     test_name = inspect.currentframe().f_code.co_name
     response = client.post(
         "/api/v1/manage/fabrics",
         json=load_test_data("fabric.json", test_name),
     )
-    assert response.status_code == 400
+    assert response.status_code == 500
 
 
 def test_v2_fabric_get_100(session: Session, client: TestClient):

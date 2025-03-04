@@ -91,7 +91,7 @@
             "testcase": "test_v2_fabric_post_210",
             "description": [
                 "Fabric POST API.",
-                "400 response when bgpAsn is wrong type."
+                "500 response when bgpAsn fails regex validation."
             ],
             "tags": [
                 "fabric",

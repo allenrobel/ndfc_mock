@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict
 from sqlmodel import Field, SQLModel
 
 from .common import get_datetime
-
+from ...common.validators.fabric import BgpValue
 
 class AgentIntfEnum(str, Enum):
     """
@@ -1355,7 +1355,7 @@ class FabricBase(SQLModel):
     BFD_ISIS_ENABLE: bool | None = Field(default=False)
     BFD_PIM_ENABLE: bool | None = Field(default=False)
 
-    BGP_AS: str = Field(index=True, description=Descriptions().bgp_as)
+    BGP_AS: BgpValue = Field(index=True, description=Descriptions().bgp_as)
     BGP_AS_PREV: str | None = Field(default=None)
     BGP_AUTH_ENABLE: bool | None = Field(default=False, description=Descriptions().bgp_auth_enable)
     BGP_AUTH_KEY_TYPE: BgpAuthKeyTypeEnum | None = Field(default=BgpAuthKeyTypeEnum.Three, description=Descriptions().bgp_auth_key_type)
@@ -1682,7 +1682,7 @@ class FabricUpdate(SQLModel):
     BFD_ISIS_ENABLE: bool | None = None
     BFD_PIM_ENABLE: bool | None = None
 
-    BGP_AS: str | None = None
+    BGP_AS: BgpValue | None = None
     BGP_AUTH_ENABLE: bool | None = None
     BGP_AUTH_KEY_TYPE: BgpAuthKeyTypeEnum | None = None
     BGP_AUTH_KEY: str | None = None

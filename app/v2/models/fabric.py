@@ -6,6 +6,9 @@ from enum import Enum
 from pydantic import BaseModel, ConfigDict
 from sqlmodel import Field, SQLModel
 
+from ...common.validators.fabric import BgpValue
+from ..validators.fabric import FabricManagementType
+
 
 class FabricCategoryEnum(Enum):
     """
@@ -45,13 +48,15 @@ class TelemetryStreamingProtocol(Enum):
     ipv6 = "ipv6"
 
 
-class FabricManagement(BaseModel):
+class FabricManagement(SQLModel):
     """
     Contents of the fabric management object.
     TODO: Add remaining parameters.
     """
 
-    bgpAsn: str
+    model_config = ConfigDict(coerce_numbers_to_str=True)
+
+    bgpAsn: str | int
     type: str
 
 
@@ -69,12 +74,12 @@ class FabricResponseModel(SQLModel):
     Representation of the fabric in a response.
     """
 
-    model_config = ConfigDict(use_enum_values=True)
+    model_config = ConfigDict(use_enum_values=True, coerce_numbers_to_str=True)
 
     category: str = Field(FabricCategoryEnum)
     licenseTier: str = Field(LicenseTier)
     location: dict = Field(FabricLocation)
-    management: dict = Field(FabricManagement)
+    management: FabricManagementType = Field(FabricManagement)
     name: str
     securityDomain: str | None = "all"
     telemetryCollectionType: str = Field(TelemetryCollectionType)
@@ -92,7 +97,7 @@ class FabricDbModel(SQLModel, table=True):
 
     model_config = ConfigDict(use_enum_values=True)
 
-    bgpAsn: str
+    bgpAsn: BgpValue = Field(BgpValue)
     type: str
     latitude: float
     longitude: float

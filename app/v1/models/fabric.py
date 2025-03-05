@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict
 from sqlmodel import Field, SQLModel
 
 from ...common.validators.fabric import BgpValue
-from .common import get_datetime
+from ...common.functions.utilities import get_datetime
 
 
 class AgentIntfEnum(str, Enum):

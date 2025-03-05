@@ -9,8 +9,8 @@ from enum import Enum
 from pydantic import BaseModel, ConfigDict
 from sqlmodel import Field, SQLModel
 
-from ...common.validators.fabric import BgpValue
 from ...common.functions.utilities import get_datetime
+from ...common.validators.fabric import BgpValue
 
 
 class AgentIntfEnum(str, Enum):

@@ -2,7 +2,6 @@
 # TODO: If SQLModel is ever fixed, remove the mypy directive below.
 # https://github.com/fastapi/sqlmodel/discussions/732
 # mypy: disable-error-code=call-arg
-import uuid
 from datetime import datetime
 from enum import Enum
 
@@ -1428,7 +1427,7 @@ class FabricBase(SQLModel):
     EXTRA_CONF_TOR: str | None = Field(default=None, description=Descriptions().extra_conf_tor)
 
     FABRIC_INTERFACE_TYPE: FabricInterfaceTypeEnum | None = Field(default=FabricInterfaceTypeEnum.p2p, description=Descriptions().fabric_interface_type)
-    FABRIC_NAME: str | None = Field(default=None, primary_key=True, min_length=1, max_length=32, description=Descriptions().fabric_name)
+    FABRIC_NAME: str | None = Field(default=None, unique=True, index=True, min_length=1, max_length=32, description=Descriptions().fabric_name)
     FABRIC_MTU: int | None = Field(default=9216, ge=576, le=9216, description=Descriptions().fabric_mtu)
     FABRIC_MTU_PREV: int | None = Field(default=9216, ge=576, le=9216)
     FABRIC_TYPE: str | None = Field(default="Switch_Fabric")
@@ -1612,7 +1611,7 @@ class Fabric(FabricBase, table=True):
     Define the fabric table in the database.
     """
 
-    id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    id: int | None = Field(default=None, primary_key=True)
     created_at: datetime | None = Field(default_factory=get_datetime)
 
     updated_at: datetime | None = Field(
@@ -1648,7 +1647,7 @@ class FabricResponseModel(BaseModel):
     Describes what is returned to clients.
     """
 
-    id: uuid.UUID
+    id: int
     nvPairs: NvPairs
 
 

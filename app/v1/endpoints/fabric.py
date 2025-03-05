@@ -52,11 +52,15 @@ def v1_delete_fabric(*, session: Session = Depends(get_session), fabric_name: st
         "path": "/rest/control/fabrics/f2"
     }
     """
-    fabric = session.get(Fabric, fabric_name)
-    if not fabric:
-        detail = {"timestamp": int(datetime.datetime.now().timestamp()), "status": 404, "error": "Not Found", "path": f"/rest/control/fabrics/{fabric_name}"}
+    db_fabric = session.exec(select(Fabric).where(Fabric.FABRIC_NAME == fabric_name)).first()
+    if not db_fabric:
+        detail = {}
+        detail["timestamp"] = int(datetime.datetime.now().timestamp())
+        detail["status"] = 404
+        detail["error"] = "Not Found"
+        detail["path"] = f"/rest/control/fabrics/{fabric_name}"
         raise HTTPException(status_code=404, detail=detail)
-    session.delete(fabric)
+    session.delete(db_fabric)
     session.commit()
     return {f"Fabric '{fabric_name}' is deleted successfully!"}
 
@@ -95,10 +99,10 @@ def v1_get_fabric_by_fabric_name(*, session: Session = Depends(get_session), fab
 
     GET request handler with fabric_name as path parameter.
     """
-    fabric = session.get(Fabric, fabric_name)
-    if not fabric:
+    db_fabric = session.exec(select(Fabric).where(Fabric.FABRIC_NAME == fabric_name)).first()
+    if not db_fabric:
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
-    response = build_response(fabric)
+    response = build_response(db_fabric)
     return response
 
 
@@ -150,7 +154,7 @@ def v1_put_fabric(
 
     PUT request handler
     """
-    db_fabric = session.get(Fabric, fabric_name)
+    db_fabric = session.exec(select(Fabric).where(Fabric.FABRIC_NAME == fabric_name)).first()
     if not db_fabric:
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
     fabric_data = fabric.model_dump(exclude_unset=True)

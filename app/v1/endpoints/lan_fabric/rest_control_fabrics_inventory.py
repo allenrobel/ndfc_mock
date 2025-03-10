@@ -5,10 +5,10 @@ from typing import List
 from fastapi import Depends, HTTPException
 from sqlmodel import Session, select
 
-from ...app import app
-from ...db import get_session
-from ..models.fabric import Fabric
-from ..models.inventory import SwitchDbModel, SwitchDiscoverBodyModel, SwitchDiscoverItem, SwitchResponseModel
+from ....app import app
+from ....db import get_session
+from ...models.fabric import Fabric
+from ...models.inventory import SwitchDbModel, SwitchDiscoverBodyModel, SwitchDiscoverItem, SwitchResponseModel
 
 
 def build_response_switch(db_switch: SwitchDbModel) -> SwitchResponseModel:
@@ -269,7 +269,7 @@ def build_success_response():
     "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/switchesByFabric",
     response_model=List[SwitchResponseModel],
 )
-def v1_get_switches_by_fabric_name(*, session: Session = Depends(get_session), fabric_name: str):
+def v1_get_inventory_switches_by_fabric(*, session: Session = Depends(get_session), fabric_name: str):
     """
     # Summary
 
@@ -289,7 +289,7 @@ def v1_get_switches_by_fabric_name(*, session: Session = Depends(get_session), f
 
 
 @app.post("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/discover")
-def v1_post_discover_switches(*, session: Session = Depends(get_session), fabric_name: str, switch_discovery_body: SwitchDiscoverBodyModel):
+def v1_post_inventory_discover(*, session: Session = Depends(get_session), fabric_name: str, switch_discovery_body: SwitchDiscoverBodyModel):
     """
     # Summary
 

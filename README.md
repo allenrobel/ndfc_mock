@@ -50,10 +50,10 @@ remove items from the database.
     - Get V1 Fm Features
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/switchesByFabric`
   - `get`
-    - V1 Get Switches By Fabric Name
+    - V1 Get Inventory Switches By Fabric
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/discover`
   - `post`
-    - V1 Post Discover Switches
+    - V1 Post Inventory Discover
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches/{switch_serial_number}/fabric-name`
   - `get`
     - V1 Get Fabric Name By Switch Serial Number

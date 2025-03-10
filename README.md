@@ -22,15 +22,47 @@ remove items from the database.
 - Basic merged, query, deleted-state ND 3.2.x dcnm_fabric playbook
   tasks run against the mock instance are working (to create, modify,
   query, and delete fabrics) per the example playbook below.
+- Limited switch discovery (add switches to fabrics)
 
 #### Supported endpoints (ND 3.x)
 
 - `/appcenter/cisco/ndfc/api/v1/configtemplate/rest/config/templates/{template_name}`
+  - `get`
+    - Get V1 Configtemplate By Name
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}`
+  - `delete`
+    - V1 Delete Fabric
+  - `get`
+    - V1 Get Fabric By Fabric Name
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/`
+  - `get`
+    - V1 Get Fabrics
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/{template_name}`
+  - `post`
+    - V1 Post Fabric
+  - `put`
+    - V1 Put Fabric
 - `/appcenter/cisco/ndfc/api/v1/fm/about/version`
+  - `get`
+    - Get V1 Fm About Version
 - `/appcenter/cisco/ndfc/api/v1/fm/features`
+  - `get`
+    - Get V1 Fm Features
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/switchesByFabric`
+  - `get`
+    - V1 Get Switches By Fabric Name
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/discover`
+  - `post`
+    - V1 Post Discover Switches
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches/{switch_serial_number}/fabric-name`
+  - `get`
+    - V1 Get Fabric Name By Switch Serial Number
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches/{fabric_name}/overview`
+  - `get`
+    - V1 Lan Fabric Rest Control Switches Overview By Fabric Name
 - `/login`
+  - `post`
+    - Post Login
 
 #### Example playbook (ND 3.x)
 
@@ -87,8 +119,18 @@ fabric switch addition/deletion.
 
 #### Supported endpoints (ND 4.0)
 
-- `/api/v1/manage/fabrics`
 - `/api/v1/manage/fabrics/{fabric_name}`
+  - `delete`
+    - V2 Delete Fabric
+  - `get`
+    - V2 Get Fabric By Fabric Name
+  - `put`
+    - V2 Put Fabric
+- `/api/v1/manage/fabrics`
+  - `get`
+    - V2 Get Fabrics
+  - `post`
+    - V2 Post Fabric
 
 ## Configuration notes
 

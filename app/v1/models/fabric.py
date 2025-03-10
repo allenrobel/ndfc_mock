@@ -5,7 +5,7 @@
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
 from sqlmodel import Field, SQLModel
 
 from ...common.functions.utilities import get_datetime
@@ -1611,6 +1611,7 @@ class Fabric(FabricBase, table=True):
     Define the fabric table in the database.
     """
 
+    model_config = ConfigDict(use_enum_values=True)
     id: int | None = Field(default=None, primary_key=True)
     created_at: datetime | None = Field(default_factory=get_datetime)
 
@@ -1627,6 +1628,8 @@ class FabricCreate(FabricBase):
     Used to validate POST request content.
     """
 
+    model_config = ConfigDict(use_enum_values=True, validate_default=True)
+
 
 class NvPairs(FabricBase):
     """
@@ -1636,16 +1639,20 @@ class NvPairs(FabricBase):
     response.
     """
 
+    model_config = ConfigDict(use_enum_values=True)
+
     # created_at: datetime | None
     # updated_at: datetime | None
 
 
-class FabricResponseModel(BaseModel):
+class FabricResponseModel(SQLModel):
     """
     # Summary
 
     Describes what is returned to clients.
     """
+
+    model_config = ConfigDict(use_enum_values=True)
 
     id: int
     nvPairs: NvPairs
@@ -1657,6 +1664,8 @@ class FabricUpdate(SQLModel):
 
     Used to validate PUT requests.
     """
+
+    model_config = ConfigDict(use_enum_values=True)
 
     AAA_REMOTE_IP_ENABLED: bool | None = None
     AAA_SERVER_CONF: str | None = None

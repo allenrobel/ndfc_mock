@@ -159,7 +159,7 @@ def build_db_switch(switch: SwitchDiscoverItem, db_fabric: Fabric) -> SwitchDbMo
         domainID=0,
         elementType="",
         fabricId=db_fabric.id,
-        fabricName="",
+        fabricName=db_fabric.FABRIC_NAME,
         fabricTechnology=db_fabric.FF,
         fcoeEnabled=False,
         fex=False,

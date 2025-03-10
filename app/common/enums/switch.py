@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class platform(Enum):
+class PlatformEnum(Enum):
     """
     Choices for switch platform
     """
@@ -10,7 +10,7 @@ class platform(Enum):
     nxos: str = "nx-os"
 
 
-class switchConfigSyncStatus(Enum):
+class SwitchConfigSyncStatusEnum(Enum):
     """
     Choices for switch configuration sync status
     """
@@ -21,7 +21,7 @@ class switchConfigSyncStatus(Enum):
     notApplicable: str = "notApplicable"
 
 
-class SwitchRole(Enum):
+class SwitchRoleEnum(Enum):
     """
     Choices for switch role
     """
@@ -43,7 +43,38 @@ class SwitchRole(Enum):
     tor: str = "tor"
 
 
-class vpcRole(Enum):
+class SwitchRoleFriendlyEnum(Enum):
+    """
+    Switch role friendly names
+    """
+
+    access: str = "access"
+    aggregation: str = "aggregation"
+    border: str = "border"
+    borderGateway: str = "border gateway"
+    borderGatewaySpine: str = "border gateway spine"
+    borderGatewaySuperSpine: str = "border gateway super spine"
+    borderSpine: str = "border spine"
+    borderSuperSpine: str = "border super spine"
+    coreRouter: str = "core router"
+    edgeRouter: str = "edge router"
+    leaf: str = "leaf"
+    spine: str = "spine"
+    superSpine: str = "super spine"
+    tier2Leaf: str = "tier2 leaf"
+    tor: str = "tor"
+
+
+class SwitchUnmanageableCauseEnum(Enum):
+    """
+    Choices for unmanageableCause field in Switch model.
+    """
+
+    none = ""
+    Unreachable = "Unreachable"
+
+
+class VpcRoleEnum(Enum):
     """
     Choices for vpc role
     """

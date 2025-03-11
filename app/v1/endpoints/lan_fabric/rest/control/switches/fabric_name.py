@@ -2,9 +2,9 @@
 from fastapi import Depends, HTTPException
 from sqlmodel import Field, Session, SQLModel, select
 
-from ....app import app
-from ....db import get_session
-from ...models.inventory import SwitchDbModel
+from .......app import app
+from .......db import get_session
+from ......models.inventory import SwitchDbModel
 
 
 class SwitchFabricNameResponseModel(SQLModel):

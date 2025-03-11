@@ -5,10 +5,10 @@ from typing import List
 from fastapi import Depends, HTTPException
 from sqlmodel import Session, select
 
-from ....app import app
-from ....db import get_session
-from ...models.fabric import Fabric
-from ...models.inventory import SwitchDbModel, SwitchDiscoverBodyModel, SwitchDiscoverItem, SwitchResponseModel
+from .......app import app
+from .......db import get_session
+from ......models.fabric import Fabric
+from ......models.inventory import SwitchDbModel, SwitchDiscoverBodyModel, SwitchDiscoverItem, SwitchResponseModel
 
 
 def build_response_switch(db_switch: SwitchDbModel) -> SwitchResponseModel:

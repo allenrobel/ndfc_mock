@@ -8,7 +8,6 @@ from ......models.inventory import SwitchDbModel
 
 router = APIRouter(
     prefix="/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches",
-    tags=["Inventory"],
 )
 
 

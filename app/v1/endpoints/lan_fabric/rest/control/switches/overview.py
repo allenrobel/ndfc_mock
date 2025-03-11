@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 import copy
 
-from .......app import app
+from fastapi import APIRouter
+
 from ......models.lan_fabric_rest_control_switches_overview import V1LanFabricRestControlSwitchesOverviewResponseModel
+
+router = APIRouter(
+    prefix="/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches",
+)
 
 
 def build_response():
@@ -18,9 +23,8 @@ def build_response():
     accessed by ansible-dcnm Fabric().Deleted() to determine if any switches
     are present in the fabric.
 
-    TODO: We need to create an entire inventory structure for the database,
-    which will include tables to be updated when switches are "added" to
-    or "deleted" from fabrics.
+    TODO: Need to reference switch tables for this info.
+    TODO: Need to raise HTTPException if fabric does not exist.
     """
     response = {
         "switchSWVersions": {"10.2(5)": 7, "10.3(1)": 2},
@@ -32,9 +36,10 @@ def build_response():
     return copy.deepcopy(response)
 
 
-@app.get(
-    "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches/{fabric_name}/overview",
+@router.get(
+    "/{fabric_name}/overview",
     response_model=V1LanFabricRestControlSwitchesOverviewResponseModel,
+    description="Return summary of fabric inventory.",
 )
 def v1_lan_fabric_rest_control_switches_overview_by_fabric_name():
     """

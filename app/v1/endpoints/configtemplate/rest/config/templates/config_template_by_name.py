@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 import json
 
-from fastapi import HTTPException
+from fastapi import APIRouter, HTTPException
 
-from ...app import app
-from ..models.configtemplate_easy_fabric import V1ConfigtemplateEasyFabricResponseModel
+from ......models.configtemplate_easy_fabric import V1ConfigtemplateEasyFabricResponseModel
 
-
-@app.get(
-    "/appcenter/cisco/ndfc/api/v1/configtemplate/rest/config/templates/{template_name}",
-    response_model=V1ConfigtemplateEasyFabricResponseModel,
+router = APIRouter(
+    prefix="/appcenter/cisco/ndfc/api/v1/configtemplate/rest/config/templates",
 )
-def get_v1_configtemplate_by_name(template_name: str):
+
+
+@router.get(
+    "/{template_name}",
+    response_model=V1ConfigtemplateEasyFabricResponseModel,
+    description="(v1) Get a configuration template by name.",
+)
+def v1_get_configtemplate_by_name(template_name: str):
     """
     # Summary
 

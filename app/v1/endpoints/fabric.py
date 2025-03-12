@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import copy
-import datetime
 from typing import List
 
 from fastapi import Depends, HTTPException, Query
@@ -34,35 +33,6 @@ def build_nv_pairs(fabric):
     Build the nvPairs object in a fabric response.
     """
     return fabric.model_dump()
-
-
-@app.delete("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}")
-def v1_delete_fabric(*, session: Session = Depends(get_session), fabric_name: str):
-    """
-    # Summary
-
-    DELETE request handler
-
-    ## NDFC Response
-
-    {
-        "timestamp": 1739842602937,
-        "status": 404,
-        "error": "Not Found",
-        "path": "/rest/control/fabrics/f2"
-    }
-    """
-    db_fabric = session.exec(select(Fabric).where(Fabric.FABRIC_NAME == fabric_name)).first()
-    if not db_fabric:
-        detail = {}
-        detail["timestamp"] = int(datetime.datetime.now().timestamp())
-        detail["status"] = 404
-        detail["error"] = "Not Found"
-        detail["path"] = f"/rest/control/fabrics/{fabric_name}"
-        raise HTTPException(status_code=404, detail=detail)
-    session.delete(db_fabric)
-    session.commit()
-    return {f"Fabric '{fabric_name}' is deleted successfully!"}
 
 
 @app.get(

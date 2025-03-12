@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 import copy
-import json
 import uuid
 
-from ...app import app
-from ..models.fm_about_version import V1FmAboutVersionResponseModel
+from fastapi import APIRouter
+
+from ....models.fm.about.version import V1FmAboutVersionResponseModel
+
+router = APIRouter(
+    prefix="/appcenter/cisco/ndfc/api/v1/fm/about",
+)
 
 
 def build_response():
@@ -29,16 +33,14 @@ def build_response():
     return copy.deepcopy(response)
 
 
-@app.get(
-    "/appcenter/cisco/ndfc/api/v1/fm/about/version",
+@router.get(
+    "/version",
     response_model=V1FmAboutVersionResponseModel,
 )
-def get_v1_fm_about_version():
+def v1_version_get():
     """
     # Summary
 
-    GET request handler.
+    GET request handler for fm/about/version
     """
-    response = build_response()
-    print(f"v1_fm_about_version: response: {json.dumps(response, indent=4, sort_keys=True)}")
-    return response
+    return build_response()

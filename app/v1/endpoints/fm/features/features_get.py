@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 import copy
-import json
 
-from ...app import app
-from ..models.fm_features import V1FmFeaturesResponseModel
+from fastapi import APIRouter
+
+from ....models.fm_features import V1FmFeaturesResponseModel
+
+router = APIRouter(
+    prefix="/appcenter/cisco/ndfc/api/v1/fm",
+)
 
 
 def build_change_mgmt():
@@ -134,16 +138,15 @@ def build_response():
     return copy.deepcopy(response)
 
 
-@app.get(
-    "/appcenter/cisco/ndfc/api/v1/fm/features",
+@router.get(
+    "/features",
     response_model=V1FmFeaturesResponseModel,
+    description="(v1) Get status of features.",
 )
-def get_v1_fm_features():
+def v1_fm_features_get():
     """
     # Summary
 
-    GET request handler.
+    GET request handler for Feature Manager features.
     """
-    response = build_response()
-    print(f"v1_fm_features: response: {json.dumps(response, indent=4, sort_keys=True)}")
-    return response
+    return build_response()

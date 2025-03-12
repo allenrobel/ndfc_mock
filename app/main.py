@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # pylint: disable=unused-import
 from .app import app
-from .v1.endpoints.configtemplate import get_v1_configtemplate_by_name
+from .v1.endpoints.configtemplate.rest.config.templates import config_template_by_name
 from .v1.endpoints.fabric import v1_delete_fabric, v1_get_fabric_by_fabric_name, v1_get_fabrics, v1_post_fabric, v1_put_fabric
 from .v1.endpoints.fm_about_version import get_v1_fm_about_version
 from .v1.endpoints.fm_features import get_v1_fm_features
@@ -12,6 +12,7 @@ from .v1.endpoints.lan_fabric.rest.control.switches.overview import v1_lan_fabri
 from .v1.endpoints.login import post_login
 from .v2.endpoints.fabric import v2_delete_fabric, v2_get_fabric_by_fabric_name, v2_get_fabrics, v2_post_fabric, v2_put_fabric
 
+app.include_router(config_template_by_name.router, tags=["Templates"])
 app.include_router(fabric_name.router, tags=["Switches"])
 app.include_router(overview.router, tags=["Switches"])
 app.include_router(roles.router, tags=["Inventory"])

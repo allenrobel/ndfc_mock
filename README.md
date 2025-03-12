@@ -26,9 +26,6 @@ remove items from the database.
 
 #### Supported endpoints (ND 3.x)
 
-- `/appcenter/cisco/ndfc/api/v1/configtemplate/rest/config/templates/{template_name}`
-  - `get`
-    - Get V1 Configtemplate By Name
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}`
   - `delete`
     - V1 Delete Fabric
@@ -54,15 +51,21 @@ remove items from the database.
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/discover`
   - `post`
     - V1 Post Inventory Discover
+- `/login`
+  - `post`
+    - Post Login
+- `/appcenter/cisco/ndfc/api/v1/configtemplate/rest/config/templates/{template_name}`
+  - `get`
+    - V1 Get Configtemplate By Name
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches/{switch_serial_number}/fabric-name`
   - `get`
     - V1 Get Fabric Name By Switch Serial Number
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches/{fabric_name}/overview`
   - `get`
     - V1 Lan Fabric Rest Control Switches Overview By Fabric Name
-- `/login`
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches/roles`
   - `post`
-    - Post Login
+    - V1 Post Switch Roles
 
 #### Example playbook (ND 3.x)
 

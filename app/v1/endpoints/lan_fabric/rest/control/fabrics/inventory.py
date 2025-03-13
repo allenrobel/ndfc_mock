@@ -93,7 +93,7 @@ def build_response_switch(db_switch: SwitchDbModel) -> SwitchResponseModel:
         protoDiscSettings=db_switch.protoDiscSettings,
         recvIntf=db_switch.recvIntf,
         release=db_switch.release,
-        role=db_switch.role,
+        role="",
         sanAnalyticsCapable=db_switch.sanAnalyticsCapable,
         scope=db_switch.scope,
         secondaryIP=db_switch.secondaryIP,

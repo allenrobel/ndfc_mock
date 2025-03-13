@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # pylint: disable=unused-import
 from .app import app
+from .v1.endpoints.cisco.ndfc.api.about import version_get_internal
 from .v1.endpoints.configtemplate.rest.config.templates import config_template_by_name
 from .v1.endpoints.fm.about import version_get
 from .v1.endpoints.fm.features import features_get
@@ -19,6 +20,7 @@ app.include_router(fabric_put.router, tags=["Fabrics (v1)"])
 app.include_router(fabrics_get.router, tags=["Fabrics (v1)"])
 app.include_router(features_get.router, tags=["Feature Manager (v1)"])
 app.include_router(version_get.router, tags=["Feature Manager (v1)"])
+app.include_router(version_get_internal.router, tags=["Internal (v1)"])
 app.include_router(roles_get.router, tags=["Inventory (v1)"])
 app.include_router(roles_post.router, tags=["Inventory (v1)"])
 app.include_router(fabric_name_get.router, tags=["Switches (v1)"])

@@ -108,8 +108,10 @@ class SwitchBase(SQLModel):
     swWwn: str | None
     swWwnName: str | None
     switchDbID: int
-    switchRole: SwitchRoleFriendlyEnum = Field(default=SwitchRoleFriendlyEnum.leaf)
-    switchRoleEnum: SwitchRoleEnum = Field(default=SwitchRoleEnum.leaf)
+    # switchRole: str = Field(default=SwitchRoleFriendlyEnum.leaf)
+    # switchRoleEnum: str = Field(default=SwitchRoleEnum.leaf)
+    switchRole: str = Field(default="")
+    switchRoleEnum: str = Field(default="")
     sysDescr: str
     systemMode: str = Field(default="Normal")
     uid: int
@@ -170,7 +172,7 @@ class SwitchDiscoverItem(BaseModel):
     ipaddr: str
 
 
-class SwitchDiscoverSucessResponseModel(BaseModel):
+class SwitchDiscoverSuccessResponseModel(BaseModel):
     """
     Representation of a switch discovery success response.
     """

@@ -3,8 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
-from .......db import get_session
-from ......models.inventory import SwitchDbModel
+from ........common.enums.switch import SwitchRoleEnum, SwitchRoleFriendlyEnum
+from ........db import get_session
+from .......models.inventory import SwitchDbModel
 
 router = APIRouter(
     prefix="/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches",
@@ -19,7 +20,7 @@ class SwitchRoleUpdate(BaseModel):
     """
 
     serialNumber: str
-    role: str
+    role: SwitchRoleEnum
 
 
 def build_200_response(success_list):
@@ -50,7 +51,7 @@ def build_400_response(success_list, failure_list):
 
 
 @router.post("/roles")
-def v1_post_switch_roles(*, session: Session = Depends(get_session), switch_roles: list[SwitchRoleUpdate]):
+def v1_roles_post(*, session: Session = Depends(get_session), switch_roles: list[SwitchRoleUpdate]):
     """
     # Summary
 
@@ -65,8 +66,8 @@ def v1_post_switch_roles(*, session: Session = Depends(get_session), switch_role
             failure_list.append(switch_role.serialNumber)
             result_code = 400
         else:
-            db_switch.role = switch_role.role
-            db_switch.switchRoleEnum = switch_role.role
+            db_switch.switchRoleEnum = SwitchRoleEnum[switch_role.role.value].value
+            db_switch.switchRole = SwitchRoleFriendlyEnum[switch_role.role.value].value
             session.add(db_switch)
             success_list.append(switch_role.serialNumber)
     if result_code == 400:

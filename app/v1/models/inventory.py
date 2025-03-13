@@ -6,7 +6,7 @@ from typing import List
 from pydantic import BaseModel, ConfigDict
 from sqlmodel import Field, SQLModel
 
-from ...common.enums.switch import SwitchRoleEnum, SwitchRoleFriendlyEnum, SwitchUnmanageableCauseEnum
+from ...common.enums.switch import SwitchUnmanageableCauseEnum
 
 
 class SwitchBase(SQLModel):

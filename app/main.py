@@ -7,8 +7,8 @@ from .v1.endpoints.fm.features import features_get
 from .v1.endpoints.lan_fabric.rest.control.fabrics import fabric_delete, fabric_get, fabric_post, fabric_put, fabrics_get
 from .v1.endpoints.lan_fabric.rest.control.fabrics.inventory import v1_get_inventory_switches_by_fabric, v1_post_inventory_discover
 from .v1.endpoints.lan_fabric.rest.control.switches import fabric_name_get, overview
-from .v1.endpoints.lan_fabric.rest.control.switches.roles import roles_get, roles_post
 from .v1.endpoints.lan_fabric.rest.control.switches.overview import v1_lan_fabric_rest_control_switches_overview_by_fabric_name
+from .v1.endpoints.lan_fabric.rest.control.switches.roles import roles_get, roles_post
 from .v1.endpoints.login import post_login
 from .v2.endpoints.fabric import v2_delete_fabric, v2_get_fabric_by_fabric_name, v2_get_fabrics, v2_post_fabric, v2_put_fabric
 

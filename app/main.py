@@ -10,9 +10,11 @@ from .v1.endpoints.lan_fabric.rest.control.fabrics.inventory import discover_pos
 from .v1.endpoints.lan_fabric.rest.control.switches import fabric_name_get, overview
 from .v1.endpoints.lan_fabric.rest.control.switches.overview import v1_lan_fabric_rest_control_switches_overview_by_fabric_name
 from .v1.endpoints.lan_fabric.rest.control.switches.roles import roles_get, roles_post
+from .v1.endpoints.lan_fabric.rest.lanConfig import getLanSwitchCredentialsWithType
 from .v1.endpoints.login import post_login
 from .v2.endpoints.fabric import v2_delete_fabric, v2_get_fabric_by_fabric_name, v2_get_fabrics, v2_post_fabric, v2_put_fabric
 
+app.include_router(getLanSwitchCredentialsWithType.router, tags=["Credentials (v1)"])
 app.include_router(fabric_delete.router, tags=["Fabrics (v1)"])
 app.include_router(fabric_get.router, tags=["Fabrics (v1)"])
 app.include_router(fabric_post.router, tags=["Fabrics (v1)"])

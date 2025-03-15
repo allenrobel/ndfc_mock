@@ -159,13 +159,13 @@ class SwitchDbModel(SwitchBase, table=True):
 
 class SwitchDiscoverItem(BaseModel):
     """
-    Representation of a switch in a discovery.
+    Representation of a switch in a SwitchDiscoverBodyModel.
     """
 
     model_config = ConfigDict(use_enum_values=True)
 
     deviceIndex: str
-    serial_number: str
+    serialNumber: str
     sysName: str
     platform: str
     version: str

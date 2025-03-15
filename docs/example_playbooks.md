@@ -1,4 +1,16 @@
-# Example playbooks
+# Example Ansible Playbooks
+
+## Configuration Notes
+
+In order for Ansible to send to http port 8080 (rather than https port 443),
+the following needs to be added either to your ansible.cfg, or to your
+inventory group_vars.  Change `ansible_httpapi_port` to 8000 if you're
+running ndfc_mock outside of a container.
+
+```yaml
+ansible_httpapi_use_ssl: no
+ansible_httpapi_port: 8080
+```
 
 ## ND 3.x
 

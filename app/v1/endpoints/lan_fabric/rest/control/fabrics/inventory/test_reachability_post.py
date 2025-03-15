@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
+from ........common.functions.utilities import random_switch_serial_number, random_unicast_mac_address
 from ........db import get_session
 from .......models.fabric import Fabric
 from .......models.inventory import SwitchDbModel
@@ -109,7 +110,7 @@ def build_response_already_managed(switch: SwitchDbModel) -> TestReachabilityRes
         "reachable": true,
         "selectable": false,
         "serialNumber": "FDO2443096H",
-        "statusReason": "already managed in Easy_Fabric_1",
+        "statusReason": "already managed in F1",
         "sysName": "cvd-111-dci",
         "valid": true,
         "vdcId": 0,
@@ -169,12 +170,70 @@ def build_response_manageable(switch: SwitchDbModel) -> TestReachabilityResponse
     )
 
 
+def build_response_manageable_force(ip_address: str) -> TestReachabilityResponseModel:
+    """
+    # Summary
+
+    Given a SwitchDbModel object, return a populated TestReachabilityResponseModel
+    object with the statusReason set to "manageable" by generating a random
+    mac address for a new switch.
+
+    ```json
+    {
+        "auth": false,
+        "deviceIndex": "switch(random_mac_address())",
+        "hopCount": 0,
+        "ipaddr": "10.1.1.2",
+        "known": false,
+        "lastChange": null,
+        "platform": null,
+        "reachable": false,
+        "selectable": false,
+        "serialNumber": null,
+        "statusReason": "not reachable",
+        "switchRole": null,
+        "sysName": "10.1.1.2",
+        "valid": false,
+        "vdcId": 0,
+        "vdcMac": null,
+        "vendor": null,
+        "version": null
+    }
+    ```
+    """
+    hostname = "switch"
+    mac_address = random_unicast_mac_address()
+    serial_number = random_switch_serial_number()
+    print(f"hostname: {hostname}, mac_address: {mac_address}, serial_number: {serial_number}")
+    return TestReachabilityResponseModel(
+        auth=True,
+        deviceIndex=f"{hostname}({serial_number})",
+        hopCount=0,
+        ipaddr=ip_address,
+        known=False,
+        lastChange=None,
+        platform="N9K-C93180YC-EX",
+        reachable=True,
+        selectable=True,
+        serialNumber=serial_number,
+        statusReason="manageable",
+        switchRole=None,
+        sysName=hostname,
+        valid=True,
+        vdcId=0,
+        vdcMac=None,
+        vendor="Cisco",
+        version="10.2(5)",
+    )
+
+
 def build_response_not_reachable(ip_address: str) -> TestReachabilityResponseModel:
     """
     # Summary
 
     Given a SwitchDbModel object, return a populated TestReachabilityResponseModel
-    object with the statusReason set to "not reachable".
+    object with the statusReason set to "manageable" by generating a random
+    mac address for a new switch.
 
     ```json
     {
@@ -222,7 +281,9 @@ def build_response_not_reachable(ip_address: str) -> TestReachabilityResponseMod
 
 
 @router.post("/{fabric_name}/inventory/test-reachability")
-def v1_inventory_test_reachability_post(*, session: Session = Depends(get_session), fabric_name: str, test_reachability_body: TestReachabilityRequestBodyModel):
+def v1_inventory_test_reachability_post(
+    *, session: Session = Depends(get_session), fabric_name: str, test_reachability_body: TestReachabilityRequestBodyModel
+) -> list[TestReachabilityResponseModel]:
     """
     # Summary
 
@@ -243,7 +304,7 @@ def v1_inventory_test_reachability_post(*, session: Session = Depends(get_sessio
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
     db_switch = session.exec(select(SwitchDbModel).where(SwitchDbModel.ipAddress == test_reachability_body.seedIP)).first()
     if not db_switch:
-        response = build_response_not_reachable(test_reachability_body.seedIP)
+        response = build_response_manageable_force(test_reachability_body.seedIP)
     elif db_switch.fabricName == fabric_name and db_switch.switchRoleEnum == "":
         response = build_response_manageable(db_switch)
     elif db_switch.fabricName == fabric_name and db_switch.switchRoleEnum != "":
@@ -254,4 +315,4 @@ def v1_inventory_test_reachability_post(*, session: Session = Depends(get_sessio
         response = build_response_manageable(db_switch)
     else:
         raise HTTPException(status_code=500, detail=f"Unhandled db_switch state. {db_switch.model_dump()}")
-    return response
+    return [response]

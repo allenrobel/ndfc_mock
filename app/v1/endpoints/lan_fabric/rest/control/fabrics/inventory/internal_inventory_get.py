@@ -177,5 +177,4 @@ def v1_inventory_switches_by_fabric_get(*, session: Session = Depends(get_sessio
     db_switches = session.exec(select(SwitchDbModel).where(SwitchDbModel.fabricId == fabric_id)).all()
     if len(db_switches) == 0:
         return []
-    response = [build_response_switch(db_switch) for db_switch in db_switches]
-    return response
+    return [build_response_switch(db_switch) for db_switch in db_switches]

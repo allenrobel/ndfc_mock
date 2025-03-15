@@ -39,7 +39,7 @@ def v1_inventory_rediscover_post(*, session: Session = Depends(get_session), fab
 
     ### Path
 
-    /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/discover/{serial_number}
+    /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/rediscover/{serial_number}
     """
     db_fabric = session.exec(select(Fabric).where(Fabric.FABRIC_NAME == fabric_name)).first()
     if not db_fabric:

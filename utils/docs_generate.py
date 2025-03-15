@@ -6,8 +6,11 @@ Retrieve all endpoints from an OpenAPI schema and format them for
 use in the README.md file.
 """
 import json
-import requests
 from os import environ
+from typing import Any
+
+import requests
+
 
 def get_endpoints_data(url: str) -> dict:
     """
@@ -18,6 +21,7 @@ def get_endpoints_data(url: str) -> dict:
     response = requests.get(url, timeout=5)
     return response.json()
 
+
 def dump_endpoints(data: dict) -> None:
     """
     # Summary
@@ -26,6 +30,7 @@ def dump_endpoints(data: dict) -> None:
     """
     print(json.dumps(data, indent=2))
 
+
 def get_endpoints_paths(data: dict) -> dict:
     """
     # Summary
@@ -33,6 +38,7 @@ def get_endpoints_paths(data: dict) -> dict:
     Process the data from the OpenAPI schema and return the paths.
     """
     return data["paths"]
+
 
 def print_endpoints(endpoints: dict) -> None:
     """
@@ -46,13 +52,14 @@ def print_endpoints(endpoints: dict) -> None:
             print(f"  - `{method}`")
             print(f"    - {method_info.get('summary')}")
 
+
 def group_endpoints_by_tag(endpoints: dict) -> dict:
     """
     # Summary
 
     Return the endpoints grouped by tag.
     """
-    tags = {}
+    tags: dict[str, Any] = {}
     for path, info in endpoints.items():
         for method, method_info in info.items():
             if "tags" not in method_info:
@@ -64,7 +71,8 @@ def group_endpoints_by_tag(endpoints: dict) -> dict:
             tags[tag].append((path, method, method_info.get("summary")))
     return tags
 
-def write_endpoints_to_markdown(lines: list) -> str:
+
+def write_endpoints_to_markdown(lines: list) -> None:
     """
     # Summary
 
@@ -77,8 +85,9 @@ def write_endpoints_to_markdown(lines: list) -> str:
     if lines[-1] == "" and lines[-2] == "":
         lines.pop()
 
-    with open(filename, "w") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
+
 
 def main():
     """
@@ -90,9 +99,9 @@ def main():
     url = "http://localhost:8000/openapi.json"
 
     data = get_endpoints_data(url)
-    #dump_endpoints(data)
+    # dump_endpoints(data)
     endpoints = get_endpoints_paths(data)
-    #print(json.dumps(endpoints, indent=2))
+    # print(json.dumps(endpoints, indent=2))
     # print_endpoints(endpoints)
     tags = group_endpoints_by_tag(endpoints)
     lines = []

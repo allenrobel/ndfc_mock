@@ -3,25 +3,17 @@
     check_mode: false
     gather_facts: false
     vars:
-        ansible_it_fabric: F1
-        ansible_switch1: 10.1.1.1
+        fabric_name: F1
+        switch1: 10.1.1.1
         switch_username: admin
         switch_password: mypassword
     tasks:
-    - name: Delete VXLAN Fabric
-      cisco.dcnm.dcnm_fabric:
-        state: deleted
-        config:
-        -   FABRIC_NAME: "{{ ansible_it_fabric }}"
-      register: result
-    - debug:
-        var: result
 
     - name: Create VXLAN Fabric
       cisco.dcnm.dcnm_fabric:
         state: merged
         config:
-        -   FABRIC_NAME: "{{ ansible_it_fabric }}"
+        -   FABRIC_NAME: "{{ fabric_name }}"
             FABRIC_TYPE: VXLAN_EVPN
             BGP_AS: "65001"
             RR_COUNT: 4
@@ -32,17 +24,16 @@
 
     - name: MERGED - Merge a Switch using GreenField Deployment
       cisco.dcnm.dcnm_inventory: &conf
-        fabric: "{{ ansible_it_fabric }}"
+        fabric: "{{ fabric_name }}"
         state: merged
         config:
-        - seed_ip: "{{ ansible_switch1 }}"
-          auth_proto: MD5 # choose from [MD5, SHA, MD5_DES, MD5_AES, SHA_DES, SHA_AES]
+        - seed_ip: "{{ switch1 }}"
+          auth_proto: MD5
           user_name: "{{ switch_username }}"
           password: "{{ switch_password }}"
           max_hops: 0
-          role: leaf # default is Leaf - choose from [Leaf, Spine, Border, Border Spine, Border Gateway, Border Gateway Spine
-                        # Super Spine, Border Super Spine, Border Gateway Super Spine]
-          preserve_config: True # boolean, default is  true
+          role: leaf 
+          preserve_config: True
       register: result
     - debug:
         var: result

@@ -176,6 +176,5 @@ def v1_inventory_switches_by_fabric_get(*, session: Session = Depends(get_sessio
     fabric_id = db_fabric.id
     db_switches = session.exec(select(SwitchDbModel).where(SwitchDbModel.fabricId == fabric_id)).all()
     if len(db_switches) == 0:
-        raise HTTPException(status_code=404, detail=f"No switches found for fabric {fabric_name}")
-    response = [build_response_switch(db_switch) for db_switch in db_switches]
-    return response
+        return []
+    return [build_response_switch(db_switch) for db_switch in db_switches]

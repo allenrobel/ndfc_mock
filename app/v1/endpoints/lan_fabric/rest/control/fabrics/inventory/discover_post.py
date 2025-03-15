@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import copy
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
@@ -30,7 +29,7 @@ def build_db_switch(switch: SwitchDiscoverItem, db_fabric: Fabric) -> SwitchDbMo
         consistencyState=True,
         contact="",
         cpuUsage=0,
-        deviceType="Switch_Fabric",
+        deviceType=db_fabric.FABRIC_TYPE,
         displayHdrs="",
         displayValues="",
         domain="",
@@ -96,7 +95,7 @@ def build_db_switch(switch: SwitchDiscoverItem, db_fabric: Fabric) -> SwitchDbMo
         secondaryIP="",
         secondarySwitchDbID=0,
         sendIntf="",
-        serialNumber=switch.serial_number,
+        serialNumber=switch.serialNumber,
         sharedBorder=False,
         sourceInterface="mgmt0",
         sourceVrf="management",
@@ -140,8 +139,7 @@ def build_success_response():
     ## Notes
 
     """
-    response = {"status": "Success"}
-    return copy.deepcopy(response)
+    return {"status": "Success"}
 
 
 @router.post("/{fabric_name}/inventory/discover")
@@ -165,10 +163,13 @@ def v1_inventory_discover_post(*, session: Session = Depends(get_session), fabri
     if not db_fabric:
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
     fabric_id = db_fabric.id
+    # Get all switches in the fabric
     db_switches = session.exec(select(SwitchDbModel).where(SwitchDbModel.fabricId == fabric_id)).all()
+    # Raise an error if any switches in the discovery body already exist in the fabric
     for db_switch in db_switches:
-        if db_switch.serialNumber in [discovery_body.serial_number for discovery_body in switch_discovery_body.switches]:
+        if db_switch.serialNumber in [discovery_body.serialNumber for discovery_body in switch_discovery_body.switches]:
             raise HTTPException(status_code=500, detail=f"Switch {db_switch.serialNumber} already exists in fabric {fabric_name}")
+    # Add all switches in the discovery body to the fabric
     for discovery_body in switch_discovery_body.switches:
         db_switch = build_db_switch(discovery_body, db_fabric)
         session.add(db_switch)

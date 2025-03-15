@@ -1,28 +1,44 @@
 #!/usr/bin/env python
-import copy
-import json
+from fastapi import APIRouter
+from pydantic import BaseModel
 
-from ...app import app
 from ..models.login import LoginResponseModel
 
+router = APIRouter(
+    prefix="/login",
+)
 
-def build_rbac():
+
+class LoginRequestBodyModel(BaseModel):
+    """
+    # Summary
+
+    The body of a POST request to the login endpoint.
+    """
+
+    domain: str
+    userName: str
+    userPasswd: str
+
+
+def build_rbac(body: LoginRequestBodyModel) -> dict:
     """
     # Summary
 
     Build the RBAC portion of the response
     """
+    roles: list = []
+    roles.append(["admin", "WritePriv"])
+    roles.append(["app-user", "ReadPriv"])
     rbac = {}
-    rbac["domain"] = "local"
+    rbac["domain"] = body.domain
     rbac["rolesR"] = 16777216
     rbac["rolesW"] = 1
-    rbac["roles"] = []
-    rbac["roles"].append(["admin", "WritePriv"])
-    rbac["roles"].append(["app-user", "ReadPriv"])
+    rbac["roles"] = roles
     return rbac
 
 
-def build_response():
+def build_response(body: LoginRequestBodyModel) -> dict:
     """
     # Summary
 
@@ -34,24 +50,23 @@ def build_response():
     """
     response = {}
     response["jwttoken"] = "asdlfkjasdf"
-    response["username"] = "admin"
-    response["usertype"] = "local"
-    response["rbac"] = [build_rbac()]
+    response["username"] = body.userName
+    response["usertype"] = body.domain
+    response["rbac"] = [build_rbac(body)]
     response["statusCode"] = 200
     response["token"] = "asdlfkjasdf"
-    return copy.deepcopy(response)
+    return response
 
 
-@app.post(
-    "/login",
+@router.post(
+    "/",
     response_model=LoginResponseModel,
 )
-def post_login():
+def login_post(body: LoginRequestBodyModel) -> dict:
     """
     # Summary
 
-    POST request handler
+    Simulate a Nexus Dashboard login response.
     """
-    response = build_response()
-    print(f"post_login: {json.dumps(response, indent=4, sort_keys=True)}")
-    return response
+    response = LoginResponseModel(**build_response(body))
+    return response.model_dump()

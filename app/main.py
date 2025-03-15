@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # pylint: disable=unused-import
 from .app import app
+from .v1.endpoints import login
 from .v1.endpoints.cisco.ndfc.api.about import version_get_internal
 from .v1.endpoints.configtemplate.rest.config.templates import config_template_by_name
 from .v1.endpoints.fm.about import version_get
@@ -11,7 +12,6 @@ from .v1.endpoints.lan_fabric.rest.control.switches import fabric_name_get, over
 from .v1.endpoints.lan_fabric.rest.control.switches.overview import v1_lan_fabric_rest_control_switches_overview_by_fabric_name
 from .v1.endpoints.lan_fabric.rest.control.switches.roles import roles_get, roles_post
 from .v1.endpoints.lan_fabric.rest.lanConfig import getLanSwitchCredentialsWithType, internal_getLanSwitchCredentials
-from .v1.endpoints.login import post_login
 from .v2.endpoints.fabric import v2_delete_fabric, v2_get_fabric_by_fabric_name, v2_get_fabrics, v2_post_fabric, v2_put_fabric
 
 app.include_router(getLanSwitchCredentialsWithType.router, tags=["Credentials (v1)"])
@@ -31,6 +31,7 @@ app.include_router(roles_get.router, tags=["Inventory (v1)"])
 app.include_router(roles_post.router, tags=["Inventory (v1)"])
 app.include_router(test_reachability_post.router, tags=["Inventory (v1)"])
 app.include_router(rediscover_post.router, tags=["Inventory (v1)"])
+app.include_router(login.router, tags=["Nexus Dashboard (v1)"])
 app.include_router(fabric_name_get.router, tags=["Switches (v1)"])
 app.include_router(overview.router, tags=["Switches (v1)"])
 app.include_router(config_template_by_name.router, tags=["Templates (v1)"])

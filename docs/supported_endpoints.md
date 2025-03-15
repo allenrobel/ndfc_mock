@@ -6,10 +6,6 @@
 
 ## Default
 
-- `/login`
-  - `post`
-    - Post Login
-
 - `/api/v1/manage/fabrics/{fabric_name}`
   - `delete`
     - V2 Delete Fabric
@@ -107,6 +103,12 @@
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/rediscover/{serial_number}`
   - `post`
     - V1 Inventory Rediscover Post
+
+## Nexus Dashboard (v1)
+
+- `/login/`
+  - `post`
+    - Login Post
 
 ## Switches (v1)
 

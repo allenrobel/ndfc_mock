@@ -15,7 +15,7 @@ POST and PUT requests update an in-memory SQLlite database;
 GET requests retrieve from this database; and DELETE requests
 remove items from the database.
 
-## [Supported Endpoints](.docs/supported_endpoints.md)
+## [Supported Endpoints](./docs/supported_endpoints.md)
 
 ## [Example Ansible Playbooks](./docs/example_playbooks.md)
 

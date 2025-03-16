@@ -6,27 +6,27 @@
 
 ## Default
 
-- `/api/v1/manage/fabrics/{fabric_name}`
-  - `get`
-    - V2 Get Fabric By Fabric Name
+- `/api/v1/manage/fabrics`
+  - `post`
+    - V2 Post Fabric
 
 - `/api/v1/manage/fabrics/{fabric_name}`
   - `put`
     - V2 Put Fabric
 
-- `/api/v1/manage/fabrics`
-  - `post`
-    - V2 Post Fabric
-
 ## Manage Fabrics (v2)
+
+- `/api/v1/manage/fabrics`
+  - `get`
+    - V2 Fabrics Get
 
 - `/api/v1/manage/fabrics/{fabric_name}`
   - `delete`
     - V2 Delete Fabric
 
-- `/api/v1/manage/fabrics`
+- `/api/v1/manage/fabrics/{fabric_name}`
   - `get`
-    - V2 Fabrics Get
+    - V2 Fabric Get
 
 ## Credentials (v1)
 

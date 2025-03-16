@@ -1,16 +1,12 @@
-import copy
-from typing import Any, List
-
-from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
-from sqlmodel import Session, select
+from fastapi import APIRouter, Depends, HTTPException
+from sqlmodel import Session
 
 from .....db import get_session
 from ....models.fabric import FabricDbModel, FabricResponseModel
 from .common import FabricLocationModel, FabricManagementModel
 
 router = APIRouter(
-    prefix="/api/v1/manage",
+    prefix="/api/v1/manage/fabrics",
 )
 
 
@@ -44,33 +40,17 @@ def build_response(fabric: FabricDbModel) -> FabricResponseModel:
 
 
 @router.get(
-    "/fabrics",
-    response_model=List[dict[Any, Any]],
+    "/{fabric_name}",
+    response_model=FabricResponseModel,
 )
-def v2_fabrics_get(
-    *,
-    session: Session = Depends(get_session),
-    offset: int = 0,
-    limit: int = Query(default=100, le=100),
-) -> List[dict[Any, Any]]:
+def v2_fabric_get(*, session: Session = Depends(get_session), fabric_name: str):
     """
     # Summary
 
-    Endpoint handler for GET /api/v1/manage/fabrics
+    GET request handler with fabric_name as path parameter.
     """
-    try:
-        fabrics = session.exec(select(FabricDbModel).offset(offset).limit(limit)).all()
-    except Exception as error:
-        raise HTTPException(status_code=500, detail=str(error)) from error
-    response = []
-    response_fabric: dict[Any, Any] = {}
-    try:
-        for fabric in fabrics:
-            response_fabric = FabricResponseModel.model_dump(build_response(fabric))
-            response.append(copy.deepcopy(response_fabric))
-    except Exception as error:
-        raise HTTPException(status_code=500, detail=str(error)) from error
-    try:
-        return response
-    except Exception as error:
-        raise HTTPException(status_code=500, detail=str(error)) from error
+    fabric = session.get(FabricDbModel, fabric_name)
+    if not fabric:
+        raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
+    response = build_response(fabric)
+    return response.model_dump()

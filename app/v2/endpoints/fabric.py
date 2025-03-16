@@ -56,23 +56,6 @@ def build_db_fabric(fabric):
     return db_fabric
 
 
-@app.get(
-    "/api/v1/manage/fabrics/{fabric_name}",
-    response_model=FabricResponseModel,
-)
-def v2_get_fabric_by_fabric_name(*, session: Session = Depends(get_session), fabric_name: str):
-    """
-    # Summary
-
-    GET request handler with fabric_name as path parameter.
-    """
-    fabric = session.get(FabricDbModel, fabric_name)
-    if not fabric:
-        raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
-    response = build_response(fabric)
-    return response
-
-
 @app.post("/api/v1/manage/fabrics", response_model=FabricResponseModel)
 async def v2_post_fabric(*, session: Session = Depends(get_session), fabric: FabricResponseModel):
     """

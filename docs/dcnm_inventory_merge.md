@@ -4,11 +4,7 @@ Endpoint call flow used by the [ansible-dcnm - dcnm_inventory][dcnm_inventory] m
 
 ## 1. test-reachability
 
-### Verb (test-reachability)
-
-POST
-
-### Path (test-reachability)
+### Endpoint (test-reachability)
 
 ```openapi
 POST /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/test-reachability
@@ -58,14 +54,10 @@ POST /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/
 
 ## 2. discover
 
-### Verb (discover)
-
-POST
-
-### Path (discover)
+### Endpoint (discover)
 
 ```openapi
-/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/discover
+POST /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/discover
 ```
 
 ### Body (discover)
@@ -93,14 +85,10 @@ POST
 
 ## 3. rediscover
 
-### Verb (rediscover)
-
-POST
-
-### Path (rediscover)
+### Endpoint (rediscover)
 
 ```openapi
-/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabricName}/inventory/rediscover/{serialNumber}
+POST /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabricName}/inventory/rediscover/{serialNumber}
 ```
 
 ### Body (rediscover)
@@ -120,14 +108,10 @@ None
 
 ## 4. getLanSwitchCredentials
 
-### Verb (getLanSwitchCredentials)
-
-GET
-
-### Path (getLanSwitchCredentials)
+### Endpoint (getLanSwitchCredentials)
 
 ```openapi
-/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/lanConfig/getLanSwitchCredentials
+GET /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/lanConfig/getLanSwitchCredentials
 ```
 
 ### Response (getLanSwitchCredentials)

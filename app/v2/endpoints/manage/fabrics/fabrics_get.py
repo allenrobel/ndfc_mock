@@ -38,7 +38,7 @@ def build_response(fabric) -> dict:
 
 @router.get(
     "/fabrics",
-    response_model=List[FabricResponseModel],
+    response_model=List[dict[Any, Any]],
 )
 def v2_fabrics_get(
     *,

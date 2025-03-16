@@ -56,41 +56,6 @@ def build_db_fabric(fabric):
     return db_fabric
 
 
-@app.post("/api/v1/manage/fabrics", response_model=FabricResponseModel)
-async def v2_post_fabric(*, session: Session = Depends(get_session), fabric: FabricResponseModel):
-    """
-    # Summary
-
-    POST request handler
-    """
-    db_fabric = session.get(FabricDbModel, fabric.name)
-    if db_fabric:
-        status_code = 500
-        msg = f"[Fabric {db_fabric.name} is already present in the cluster "
-        msg += f"A fabric with name {db_fabric.name} is already in use on "
-        msg += "this cluster]"
-        error_response = {}
-        error_response["code"] = status_code
-        error_response["description"] = ""
-        error_response["message"] = msg
-        raise HTTPException(status_code=status_code, detail=error_response)
-    db_fabric = build_db_fabric(fabric)
-    session.add(db_fabric)
-    try:
-        session.commit()
-    except Exception as error:
-        session.rollback()
-        status_code = 500
-        msg = f"Unknown error. Detail: {error}"
-        error_response = {}
-        error_response["code"] = status_code
-        error_response["description"] = ""
-        error_response["message"] = msg
-        raise HTTPException(status_code=status_code, detail=error_response) from error
-    session.refresh(db_fabric)
-    return build_response(db_fabric)
-
-
 @app.put(
     "/api/v1/manage/fabrics/{fabric_name}",
     response_model=FabricResponseModel,

@@ -16,9 +16,9 @@
 
 - `/api/v1/manage/fabrics/{fabric_name}`
   - `put`
-    - V2 Put Fabric
+    - V2 Fabric Put
 
-- `/api/v1/manage/fabrics/`
+- `/api/v1/manage/fabrics`
   - `post`
     - V2 Fabric Post
 

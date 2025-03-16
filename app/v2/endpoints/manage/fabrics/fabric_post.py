@@ -6,7 +6,7 @@ from ....models.fabric import FabricDbModel, FabricResponseModel
 from .common import FabricLocationModel, FabricManagementModel
 
 router = APIRouter(
-    prefix="/api/v1/manage/fabrics",
+    prefix="/api/v1/manage",
 )
 
 
@@ -62,7 +62,7 @@ def build_db_fabric(fabric):
     return db_fabric
 
 
-@router.post("/", response_model=FabricResponseModel)
+@router.post("/fabrics", response_model=FabricResponseModel)
 async def v2_fabric_post(*, session: Session = Depends(get_session), fabric: FabricResponseModel):
     """
     # Summary

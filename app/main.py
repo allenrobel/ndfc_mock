@@ -12,8 +12,10 @@ from .v1.endpoints.lan_fabric.rest.control.switches import fabric_name_get, over
 from .v1.endpoints.lan_fabric.rest.control.switches.overview import v1_lan_fabric_rest_control_switches_overview_by_fabric_name
 from .v1.endpoints.lan_fabric.rest.control.switches.roles import roles_get, roles_post
 from .v1.endpoints.lan_fabric.rest.lanConfig import getLanSwitchCredentialsWithType, internal_getLanSwitchCredentials
-from .v2.endpoints.fabric import v2_delete_fabric, v2_get_fabric_by_fabric_name, v2_get_fabrics, v2_post_fabric, v2_put_fabric
+from .v2.endpoints.fabric import v2_delete_fabric, v2_get_fabric_by_fabric_name, v2_post_fabric, v2_put_fabric
+from .v2.endpoints.manage.fabrics import fabrics_get as v2_fabrics_get
 
+app.include_router(v2_fabrics_get.router, tags=["Manage Fabrics (v2)"])
 app.include_router(getLanSwitchCredentialsWithType.router, tags=["Credentials (v1)"])
 app.include_router(fabric_delete.router, tags=["Fabrics (v1)"])
 app.include_router(fabric_get.router, tags=["Fabrics (v1)"])

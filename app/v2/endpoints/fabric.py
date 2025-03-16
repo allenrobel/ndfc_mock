@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 import copy
-from typing import List
 
-from fastapi import Depends, HTTPException, Query
-from sqlmodel import Session, select
+from fastapi import Depends, HTTPException
+from sqlmodel import Session
 
 from ...app import app
 from ...db import get_session
@@ -81,30 +80,6 @@ async def v2_delete_fabric(*, session: Session = Depends(get_session), fabric_na
     session.delete(fabric)
     session.commit()
     return {}
-
-
-@app.get(
-    "/api/v1/manage/fabrics",
-    response_model=List[FabricResponseModel],
-)
-def v2_get_fabrics(
-    *,
-    session: Session = Depends(get_session),
-    offset: int = 0,
-    limit: int = Query(default=100, le=100),
-):
-    """
-    # Summary
-
-    GET request handler with limit and offset query parameters.
-    """
-    fabrics = session.exec(select(FabricDbModel).offset(offset).limit(limit)).all()
-    response = []
-    response_fabric = {}
-    for fabric in fabrics:
-        response_fabric = build_response(fabric)
-        response.append(copy.deepcopy(response_fabric))
-    return response
 
 
 @app.get(

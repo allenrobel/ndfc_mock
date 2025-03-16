@@ -7,10 +7,6 @@
 ## Default
 
 - `/api/v1/manage/fabrics/{fabric_name}`
-  - `delete`
-    - V2 Delete Fabric
-
-- `/api/v1/manage/fabrics/{fabric_name}`
   - `get`
     - V2 Get Fabric By Fabric Name
 
@@ -23,6 +19,10 @@
     - V2 Post Fabric
 
 ## Manage Fabrics (v2)
+
+- `/api/v1/manage/fabrics/{fabric_name}`
+  - `delete`
+    - V2 Delete Fabric
 
 - `/api/v1/manage/fabrics`
   - `get`

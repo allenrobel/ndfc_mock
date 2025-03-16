@@ -2,7 +2,6 @@ import copy
 from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from .....db import get_session

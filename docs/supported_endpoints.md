@@ -19,12 +19,14 @@
     - V2 Put Fabric
 
 - `/api/v1/manage/fabrics`
-  - `get`
-    - V2 Get Fabrics
-
-- `/api/v1/manage/fabrics`
   - `post`
     - V2 Post Fabric
+
+## Manage Fabrics (v2)
+
+- `/api/v1/manage/fabrics`
+  - `get`
+    - V2 Fabrics Get
 
 ## Credentials (v1)
 

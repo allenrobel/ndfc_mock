@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from ..models.login import LoginResponseModel
 
 router = APIRouter(
-    prefix="/login",
+    prefix="",
 )
 
 
@@ -59,7 +59,7 @@ def build_response(body: LoginRequestBodyModel) -> dict:
 
 
 @router.post(
-    "/",
+    "/login",
     response_model=LoginResponseModel,
 )
 def login_post(body: LoginRequestBodyModel) -> dict:

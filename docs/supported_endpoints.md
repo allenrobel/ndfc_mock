@@ -4,12 +4,6 @@
 - V2 denotes Nexus Dashboard 4.x endpoint
 - We are migrating endpoints out of Default and into their respective tags over the next week or so...
 
-## Default
-
-- `/api/v1/manage/fabrics/{fabric_name}`
-  - `put`
-    - V2 Put Fabric
-
 ## Manage Fabrics (v2)
 
 - `/api/v1/manage/fabrics/{fabric_name}`
@@ -19,6 +13,10 @@
 - `/api/v1/manage/fabrics/{fabric_name}`
   - `get`
     - V2 Fabric Get
+
+- `/api/v1/manage/fabrics/{fabric_name}`
+  - `put`
+    - V2 Put Fabric
 
 - `/api/v1/manage/fabrics/`
   - `post`

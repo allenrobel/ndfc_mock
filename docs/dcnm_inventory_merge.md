@@ -131,4 +131,31 @@ GET /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/lanConfig/getLanSwitchCredentia
 ]
 ```
 
+## 5. internal.topology.role
+
+Set the role of a switch, given switchDbID.  
+
+This is an internal endpoint and will likely be deprecated.  It continues to work in the following versions.
+
+- ND 3.0.1i
+  - NDFC 12.1.3b
+- ND 3.2.1e
+  - NDFC 12.2.2.238
+- ND 4.0 LA
+
+### Endpoint (internal.topology.role)
+
+```openapi
+PUT /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/topology/role/{switchDbID}?newRole=spine
+```
+
+### Response (internal.topology.role)
+
+```json
+{
+    "tierLevel": 2,
+    "newRole": "spine"
+}
+```
+
 [dcnm_inventory]: <https://github.com/CiscoDevNet/ansible-dcnm/blob/main/plugins/modules/dcnm_inventory.py>

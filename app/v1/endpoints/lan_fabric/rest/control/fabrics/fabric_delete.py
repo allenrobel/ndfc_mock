@@ -3,6 +3,7 @@ from sqlmodel import Session, select
 
 from .......db import get_session
 from ......models.fabric import Fabric
+from ......models.inventory import SwitchDbModel
 from .common import build_404_response
 
 router = APIRouter(
@@ -25,6 +26,12 @@ def v1_fabric_delete(*, session: Session = Depends(get_session), fabric_name: st
     if not db_fabric:
         path = f"{router.prefix}/{fabric_name}"
         raise HTTPException(status_code=404, detail=build_404_response(path))
+    fabric_id = db_fabric.id
+    db_switches = session.exec(select(SwitchDbModel).where(SwitchDbModel.fabricId == fabric_id)).all()
+    if len(db_switches) != 0:
+        msg = "Failed to delete the fabric. Please check Events for possible reasons."
+        raise HTTPException(status_code=500, detail=msg)
+
     session.delete(db_fabric)
     session.commit()
     return {f"Fabric '{fabric_name}' is deleted successfully!"}

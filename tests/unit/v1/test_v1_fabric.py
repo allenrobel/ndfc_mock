@@ -204,12 +204,11 @@ def test_v1_fabric_put_100(session: Session, client: TestClient):
     """
     f1 = Fabric(FABRIC_NAME="F1", BGP_AS="65001")
     session.add(f1)
-    # model_updated_at_ts = convert_model_date_to_timestamp(f1.updated_at)
     session.commit()
     sleep(1)
 
     response = client.put(
-        "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/f1/Easy_Fabric",
+        f"/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{f1.FABRIC_NAME}/Easy_Fabric",
         json={"BGP_AS": "65111"},
     )
     data = response.json()
@@ -217,12 +216,6 @@ def test_v1_fabric_put_100(session: Session, client: TestClient):
     assert response.status_code == 200
     assert data["nvPairs"]["FABRIC_NAME"] == "F1"
     assert data["nvPairs"]["BGP_AS"] == "65111"
-    # assert data["created_at"] is not None
-    # assert data["updated_at"] is not None
-    # db_updated_at_ts = convert_db_date_to_timestamp(data["updated_at"])
-
-    # assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=0) is False
-    # assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=2000000) is True
 
 
 def test_v1_fabric_put_110(session: Session, client: TestClient):
@@ -238,12 +231,11 @@ def test_v1_fabric_put_110(session: Session, client: TestClient):
     """
     f1 = Fabric(FABRIC_NAME="F1", BGP_AS="65001")
     session.add(f1)
-    # model_updated_at_ts = convert_model_date_to_timestamp(f1.updated_at)
     session.commit()
     sleep(1)
 
     response = client.put(
-        "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/f1/Easy_Fabric",
+        f"/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{f1.FABRIC_NAME}/Easy_Fabric",
         json={"REPLICATION_MODE": "Ingress"},
     )
     data = response.json()
@@ -252,12 +244,6 @@ def test_v1_fabric_put_110(session: Session, client: TestClient):
     assert data["nvPairs"]["FABRIC_NAME"] == "F1"
     assert data["nvPairs"]["BGP_AS"] == "65001"
     assert data["nvPairs"]["REPLICATION_MODE"] == "Ingress"
-    # assert data["created_at"] is not None
-    # assert data["updated_at"] is not None
-    # db_updated_at_ts = convert_db_date_to_timestamp(data["updated_at"])
-
-    # assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=0) is False
-    # assert timestamps_within_delta(model_updated_at_ts, db_updated_at_ts, delta=2000000) is True
 
 
 def test_v1_fabric_delete_100(session: Session, client: TestClient):

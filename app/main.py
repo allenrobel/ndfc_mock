@@ -6,7 +6,7 @@ from .v1.endpoints.cisco.ndfc.api.about import version_get_internal
 from .v1.endpoints.configtemplate.rest.config.templates import config_template_by_name
 from .v1.endpoints.fm.about import version_get
 from .v1.endpoints.fm.features import features_get
-from .v1.endpoints.lan_fabric.rest.control.fabrics import config_save_post, fabric_delete, fabric_get, fabric_post, fabric_put, fabrics_get
+from .v1.endpoints.lan_fabric.rest.control.fabrics import config_deploy_post, config_save_post, fabric_delete, fabric_get, fabric_post, fabric_put, fabrics_get
 from .v1.endpoints.lan_fabric.rest.control.fabrics.inventory import discover_post, internal_inventory_get, rediscover_post, switches_by_fabric_get, test_reachability_post
 from .v1.endpoints.lan_fabric.rest.control.switches import fabric_name_get, overview
 from .v1.endpoints.lan_fabric.rest.control.switches.overview import v1_lan_fabric_rest_control_switches_overview_by_fabric_name
@@ -25,6 +25,7 @@ app.include_router(v2_fabric_post.router, tags=["Manage Fabrics (v2)"])
 app.include_router(v2_fabric_put.router, tags=["Manage Fabrics (v2)"])
 app.include_router(v2_fabrics_get.router, tags=["Manage Fabrics (v2)"])
 app.include_router(getLanSwitchCredentialsWithType.router, tags=["Credentials (v1)"])
+app.include_router(config_deploy_post.router, tags=["Fabrics (v1)"])
 app.include_router(config_save_post.router, tags=["Fabrics (v1)"])
 app.include_router(fabric_delete.router, tags=["Fabrics (v1)"])
 app.include_router(fabric_get.router, tags=["Fabrics (v1)"])

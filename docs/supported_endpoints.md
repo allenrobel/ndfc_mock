@@ -74,6 +74,10 @@
   - `get`
     - V1 Inventory Switches By Fabric Get
 
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/topology/role/{switch_db_id}`
+  - `put`
+    - V1 Internal Role Put
+
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/lanConfig/getLanSwitchCredentials`
   - `get`
     - V1 Getlanswitchcredentials
@@ -106,7 +110,7 @@
 
 ## Nexus Dashboard (v1)
 
-- `/login/`
+- `/login`
   - `post`
     - Login Post
 

@@ -49,3 +49,42 @@ def random_switch_serial_number() -> str:
     FOX2109PGCS
     """
     return f"FOX{gen_number(4)}{gen_string(4).upper()}"
+
+
+def map_friendly_switch_role_to_enum_key(role: str) -> str:
+    """
+    # Summary
+
+    Map a friendly switch role name to a key to use with
+    ../enums/switch.py SwitchRoleFriendlyEnum and SwitchRoleEnum.
+
+    For example:
+
+    "border gateway spine" -> "borderGatewaySpine"
+
+    # Parameters
+
+    - role: The switch role.
+
+    # Returns
+
+    The key to use with SwitchRoleFriendlyEnum and SwitchRoleEnum.
+    """
+    switch_role_map = {
+        "access": "access",
+        "aggregation": "aggregation",
+        "border": "border",
+        "border gateway": "borderGateway",
+        "border gateway spine": "borderGatewaySpine",
+        "border gateway super spine": "borderGatewaySuperSpine",
+        "border spine": "borderSpine",
+        "border super spine": "borderSuperSpine",
+        "core router": "coreRouter",
+        "edge router": "edgeRouter",
+        "leaf": "leaf",
+        "spine": "spine",
+        "super spine": "superSpine",
+        "tier2 leaf": "tier2Leaf",
+        "tor": "tor",
+    }
+    return switch_role_map[role]

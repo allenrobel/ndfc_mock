@@ -12,6 +12,7 @@ from .v1.endpoints.lan_fabric.rest.control.switches import fabric_name_get, over
 from .v1.endpoints.lan_fabric.rest.control.switches.overview import v1_lan_fabric_rest_control_switches_overview_by_fabric_name
 from .v1.endpoints.lan_fabric.rest.control.switches.roles import roles_get, roles_post
 from .v1.endpoints.lan_fabric.rest.lanConfig import getLanSwitchCredentialsWithType, internal_getLanSwitchCredentials
+from .v1.endpoints.lan_fabric.rest.topology import role_put as internal_role_put
 from .v2.endpoints.manage.fabrics import fabric_delete as v2_fabric_delete
 from .v2.endpoints.manage.fabrics import fabric_get as v2_fabric_get
 from .v2.endpoints.manage.fabrics import fabric_post as v2_fabric_post
@@ -33,6 +34,7 @@ app.include_router(features_get.router, tags=["Feature Manager (v1)"])
 app.include_router(version_get.router, tags=["Feature Manager (v1)"])
 app.include_router(version_get_internal.router, tags=["Internal (v1)"])
 app.include_router(internal_inventory_get.router, tags=["Internal (v1)"])
+app.include_router(internal_role_put.router, tags=["Internal (v1)"])
 app.include_router(internal_getLanSwitchCredentials.router, tags=["Internal (v1)"])
 app.include_router(discover_post.router, tags=["Inventory (v1)"])
 app.include_router(switches_by_fabric_get.router, tags=["Inventory (v1)"])

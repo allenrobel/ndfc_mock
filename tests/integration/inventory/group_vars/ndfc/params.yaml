@@ -8,7 +8,7 @@ device_password: dummy_password
 ansible_password: dummy_password
 
 # For NDFC Mock in a container, uncomment these options
-ansible_httpapi_port: 8080
+#ansible_httpapi_port: 8080
 
 # For NDFC Mock outside a container, uncomment these options
-# ansible_httpapi_port: 8000
+ansible_httpapi_port: 8000

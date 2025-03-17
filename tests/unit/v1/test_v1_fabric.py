@@ -15,7 +15,10 @@ from time import sleep
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
+from ....app.common.functions.utilities import random_switch_serial_number
+from ....app.v1.endpoints.lan_fabric.rest.control.fabrics.inventory.common import build_db_switch
 from ....app.v1.models.fabric import Fabric
+from ....app.v1.models.inventory import SwitchDbModel, SwitchDiscoverBodyModel, SwitchDiscoverItem
 from ..common import client_fixture, convert_db_date_to_timestamp, convert_model_date_to_timestamp, session_fixture, timestamps_within_delta
 
 
@@ -176,7 +179,7 @@ def test_v1_fabric_get_110(session: Session, client: TestClient):
         -   created_at field is present and not None
         -   updated_at field is present and not None
     """
-    f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
+    f1 = Fabric(FABRIC_NAME="F1", BGP_AS="65001")
     session.add(f1)
     session.commit()
 
@@ -199,7 +202,7 @@ def test_v1_fabric_put_100(session: Session, client: TestClient):
        2a. updated_at pre-update is not identical to post-update (delta=0)
        2b. updated_at post-update is <= 2 seconds later than pre-update
     """
-    f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
+    f1 = Fabric(FABRIC_NAME="F1", BGP_AS="65001")
     session.add(f1)
     # model_updated_at_ts = convert_model_date_to_timestamp(f1.updated_at)
     session.commit()
@@ -212,7 +215,7 @@ def test_v1_fabric_put_100(session: Session, client: TestClient):
     data = response.json()
 
     assert response.status_code == 200
-    assert data["nvPairs"]["FABRIC_NAME"] == "f1"
+    assert data["nvPairs"]["FABRIC_NAME"] == "F1"
     assert data["nvPairs"]["BGP_AS"] == "65111"
     # assert data["created_at"] is not None
     # assert data["updated_at"] is not None
@@ -233,7 +236,7 @@ def test_v1_fabric_put_110(session: Session, client: TestClient):
        2a. updated_at pre-update is not identical to post-update (delta=0)
        2b. updated_at post-update is <= 2 seconds later than pre-update
     """
-    f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
+    f1 = Fabric(FABRIC_NAME="F1", BGP_AS="65001")
     session.add(f1)
     # model_updated_at_ts = convert_model_date_to_timestamp(f1.updated_at)
     session.commit()
@@ -246,7 +249,7 @@ def test_v1_fabric_put_110(session: Session, client: TestClient):
     data = response.json()
 
     assert response.status_code == 200
-    assert data["nvPairs"]["FABRIC_NAME"] == "f1"
+    assert data["nvPairs"]["FABRIC_NAME"] == "F1"
     assert data["nvPairs"]["BGP_AS"] == "65001"
     assert data["nvPairs"]["REPLICATION_MODE"] == "Ingress"
     # assert data["created_at"] is not None
@@ -266,7 +269,7 @@ def test_v1_fabric_delete_100(session: Session, client: TestClient):
 
     Verify that fabric is deleted with 200 status_code.
     """
-    f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
+    f1 = Fabric(FABRIC_NAME="F1", BGP_AS="65001")
     session.add(f1)
     session.commit()
 
@@ -304,3 +307,40 @@ def test_v1_fabric_delete_110(session: Session, client: TestClient):
     assert response_detail.get("error") == "Not Found"
     assert response_detail.get("path") in "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/foo"
     assert fabric_in_db is None
+
+
+def test_v1_fabric_delete_120(session: Session, client: TestClient):
+    """
+    # Summary
+
+    1. Attempt to delete a fabric that contains switches.
+
+    Verify expected error response is returned.
+    """
+    # Create fabric
+    db_fabric = Fabric(FABRIC_NAME="F1", BGP_AS="65001")
+    session.add(db_fabric)
+    session.commit()
+    # Add switch
+    serial_number = random_switch_serial_number()
+    switch_name = "switch1"
+    discover_item = SwitchDiscoverItem(
+        deviceIndex=f"{switch_name}({serial_number})", serialNumber=serial_number, sysName=switch_name, platform="N9K-C9396PX", version="9.3(3)", ipaddr="10.1.1.1"
+    )
+    db_switch = build_db_switch(discover_item, db_fabric)
+    session.add(db_switch)
+    session.commit()
+
+    # Try to delete the fabric and verify a 500 status_code is returned
+    response = client.delete(f"/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{db_fabric.FABRIC_NAME}")
+    session.refresh(db_fabric)
+    response_decode = response.json()
+    response_detail = response_decode.get("detail")
+
+    assert response.status_code == 500
+    assert response_detail is not None
+    assert response_detail == "Failed to delete the fabric. Please check Events for possible reasons."
+
+    # Verify that the fabric was not deleted
+    response = client.get(f"/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{db_fabric.FABRIC_NAME}")
+    assert response.status_code == 200

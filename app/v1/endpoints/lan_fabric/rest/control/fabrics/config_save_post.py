@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from .......db import get_session
-from ......models.fabric import Fabric
+from ......models.fabric import FabricDbModelV1
 from .common import build_404_response
 
 router = APIRouter(
@@ -40,7 +40,7 @@ def v1_fabric_post(
 
     /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/config-save
     """
-    db_fabric = session.exec(select(Fabric).where(Fabric.FABRIC_NAME == fabric_name)).first()
+    db_fabric = session.exec(select(FabricDbModelV1).where(FabricDbModelV1.FABRIC_NAME == fabric_name)).first()
     if not db_fabric:
         path = f"{router.prefix}/{fabric_name}/config-save"
         raise HTTPException(status_code=404, detail=build_404_response(path))

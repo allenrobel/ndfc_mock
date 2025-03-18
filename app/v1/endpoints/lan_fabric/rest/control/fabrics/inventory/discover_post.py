@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ........db import get_session
-from .......models.fabric import Fabric
+from .......models.fabric import FabricDbModelV1
 from .......models.inventory import SwitchDbModel, SwitchDiscoverBodyModel
 from .common import build_db_switch
 
@@ -42,7 +42,7 @@ def v1_inventory_discover_post(*, session: Session = Depends(get_session), fabri
 
     /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/discover
     """
-    db_fabric = session.exec(select(Fabric).where(Fabric.FABRIC_NAME == fabric_name)).first()
+    db_fabric = session.exec(select(FabricDbModelV1).where(FabricDbModelV1.FABRIC_NAME == fabric_name)).first()
     if not db_fabric:
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
     fabric_id = db_fabric.id

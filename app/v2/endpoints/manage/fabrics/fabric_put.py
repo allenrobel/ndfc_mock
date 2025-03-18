@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from .....db import get_session
-from ....models.fabric import FabricDbModel, FabricResponseModel
+from ....models.fabric import FabricDbModelV2, FabricResponseModel
 from .common import FabricLocationModel, FabricManagementModel
 
 router = APIRouter(
@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 
-def build_response(fabric: FabricDbModel) -> FabricResponseModel:
+def build_response(fabric: FabricDbModelV2) -> FabricResponseModel:
     """
     # Summary
 
@@ -47,7 +47,7 @@ def build_db_fabric(fabric):
     Build the representation of the fabric in the database.
     """
     fabric_dict = fabric.model_dump()
-    db_fabric = FabricDbModel()
+    db_fabric = FabricDbModelV2()
     db_fabric.name = fabric.name
     db_fabric.category = fabric.category
     db_fabric.licenseTier = fabric.licenseTier
@@ -84,7 +84,7 @@ def v2_fabric_put(
         nested keys under management to the model, e.g.
         .netflowSettings, .leafTorVpcPortChannelIdRange, etc.
     """
-    db_fabric = session.get(FabricDbModel, fabric_name)
+    db_fabric = session.get(FabricDbModelV2, fabric_name)
     if not db_fabric:
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
     fabric_data = fabric.model_dump(exclude_unset=True)

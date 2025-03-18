@@ -1604,7 +1604,7 @@ class FabricBase(SQLModel):
     VRF_VLAN_RANGE: str | None = Field(default="2000-2299", description=Descriptions().vrf_vlan_range)
 
 
-class Fabric(FabricBase, table=True):
+class FabricDbModelV1(FabricBase, table=True):
     """
     # Summary
 

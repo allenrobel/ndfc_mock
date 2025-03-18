@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from .......db import get_session
-from ......models.fabric import Fabric, FabricCreate, FabricResponseModel
+from ......models.fabric import FabricCreate, FabricDbModelV1, FabricResponseModel
 from .common import build_response
 
 router = APIRouter(
@@ -27,7 +27,7 @@ def v1_fabric_post(
 
     POST request handler
     """
-    db_fabric = Fabric.model_validate(fabric)
+    db_fabric = FabricDbModelV1.model_validate(fabric)
     setattr(db_fabric, "FABRIC_NAME", fabric_name)
     setattr(db_fabric, "FF", template_name)
 

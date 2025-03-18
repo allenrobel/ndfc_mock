@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from .....db import get_session
-from ....models.fabric import FabricDbModel, FabricResponseModel
+from ....models.fabric import FabricDbModelV2, FabricResponseModel
 from .common import FabricLocationModel, FabricManagementModel
 
 router = APIRouter(
@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 
-def build_response(fabric: FabricDbModel) -> FabricResponseModel:
+def build_response(fabric: FabricDbModelV2) -> FabricResponseModel:
     """
     # Summary
 
@@ -46,7 +46,7 @@ def build_db_fabric(fabric):
     Build the representation of the fabric in the database.
     """
     fabric_dict = fabric.model_dump()
-    db_fabric = FabricDbModel()
+    db_fabric = FabricDbModelV2()
     db_fabric.name = fabric.name
     db_fabric.category = fabric.category
     db_fabric.licenseTier = fabric.licenseTier
@@ -69,7 +69,7 @@ async def v2_fabric_post(*, session: Session = Depends(get_session), fabric: Fab
 
     POST request handler
     """
-    db_fabric = session.get(FabricDbModel, fabric.name)
+    db_fabric = session.get(FabricDbModelV2, fabric.name)
     if db_fabric:
         status_code = 500
         msg = f"[Fabric {db_fabric.name} is already present in the cluster "

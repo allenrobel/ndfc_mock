@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from ......db import get_session
-from .....models.fabric import Fabric
+from .....models.fabric import FabricDbModelV1
 from .....models.inventory import SwitchDbModel
 
 router = APIRouter(
@@ -87,7 +87,7 @@ def v1_getLanSwitchCredentials(*, session: Session = Depends(get_session)) -> Li
     ### Path
     /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/lanConfig/getLanSwitchCredentials
     """
-    db_fabric = session.exec(select(Fabric)).first()
+    db_fabric = session.exec(select(FabricDbModelV1)).first()
     if not db_fabric:
         return []
     fabric_id = db_fabric.id

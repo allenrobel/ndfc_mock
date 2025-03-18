@@ -88,7 +88,7 @@ class FabricResponseModel(SQLModel):
     telemetrySourceVrf: str | None = None
 
 
-class FabricDbModel(SQLModel, table=True):
+class FabricDbModelV2(SQLModel, table=True):
     """
     Representation of the fabric in the database.
 

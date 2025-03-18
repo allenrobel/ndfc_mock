@@ -16,6 +16,7 @@
         -   FABRIC_NAME: "{{ fabric_name }}"
             FABRIC_TYPE: VXLAN_EVPN
             BGP_AS: "65001"
+            REPLICATION_MODE: Multicast
             RR_COUNT: 4
             RP_COUNT: 4
       register: result

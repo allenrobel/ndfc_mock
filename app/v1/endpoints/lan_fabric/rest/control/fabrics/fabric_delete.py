@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from .......db import get_session
-from ......models.fabric import Fabric
+from ......models.fabric import FabricDbModelV1
 from ......models.inventory import SwitchDbModel
 from .common import build_404_response
 
@@ -22,7 +22,7 @@ def v1_fabric_delete(*, session: Session = Depends(get_session), fabric_name: st
 
     /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}
     """
-    db_fabric = session.exec(select(Fabric).where(Fabric.FABRIC_NAME == fabric_name)).first()
+    db_fabric = session.exec(select(FabricDbModelV1).where(FabricDbModelV1.FABRIC_NAME == fabric_name)).first()
     if not db_fabric:
         path = f"{router.prefix}/{fabric_name}"
         raise HTTPException(status_code=404, detail=build_404_response(path))

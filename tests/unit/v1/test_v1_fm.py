@@ -15,7 +15,7 @@ from time import sleep
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
-from ....app.v1.models.fabric import Fabric
+from ....app.v1.models.fabric import FabricDbModelV1
 from ..common import client_fixture, convert_db_date_to_timestamp, convert_model_date_to_timestamp, session_fixture, timestamps_within_delta
 
 

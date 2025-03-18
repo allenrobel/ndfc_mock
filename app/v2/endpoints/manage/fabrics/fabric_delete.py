@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from .....db import get_session
-from ....models.fabric import FabricDbModel
+from ....models.fabric import FabricDbModelV2
 
 router = APIRouter(
     prefix="/api/v1/manage/fabrics",
@@ -28,7 +28,7 @@ async def v2_delete_fabric(*, session: Session = Depends(get_session), fabric_na
     }
     ```
     """
-    fabric = session.get(FabricDbModel, fabric_name)
+    fabric = session.get(FabricDbModelV2, fabric_name)
     if not fabric:
         detail = {"code": 404, "description": "", "message": f"Fabric {fabric_name} not found"}
         raise HTTPException(status_code=404, detail=detail)

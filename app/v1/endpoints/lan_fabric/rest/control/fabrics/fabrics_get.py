@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session, select
 
 from .......db import get_session
-from ......models.fabric import Fabric, FabricResponseModel
+from ......models.fabric import FabricDbModelV1, FabricResponseModel
 from .common import build_response
 
 router = APIRouter(
@@ -25,7 +25,7 @@ def v1_fabrics_get(
 
     GET request handler with limit and offset query parameters.
     """
-    fabrics = session.exec(select(Fabric).offset(offset).limit(limit)).all()
+    fabrics = session.exec(select(FabricDbModelV1).offset(offset).limit(limit)).all()
     response = []
     response_fabric = {}
     for fabric in fabrics:

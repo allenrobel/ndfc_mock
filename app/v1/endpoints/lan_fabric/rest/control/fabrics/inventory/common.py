@@ -1,8 +1,8 @@
-from .......models.fabric import Fabric as FabricModel
+from .......models.fabric import FabricDbModelV1
 from .......models.inventory import SwitchDbModel, SwitchDiscoverItem, SwitchResponseModel
 
 
-def build_db_switch(switch: SwitchDiscoverItem, db_fabric: FabricModel) -> SwitchDbModel:
+def build_db_switch(switch: SwitchDiscoverItem, db_fabric: FabricDbModelV1) -> SwitchDbModel:
     """
     # Summary
 

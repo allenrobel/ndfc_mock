@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from .....db import get_session
-from ....models.fabric import FabricDbModel, FabricResponseModel
+from ....models.fabric import FabricDbModelV2, FabricResponseModel
 from .common import FabricLocationModel, FabricManagementModel
 
 router = APIRouter(
@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 
-def build_response(fabric: FabricDbModel) -> FabricResponseModel:
+def build_response(fabric: FabricDbModelV2) -> FabricResponseModel:
     """
     # Summary
 
@@ -49,7 +49,7 @@ def v2_fabric_get(*, session: Session = Depends(get_session), fabric_name: str):
 
     GET request handler with fabric_name as path parameter.
     """
-    fabric = session.get(FabricDbModel, fabric_name)
+    fabric = session.get(FabricDbModelV2, fabric_name)
     if not fabric:
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
     response = build_response(fabric)

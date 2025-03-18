@@ -6,7 +6,7 @@ from sqlmodel import Session, select
 
 from ........common.functions.utilities import random_switch_serial_number, random_unicast_mac_address
 from ........db import get_session
-from .......models.fabric import Fabric
+from .......models.fabric import FabricDbModelV1
 from .......models.inventory import SwitchDbModel
 
 router = APIRouter(
@@ -299,7 +299,7 @@ def v1_inventory_test_reachability_post(
 
     /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/inventory/test-reachability
     """
-    db_fabric = session.exec(select(Fabric).where(Fabric.FABRIC_NAME == fabric_name)).first()
+    db_fabric = session.exec(select(FabricDbModelV1).where(FabricDbModelV1.FABRIC_NAME == fabric_name)).first()
     if not db_fabric:
         raise HTTPException(status_code=404, detail=f"Fabric {fabric_name} not found")
     db_switch = session.exec(select(SwitchDbModel).where(SwitchDbModel.ipAddress == test_reachability_body.seedIP)).first()

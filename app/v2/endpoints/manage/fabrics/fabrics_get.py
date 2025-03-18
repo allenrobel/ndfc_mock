@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
 from .....db import get_session
-from ....models.fabric import FabricDbModel, FabricResponseModel
+from ....models.fabric import FabricDbModelV2, FabricResponseModel
 from .common import FabricLocationModel, FabricManagementModel
 
 router = APIRouter(
@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-def build_response(fabric: FabricDbModel) -> FabricResponseModel:
+def build_response(fabric: FabricDbModelV2) -> FabricResponseModel:
     """
     # Summary
 
@@ -58,7 +58,7 @@ def v2_fabrics_get(
     Endpoint handler for GET /api/v1/manage/fabrics
     """
     try:
-        fabrics = session.exec(select(FabricDbModel).offset(offset).limit(limit)).all()
+        fabrics = session.exec(select(FabricDbModelV2).offset(offset).limit(limit)).all()
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error)) from error
     response = []

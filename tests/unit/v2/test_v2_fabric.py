@@ -17,7 +17,7 @@ import json
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
-from ....app.v2.models.fabric import FabricDbModel, FabricResponseModel
+from ....app.v2.models.fabric import FabricDbModelV2, FabricResponseModel
 from ..common import client_fixture, convert_db_date_to_timestamp, convert_model_date_to_timestamp, session_fixture, timestamps_within_delta
 from .data_loader import load_data
 
@@ -113,7 +113,7 @@ def test_v2_fabric_get_100(session: Session, client: TestClient):
         -   location.lataitude == expected latitude
         -   location.longitude == expected longitude
     """
-    f1 = FabricDbModel(
+    f1 = FabricDbModelV2(
         bgpAsn="65001",
         category="fabric",
         latitude=71.1,
@@ -127,7 +127,7 @@ def test_v2_fabric_get_100(session: Session, client: TestClient):
         telemetryStreamingProtocol="ipv4",
         type="fabric",
     )
-    f2 = FabricDbModel(
+    f2 = FabricDbModelV2(
         bgpAsn="65002",
         category="fabric",
         latitude=72.2,
@@ -175,7 +175,7 @@ def test_v2_fabric_get_110(session: Session, client: TestClient):
         -   location.lataitude == expected latitude
         -   location.longitude == expected longitude
     """
-    f1 = FabricDbModel(
+    f1 = FabricDbModelV2(
         bgpAsn="65001",
         category="fabric",
         name="f1",
@@ -218,7 +218,7 @@ def test_v2_fabric_put_100(session: Session, client: TestClient):
             d. telemetryCollectionType is updated
             e. telemetryStreamingProtocol is updated
     """
-    f1 = FabricDbModel(
+    f1 = FabricDbModelV2(
         bgpAsn="65001",
         category="fabric",
         latitude=71.1,
@@ -280,7 +280,7 @@ def test_v2_fabric_delete_100(session: Session, client: TestClient):
 
     Verify that fabric is deleted with 204 status_code.
     """
-    f1 = FabricDbModel(
+    f1 = FabricDbModelV2(
         bgpAsn="65001",
         category="fabric",
         latitude=60.1,
@@ -298,7 +298,7 @@ def test_v2_fabric_delete_100(session: Session, client: TestClient):
     session.commit()
 
     response = client.delete(f"/api/v1/manage/fabrics/{f1.name}")
-    fabric_in_db = session.get(FabricDbModel, f1.name)
+    fabric_in_db = session.get(FabricDbModelV2, f1.name)
 
     assert response.status_code == 204
 
@@ -314,7 +314,7 @@ def test_v2_fabric_delete_110(session: Session, client: TestClient):
     Verify the response.
     """
     response = client.delete("/api/v1/manage/fabrics/foo")
-    fabric_in_db = session.get(FabricDbModel, "foo")
+    fabric_in_db = session.get(FabricDbModelV2, "foo")
 
     response_decode = response.json()
     print(f"response_decode: {response_decode}")

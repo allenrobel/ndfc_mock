@@ -17,7 +17,7 @@ from sqlmodel import Session
 
 from ....app.common.functions.utilities import random_switch_serial_number
 from ....app.v1.endpoints.lan_fabric.rest.control.fabrics.inventory.common import build_db_switch
-from ....app.v1.models.fabric import Fabric
+from ....app.v1.models.fabric import FabricDbModelV1
 from ....app.v1.models.inventory import SwitchDbModel, SwitchDiscoverBodyModel, SwitchDiscoverItem
 from ..common import client_fixture, convert_db_date_to_timestamp, convert_model_date_to_timestamp, session_fixture, timestamps_within_delta
 
@@ -124,8 +124,8 @@ def test_v1_fabric_get_100(session: Session, client: TestClient):
         -   updated_at field is present and the step 2 version
             timestamp differs from the retrieved version timestamp.
     """
-    f1 = Fabric(FABRIC_NAME="f1", BGP_AS="65001")
-    f2 = Fabric(FABRIC_NAME="f2", BGP_AS="65002")
+    f1 = FabricDbModelV1(FABRIC_NAME="f1", BGP_AS="65001")
+    f2 = FabricDbModelV1(FABRIC_NAME="f2", BGP_AS="65002")
 
     # Convert naive (timezone unaware) data model dates to
     # unix timestamps for comparison with dates in the database
@@ -179,7 +179,7 @@ def test_v1_fabric_get_110(session: Session, client: TestClient):
         -   created_at field is present and not None
         -   updated_at field is present and not None
     """
-    f1 = Fabric(FABRIC_NAME="F1", BGP_AS="65001")
+    f1 = FabricDbModelV1(FABRIC_NAME="F1", BGP_AS="65001")
     session.add(f1)
     session.commit()
 
@@ -202,7 +202,7 @@ def test_v1_fabric_put_100(session: Session, client: TestClient):
        2a. updated_at pre-update is not identical to post-update (delta=0)
        2b. updated_at post-update is <= 2 seconds later than pre-update
     """
-    f1 = Fabric(FABRIC_NAME="F1", BGP_AS="65001")
+    f1 = FabricDbModelV1(FABRIC_NAME="F1", BGP_AS="65001")
     session.add(f1)
     session.commit()
     sleep(1)
@@ -229,7 +229,7 @@ def test_v1_fabric_put_110(session: Session, client: TestClient):
        2a. updated_at pre-update is not identical to post-update (delta=0)
        2b. updated_at post-update is <= 2 seconds later than pre-update
     """
-    f1 = Fabric(FABRIC_NAME="F1", BGP_AS="65001")
+    f1 = FabricDbModelV1(FABRIC_NAME="F1", BGP_AS="65001")
     session.add(f1)
     session.commit()
     sleep(1)
@@ -255,12 +255,12 @@ def test_v1_fabric_delete_100(session: Session, client: TestClient):
 
     Verify that fabric is deleted with 200 status_code.
     """
-    f1 = Fabric(FABRIC_NAME="F1", BGP_AS="65001")
+    f1 = FabricDbModelV1(FABRIC_NAME="F1", BGP_AS="65001")
     session.add(f1)
     session.commit()
 
     response = client.delete(f"/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{f1.FABRIC_NAME}")
-    fabric_in_db = session.get(Fabric, f1.FABRIC_NAME)
+    fabric_in_db = session.get(FabricDbModelV1, f1.FABRIC_NAME)
 
     assert response.status_code == 200
 
@@ -281,7 +281,7 @@ def test_v1_fabric_delete_110(session: Session, client: TestClient):
         ndfc_mock returns the full path.
     """
     response = client.delete("/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/foo")
-    fabric_in_db = session.get(Fabric, "foo")
+    fabric_in_db = session.get(FabricDbModelV1, "foo")
     response_decode = response.json()
     response_detail = response_decode.get("detail")
 
@@ -304,7 +304,7 @@ def test_v1_fabric_delete_120(session: Session, client: TestClient):
     Verify expected error response is returned.
     """
     # Create fabric
-    db_fabric = Fabric(FABRIC_NAME="F1", BGP_AS="65001")
+    db_fabric = FabricDbModelV1(FABRIC_NAME="F1", BGP_AS="65001")
     session.add(db_fabric)
     session.commit()
     # Add switch

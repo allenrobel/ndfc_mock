@@ -34,6 +34,14 @@
 
 ## Fabrics (v1)
 
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/config-deploy/{switch_id}`
+  - `post`
+    - V1 Config Deploy Post
+
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/config-save`
+  - `post`
+    - V1 Fabric Post
+
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}`
   - `delete`
     - V1 Fabric Delete

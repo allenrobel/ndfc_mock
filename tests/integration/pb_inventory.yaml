@@ -33,7 +33,7 @@
           user_name: "{{ switch_username }}"
           password: "{{ switch_password }}"
           max_hops: 0
-          role: leaf 
+          role: leaf
           preserve_config: True
       register: result
     - debug:

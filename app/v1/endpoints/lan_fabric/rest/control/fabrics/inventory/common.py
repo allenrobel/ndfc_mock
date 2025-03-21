@@ -59,7 +59,7 @@ def build_db_switch(switch: SwitchDiscoverItem, db_fabric: FabricDbModelV1) -> S
         mgmtAddress="",
         memoryUsage=0,
         mode="Normal",
-        model="",
+        model=switch.platform,
         moduleIndexOffset=9999,
         modelType=0,
         name=switch.sysName,

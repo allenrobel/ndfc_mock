@@ -1,14 +1,14 @@
-from typing import Dict, Optional, List, Any
-from pydantic import BaseModel
-from sqlmodel import SQLModel, Field, Relationship, select, Column, JSON
-import json
+# TODO: If SQLModel is ever fixed, remove the mypy directive below.
+# https://github.com/fastapi/sqlmodel/discussions/732
+# mypy: disable-error-code=call-arg
+from typing import Dict, Optional
 
-"""
-This simplifies things by using separate tables for Config, Health, Roles,
-HW Versions, and SW Versions.  There is no need to link these tables e.g.
-through a foreign key in the SwitchOverview table since there is only
-a single overview record.
-"""
+from pydantic import BaseModel
+from sqlmodel import Field, Session, SQLModel, create_engine, select
+
+DATABASE_URL = "sqlite:///./nexus_dashboard.db"  # Replace with your database URL
+engine = create_engine(DATABASE_URL, echo=True)
+
 
 class SwitchConfigBase(SQLModel):
     """
@@ -18,6 +18,7 @@ class SwitchConfigBase(SQLModel):
         in_sync (int): The number of switches that are in sync with the configuration.
         out_of_sync (int): The number of switches that are out of sync with the configuration.
     """
+
     in_sync: int = Field(default=0)
     out_of_sync: int = Field(default=0)
 
@@ -26,6 +27,7 @@ class SwitchConfigDbModel(SwitchConfigBase, table=True):
     """
     SQLModel table representing the configuration synchronization status of switches.
     """
+
     id: Optional[int] = Field(default=None, primary_key=True)
 
 
@@ -38,6 +40,7 @@ class SwitchHealthBase(SQLModel):
         Major (int): The number of switches with a major health issue.
         Minor (int): The number of switches with a minor health issue.
     """
+
     Healthy: int
     Major: int
     Minor: int
@@ -47,6 +50,7 @@ class SwitchHealthDbModel(SwitchHealthBase, table=True):
     """
     SQLModel table representing the health status of switches.
     """
+
     id: Optional[int] = Field(default=None, primary_key=True)
 
 
@@ -70,6 +74,7 @@ class SwitchRolesBase(SQLModel):
         super_spine (int): The number of switches with the super spine role.
         tor (int): The number of switches with the Top of Rack (TOR) role.
     """
+
     access: int = Field(default=0)
     aggregation: int = Field(default=0)
     border: int = Field(default=0)
@@ -94,11 +99,13 @@ class SwitchRolesDbModel(SwitchRolesBase, table=True):
         id (Optional[int]): The primary key for the table.
         switch_overview_id (Optional[int]): Foreign key linking to the SwitchOverviewDbModel table.
     """
+
     id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class SwitchVersionBase(SQLModel):
     """Base class for Switch Versions."""
+
     version_name: str
     count: int
 
@@ -108,6 +115,7 @@ class SwitchHWVersionsDbModel(SwitchVersionBase, table=True):
     SQLModel table representing the hardware versions of switches.
     Stores each HW version as a separate row.
     """
+
     id: Optional[int] = Field(default=None, primary_key=True)
 
 
@@ -116,6 +124,7 @@ class SwitchSWVersionsDbModel(SwitchVersionBase, table=True):
     SQLModel table representing the software versions of switches.
     Stores each SW version as a separate row.
     """
+
     id: Optional[int] = Field(default=None, primary_key=True)
 
 
@@ -130,6 +139,7 @@ class SwitchOverviewResponseModel(BaseModel):
         switchRoles (Dict): Roles of the switches in the network.
         switchSWVersions (Dict[str, int]): Software versions of the switches.
     """
+
     switchConfig: SwitchConfigBase
     switchHealth: SwitchHealthBase
     switchHWVersions: Dict[str, int]
@@ -160,6 +170,7 @@ class SwitchOverview:
     # single response.
     response = switch_overview.response()
     """
+
     def __init__(self):
         self._health = None
         self._hw_version = None
@@ -185,11 +196,29 @@ class SwitchOverview:
             leaf=0,
             spine=0,
             super_spine=0,
-            tor=0
+            tor=0,
         )
         self._init_switch_sw_versions = SwitchHWVersionsDbModel(version_name="ignore", count=0)
 
-    
+        self.switch_roles = {
+            "access",
+            "aggregation",
+            "border",
+            "border_gateway",
+            "border_gateway_spine",
+            "border_gateway_super_spine",
+            "border_spine",
+            "border_super_spine",
+            "core_router",
+            "edge_router",
+            "leaf",
+            "spine",
+            "super_spine",
+            "tor",
+        }
+
+        self.switch_health_status = {"Healthy", "Major", "Minor"}
+
     def initialize_db_tables(self):
         """
         Initializes the switch overview database tables.
@@ -216,7 +245,7 @@ class SwitchOverview:
                 switch_roles_db = SwitchRolesDbModel(**self._init_switch_roles.model_dump())
                 session.add(switch_roles_db)
                 commit = True
-            
+
             statement = select(SwitchHWVersionsDbModel)
             switch_hw_versions = session.exec(statement).all()
             if len(switch_hw_versions) == 0:
@@ -235,8 +264,13 @@ class SwitchOverview:
             if commit:
                 session.commit()
 
-
     def update_switch_config(self, session):
+        """
+        Update the switch configuration synchronization status,
+        incrementing the in_sync or out_of_sync count based on self.sync.
+
+        Add the updated switch configuration to the session.
+        """
         statement = select(SwitchConfigDbModel).where(SwitchConfigDbModel.id == 1)
         switch_config = session.exec(statement).first()
         if self.sync is True:
@@ -245,55 +279,44 @@ class SwitchOverview:
             switch_config.out_of_sync += 1
         session.add(switch_config)
 
-
     def update_switch_health(self, session):
+        """
+        Update the switch health status, incrementing the Healthy, Major, or Minor count
+        based on self.health.
+
+        Add the updated switch health to the session.
+        """
         statement = select(SwitchHealthDbModel).where(SwitchHealthDbModel.id == 1)
         switch_health = session.exec(statement).first()
-        if self.health == "Healthy":
-            switch_health.Healthy += 1
-        elif self.health == "Major":
-            switch_health.Major += 1
-        elif self.health == "Minor":
-            switch_health.Minor += 1
-        session.add(switch_health)
 
+        for status in self.switch_health_status:
+            if self.health == status:
+                setattr(switch_health, status, getattr(switch_health, status) + 1)
+                session.add(switch_health)
+                break
 
     def update_switch_roles(self, session):
+        """
+        Update the switch roles, incrementing the count for the role specified in self.role.
+
+        Add the updated switch roles to the session.
+        """
         statement = select(SwitchRolesDbModel).where(SwitchRolesDbModel.id == 1)
         switch_roles = session.exec(statement).first()
 
-        if self.role == "access":
-            switch_roles.access += 1
-        elif self.role == "aggregation":
-            switch_roles.aggregation += 1
-        elif self.role == "border":
-            switch_roles.border += 1
-        elif self.role == "border_gateway":
-            switch_roles.border_gateway += 1
-        elif self.role == "border_gateway_spine":
-            switch_roles.border_gateway_spine += 1
-        elif self.role == "border_gateway_super_spine":
-            switch_roles.border_gateway_super_spine += 1
-        elif self.role == "border_spine":
-            switch_roles.border_spine += 1
-        elif self.role == "border_super_spine":
-            switch_roles.border_super_spine += 1
-        elif self.role == "core_router":
-            switch_roles.core_router += 1
-        elif self.role == "edge_router":
-            switch_roles.edge_router += 1
-        elif self.role == "leaf":
-            switch_roles.leaf += 1
-        elif self.role == "spine":
-            switch_roles.spine += 1
-        elif self.role == "super_spine":
-            switch_roles.super_spine += 1
-        elif self.role == "tor":
-            switch_roles.tor += 1
-        session.add(switch_roles)
-
+        for role in self.switch_roles:
+            if self.role == role:
+                setattr(switch_roles, role, getattr(switch_roles, role) + 1)
+                session.add(switch_roles)
+                break
 
     def update_switch_hw_versions(self, session):
+        """
+        Update the switch hardware versions, incrementing the count for the hardware version
+        specified in self.hw_version.
+
+        Add the updated switch hardware versions to the session.
+        """
         statement = select(SwitchHWVersionsDbModel)
         switch_hw_versions = session.exec(statement).all()
         if self.hw_version not in [hw.version_name for hw in switch_hw_versions]:
@@ -305,8 +328,13 @@ class SwitchOverview:
                     hw.count += 1
                     session.add(hw)
 
-
     def update_switch_sw_versions(self, session):
+        """
+        Update the switch software versions, incrementing the count for the software version
+        specified in self.sw_version.
+
+        Add the updated switch software versions to the session.
+        """
         statement = select(SwitchSWVersionsDbModel)
         switch_sw_versions = session.exec(statement).all()
         if self.sw_version not in [sw.version_name for sw in switch_sw_versions]:
@@ -318,10 +346,9 @@ class SwitchOverview:
                     sw.count += 1
                     session.add(sw)
 
-
     def commit(self):
         """
-        Commits the changes to the database.
+        Persists the changes to the database.
         """
         if self._health is None:
             raise ValueError("Health status not set.")
@@ -342,13 +369,12 @@ class SwitchOverview:
             self.update_switch_sw_versions(session)
             session.commit()
 
-
-    def response(self) -> Dict[str, Any]:
+    def response(self) -> str:
         """
         Returns the current switch overview data.
 
         Returns:
-            Dict[str, Any]: The current switch overview data.
+            str: The current switch overview data as JSON
         """
         session = Session(engine)
 
@@ -378,55 +404,76 @@ class SwitchOverview:
                 sw_response[sw.version_name] = sw.count
 
         response = SwitchOverviewResponseModel(
-            switchConfig=switch_config.model_dump(exclude={'id'}),
-            switchHealth=switch_health.model_dump(exclude={'id'}),
-            switchRoles=switch_roles.model_dump(exclude={'id'}),
+            switchConfig=switch_config.model_dump(exclude={"id"}),
+            switchHealth=switch_health.model_dump(exclude={"id"}),
+            switchRoles=switch_roles.model_dump(exclude={"id"}),
             switchHWVersions=hw_response,
-            switchSWVersions=sw_response
+            switchSWVersions=sw_response,
         )
         return response.model_dump_json(indent=4)
 
     @property
     def health(self) -> str:
+        """
+        Get the health status of the switch.
+
+        Valid values: "Healthy", "Major", "Minor"
+        """
         return self._health
+
     @health.setter
     def health(self, value: str):
         self._health = value
-    
+
     @property
     def hw_version(self) -> str:
+        """
+        The hardware version of the switch.
+        """
         return self._hw_version
+
     @hw_version.setter
     def hw_version(self, value: str):
         self._hw_version = value
 
     @property
     def role(self) -> str:
+        """
+        The role of the switch in the fabric.
+        """
         return self._role
+
     @role.setter
     def role(self, value: str):
         self._role = value
-    
+
     @property
     def sw_version(self) -> str:
+        """
+        The software version of the switch.
+        """
         return self._sw_version
+
     @sw_version.setter
     def sw_version(self, value: str):
         self._sw_version = value
-    
+
     @property
     def sync(self) -> bool:
+        """
+        The synchronization status of the switch.
+
+        True: In sync
+        False: Out of sync
+        """
         return self._sync
+
     @sync.setter
     def sync(self, value: bool):
         self._sync = value
 
 
 if __name__ == "__main__":
-    from sqlmodel import create_engine, Session, select
-
-    DATABASE_URL = "sqlite:///./nexus_dashboard.db"  # Replace with your database URL
-    engine = create_engine(DATABASE_URL, echo=True)
 
     SQLModel.metadata.create_all(engine)
 
@@ -449,4 +496,3 @@ if __name__ == "__main__":
     switch_overview.commit()
 
     print(f"ZZZ: response: {switch_overview.response()}")
-

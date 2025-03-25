@@ -7,10 +7,12 @@ import inspect
 import json
 from typing import Dict, List, Optional
 
+from fastapi import HTTPException
 from pydantic import BaseModel
-from sqlmodel import Field, Session, SQLModel, create_engine, select
+from sqlmodel import Field, SQLModel, select
 
 from ........common.functions.utilities import switch_role_db_to_external, switch_role_external_to_db
+from .......models.fabric import FabricDbModelV1
 
 
 class SwitchConfigBase(SQLModel):
@@ -173,6 +175,7 @@ class SwitchOverviewHealth:
     ## Methods
 
     - add: Increment the count of the record attribute matching self.fabric and self.health.
+    - delete: Delete the record/row matching self.fabric.
     - remove: Decrement the count of the record attribute matching self.fabric and self.health.
     - response_json: Return the current switch health data for self.fabric as JSON.
     - response_model: Return the current switch health data for self.fabric as a model.
@@ -256,6 +259,21 @@ class SwitchOverviewHealth:
                 self.session.add(record)
                 break
         self.session.commit()
+
+    def delete(self):
+        """
+        # Summary
+
+        - Delete the record matching self.fabric from the table.
+        - Commit the session.
+        """
+        self.validate_properties()
+        statement = select(SwitchHealthDbModel).where(SwitchHealthDbModel.fabric == self.fabric)
+        record = self.session.exec(statement).first()
+
+        if record is not None:
+            self.session.delete(record)
+            self.session.commit()
 
     def remove(self):
         """
@@ -365,6 +383,7 @@ class SwitchOverviewRoles:
     ## Methods
 
     - add: Increment the count of the record attribute matching self.fabric and self.role.
+    - delete: Delete from the table the record/row matching self.fabric.
     - remove: Decrement the count of the record attribute matching self.fabric and self.role.
     - response_json: Return the current switch role data for self.fabric as JSON.
     - response_model: Return the current switch role data for self.fabric as a model.
@@ -505,6 +524,21 @@ class SwitchOverviewRoles:
                 break
         self.session.commit()
 
+    def delete(self):
+        """
+        # Summary
+
+        - Delete the record matching self.fabric from the table.
+        - Commit the session.
+        """
+        self.validate_properties()
+        statement = select(SwitchHealthDbModel).where(SwitchHealthDbModel.fabric == self.fabric)
+        record = self.session.exec(statement).first()
+
+        if record is not None:
+            self.session.delete(record)
+            self.session.commit()
+
     def remove(self):
         """
         # Summary
@@ -637,6 +671,7 @@ class SwitchOverviewSw:
     ## Methods
 
     - add: Increment the count of the record attribute matching self.fabric and self.version.
+    - delete: Delete from the table the record/row matching self.fabric.
     - remove: Decrement the count of the record attribute matching self.fabric and self.version.
     - response_json: Return the current switch software version data for self.fabric as JSON.
     - response_model: Return the current switch software version data for self.fabric as a model.
@@ -724,6 +759,21 @@ class SwitchOverviewSw:
                     self.session.add(record)
                     break
         self.session.commit()
+
+    def delete(self):
+        """
+        # Summary
+
+        - Delete the record matching self.fabric from the table.
+        - Commit the session.
+        """
+        self.validate_properties()
+        statement = select(SwitchHealthDbModel).where(SwitchHealthDbModel.fabric == self.fabric)
+        record = self.session.exec(statement).first()
+
+        if record is not None:
+            self.session.delete(record)
+            self.session.commit()
 
     def remove(self):
         """
@@ -814,6 +864,7 @@ class SwitchOverviewHw:
     ## Methods
 
     - add: Increment the count of the record attribute matching self.fabric and self.version.
+    - delete: Delete from the table the record/row matching self.fabric.
     - remove: Decrement the count of the record attribute matching self.fabric and self.version.
     - response_json: Return the current switch hardware version data for self.fabric as JSON.
     - response_model: Return the current switch hardware version data for self.fabric as a model.
@@ -901,6 +952,21 @@ class SwitchOverviewHw:
                     self.session.add(record)
                     break
         self.session.commit()
+
+    def delete(self):
+        """
+        # Summary
+
+        - Delete the record matching self.fabric from the table.
+        - Commit the session.
+        """
+        self.validate_properties()
+        statement = select(SwitchHealthDbModel).where(SwitchHealthDbModel.fabric == self.fabric)
+        record = self.session.exec(statement).first()
+
+        if record is not None:
+            self.session.delete(record)
+            self.session.commit()
 
     def remove(self):
         """
@@ -991,6 +1057,7 @@ class SwitchOverviewSync:
     ## Methods
 
     - add: Increment the count of the record attribute matching self.fabric and self.sync.
+    - delete: Delete from the table the record/row matching self.fabric.
     - remove: Decrement the count of the record attribute matching self.fabric and self.sync.
     - response_json: Return the current switch configuration synchronization data for self.fabric as JSON.
     - response_model: Return the current switch configuration synchronization data for self.fabric as a model.
@@ -1072,6 +1139,21 @@ class SwitchOverviewSync:
                 self.session.add(record)
                 break
         self.session.commit()
+
+    def delete(self):
+        """
+        # Summary
+
+        - Delete the record matching self.fabric from the table.
+        - Commit the session.
+        """
+        self.validate_properties()
+        statement = select(SwitchHealthDbModel).where(SwitchHealthDbModel.fabric == self.fabric)
+        record = self.session.exec(statement).first()
+
+        if record is not None:
+            self.session.delete(record)
+            self.session.commit()
 
     def remove(self):
         """
@@ -1191,6 +1273,41 @@ class SwitchOverview:
         sw.fabric = self.fabric
         sw.initialize_db_table()
 
+    def delete(self):
+        """
+        Delete the database tables for the switch overview data.
+        """
+        self.validate_properties()
+
+        db_fabric = self.session.exec(select(FabricDbModelV1).where(FabricDbModelV1.FABRIC_NAME == self.fabric)).first()
+        if not db_fabric:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
+
+        sync = SwitchOverviewSync()
+        sync.session = self.session
+        sync.fabric = self.fabric
+        sync.delete()
+
+        health = SwitchOverviewHealth()
+        health.session = self.session
+        health.fabric = self.fabric
+        health.delete()
+
+        hw = SwitchOverviewHw()
+        hw.session = self.session
+        hw.fabric = self.fabric
+        hw.delete()
+
+        roles = SwitchOverviewRoles()
+        roles.session = self.session
+        roles.fabric = self.fabric
+        roles.delete()
+
+        sw = SwitchOverviewSw()
+        sw.session = self.session
+        sw.fabric = self.fabric
+        sw.delete()
+
     def validate_properties(self):
         """
         Validate the properties of the class.
@@ -1293,6 +1410,10 @@ class SwitchOverviewResponse:
         Retrieve the switch overview data for self.fabric from the database.
         """
         self.validate_properties()
+        db_fabric = self.session.exec(select(FabricDbModelV1).where(FabricDbModelV1.FABRIC_NAME == self.fabric)).first()
+        if not db_fabric:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
+
         self.sync = SwitchOverviewSync()
         self.sync.session = self.session
         self.sync.fabric = self.fabric
@@ -1408,343 +1529,3 @@ class SwitchOverviewResponse:
     @session.setter
     def session(self, value):
         self._session = value
-
-
-def print_health(engine):
-    """
-    Exercise the SwitchOverviewHealth class.
-    """
-    print("Health: ==========================================================")
-    print("Health: add Healthy ==============================================")
-    with Session(engine) as db_session:
-        health = SwitchOverviewHealth()
-        health.session = db_session
-        health.fabric = "fabric1"
-        health.initialize_db_table()
-        health.health = "Healthy"
-        health.add()
-        print(f"Health: response: {health.response_json()}")
-        health_record = health.response_model()
-        print("Health: Model access")
-        print(f"  fabric:  {health_record.fabric}")
-        print(f"  Healthy: {health_record.Healthy}")
-        print(f"  Major:   {health_record.Major}")
-        print(f"  Minor:   {health_record.Minor}")
-
-    print("Health: remove Healthy, add Minor ================================")
-    with Session(engine) as db_session:
-        health = SwitchOverviewHealth()
-        health.session = db_session
-        health.fabric = "fabric1"
-        health.initialize_db_table()
-        health.health = "Healthy"
-        health.remove()
-        health.health = "Minor"
-        health.add()
-        print(f"Health: response: {health.response_json()}")
-        health_record = health.response_model()
-        print("Health: Model access")
-        print(f"  fabric:  {health_record.fabric}")
-        print(f"  Healthy: {health_record.Healthy}")
-        print(f"  Major:   {health_record.Major}")
-        print(f"  Minor:   {health_record.Minor}")
-
-    # Try to remove a health status that is already 0
-    print("Health: remove Healthy (it's already 0) ==========================")
-    with Session(engine) as db_session:
-        health = SwitchOverviewHealth()
-        health.session = db_session
-        health.fabric = "fabric1"
-        health.initialize_db_table()
-        health.health = "Healthy"
-        health.remove()
-        print(f"Health: response: {health.response_json()}")
-        health_record = health.response_model()
-        print("Health: Model access")
-        print(f"  fabric:  {health_record.fabric}")
-        print(f"  Healthy: {health_record.Healthy}")
-        print(f"  Major:   {health_record.Major}")
-        print(f"  Minor:   {health_record.Minor}")
-
-    print()
-
-
-def print_hw(engine):
-    """
-    Exercise the SwitchOverviewHw class.
-    """
-
-    print("HW: ==============================================================")
-    print("HW: add N9K-C93180YC-EX ==========================================")
-    with Session(engine) as db_session:
-        hw = SwitchOverviewHw()
-        hw.session = db_session
-        hw.fabric = "fabric1"
-        hw.initialize_db_table()
-        hw.model = "N9K-C93180YC-EX"
-        hw.add()
-        print(f"HW: response: {hw.response_json()}")
-        hw_records = hw.response_model()
-        print("HW: Model access")
-        for hw_record in hw_records:
-            print(f"  model: {hw_record.model}")
-            print(f"  count: {hw_record.count}")
-
-    print("HW: remove N9K-C93180YC-EX, add N9K-9508 ==================")
-    with Session(engine) as db_session:
-        hw = SwitchOverviewHw()
-        hw.session = db_session
-        hw.fabric = "fabric1"
-        hw.initialize_db_table()
-        hw.model = "N9K-C93180YC-EX"
-        hw.remove()
-        hw.model = "N9K-9508"
-        hw.add()
-        print(f"HW: response: {hw.response_json()}")
-        hw_records = hw.response_model()
-        print("HW: Model access")
-        for hw_record in hw_records:
-            print(f"  model: {hw_record.model}")
-            print(f"  count: {hw_record.count}")
-
-    # Try to remove a hw model that is already 0
-    print("HW: remove N9K-C93180YC-EX (it's already 0) =====================")
-    with Session(engine) as db_session:
-        hw = SwitchOverviewHw()
-        hw.session = db_session
-        hw.fabric = "fabric1"
-        hw.initialize_db_table()
-        hw.model = "N9K-C93180YC-EX"
-        hw.remove()
-        print(f"HW: response: {hw.response_json()}")
-        hw_records = hw.response_model()
-        print("HW: Model access")
-        switch_hw = []
-        for hw_record in hw_records:
-            print(f"  model: {hw_record.model}")
-            print(f"  count: {hw_record.count}")
-            switch_hw.append(hw_record.model_dump(exclude={"fabric"}))
-
-    print()
-
-
-def print_roles(engine):
-    """
-    Exercise the SwitchOverviewRoles class.
-    """
-    print("Roles: ===========================================================")
-    print("Roles: add spine =================================================")
-    with Session(engine) as db_session:
-        roles = SwitchOverviewRoles()
-        roles.session = db_session
-        roles.fabric = "fabric1"
-        roles.initialize_db_table()
-        roles.role = "spine"
-        roles.add()
-        print(f"Roles: response: {roles.response_json()}")
-        # This is returned as a dictionary because Models do
-        # not support keys that contain spaces.
-        roles_record = roles.response_dict()
-        print("Roles: dictionary access")
-        print(f"  fabric: {roles_record.get('fabric')}")
-        print(f"  leaf:   {roles_record.get('leaf')}")
-        print(f"  spine:  {roles_record.get('spine')}")
-
-    print("Roles: remove spine, add leaf ====================================")
-    with Session(engine) as db_session:
-        roles = SwitchOverviewRoles()
-        roles.session = db_session
-        roles.fabric = "fabric1"
-        roles.initialize_db_table()
-        roles.role = "spine"
-        roles.remove()
-        roles.role = "leaf"
-        roles.add()
-        print(f"Roles: response: {roles.response_json()}")
-        roles_record = roles.response_dict()
-        print("Roles: dictionary access")
-        print(f"  fabric: {roles_record.get('fabric')}")
-        print(f"  leaf:   {roles_record.get('leaf')}")
-        print(f"  spine:  {roles_record.get('spine')}")
-
-    # Try to remove a role that is already 0
-    print("Roles: remove spine (it's already 0 ==========================")
-    with Session(engine) as db_session:
-        roles = SwitchOverviewRoles()
-        roles.session = db_session
-        roles.fabric = "fabric1"
-        roles.initialize_db_table()
-        roles.role = "spine"
-        roles.remove()
-        print(f"Roles: response: {roles.response_json()}")
-        roles_record = roles.response_dict()
-        print("Roles: dictionary access")
-        print(f"  fabric: {roles_record.get('fabric')}")
-        print(f"  leaf:   {roles_record.get('leaf')}")
-        print(f"  spine:  {roles_record.get('spine')}")
-
-    print()
-
-
-def print_sw(engine):
-    """
-    Exercise the SwitchOverviewSw class.
-    """
-    print("SW: =======================================================")
-    print("SW: add 10.2(5) ===========================================")
-    with Session(engine) as db_session:
-        sw = SwitchOverviewSw()
-        sw.session = db_session
-        sw.fabric = "fabric1"
-        sw.initialize_db_table()
-        sw.version = "10.2(5)"
-        sw.add()
-        print(f"SW Version: response: {sw.response_json()}")
-        sw_records = sw.response_model()
-        print("SW Version: Model access")
-        for sw_record in sw_records:
-            print(f"  version: {sw_record.version_name}")
-            print(f"  count:   {sw_record.count}")
-
-    print("SW: remove 10.2(5), add 10.2(6) ===========================")
-    with Session(engine) as db_session:
-        sw = SwitchOverviewSw()
-        sw.session = db_session
-        sw.fabric = "fabric1"
-        sw.initialize_db_table()
-        sw.version = "10.2(5)"
-        sw.remove()
-        sw.version = "10.2(6)"
-        sw.add()
-        print(f"SW: response: {sw.response_json()}")
-        print("SW: Model access")
-        for sw_record in sw.response_model():
-            print(f"  version: {sw_record.version_name}")
-            print(f"  count:   {sw_record.count}")
-
-    # Try to remove a sw version that is already 0
-    print("SW: remove 10.2(5) (it's already 0) ======================")
-    with Session(engine) as db_session:
-        sw = SwitchOverviewSw()
-        sw.session = db_session
-        sw.fabric = "fabric1"
-        sw.initialize_db_table()
-        sw.version = "10.2(5)"
-        sw.remove()
-        print(f"SW: response: {sw.response_json()}")
-        print("SW: Model access")
-        switch_sw = []
-        for sw_record in sw.response_model():
-            print(f"  version: {sw_record.version_name}")
-            print(f"  count:   {sw_record.count}")
-            switch_sw.append(sw_record.model_dump(exclude={"fabric"}))
-
-    print()
-
-
-def print_sync(engine):
-    """
-    Exercise the SwitchOverviewSync class.
-    """
-    print("Sync: ============================================================")
-    print("Sync: add in_sync ================================================")
-    with Session(engine) as db_session:
-        sync = SwitchOverviewSync()
-        sync.session = db_session
-        sync.fabric = "fabric1"
-        sync.initialize_db_table()
-        sync.sync = "in_sync"
-        sync.add()
-        print(f"Sync: response: {sync.response_json()}")
-        sync_model = sync.response_model()
-        print("Sync: Model access")
-        print(f"  fabric:      {sync_model.fabric}")
-        print(f"  in_sync:     {sync_model.in_sync}")
-        print(f"  out_of_sync: {sync_model.out_of_sync}")
-
-    print("Sync: remove in_sync, add out_of_sync ============================")
-    with Session(engine) as db_session:
-        sync = SwitchOverviewSync()
-        sync.session = db_session
-        sync.fabric = "fabric1"
-        sync.initialize_db_table()
-        sync.sync = "in_sync"
-        sync.remove()
-        sync.sync = "out_of_sync"
-        sync.add()
-        print(f"Sync: response: {sync.response_json()}")
-        sync_model = sync.response_model()
-        print("Sync: Model access")
-        print(f"  fabric:      {sync_model.fabric}")
-        print(f"  in_sync:     {sync_model.in_sync}")
-        print(f"  out_of_sync: {sync_model.out_of_sync}")
-
-    # Try to remove a sync status that is already 0
-    print("Sync: remove in_sync (it's already 0 =============================")
-    with Session(engine) as db_session:
-        sync = SwitchOverviewSync()
-        sync.session = db_session
-        sync.fabric = "fabric1"
-        sync.initialize_db_table()
-        sync.sync = "in_sync"
-        sync.remove()
-        print(f"Sync: response: {sync.response_json()}")
-        sync_model = sync.response_model()
-        print("Sync: Model access")
-        print(f"  fabric:      {sync_model.fabric}")
-        print(f"  in_sync:     {sync_model.in_sync}")
-        print(f"  out_of_sync: {sync_model.out_of_sync}")
-
-    print()
-
-
-def print_switch_overview_response(engine):
-    """
-    Exercise the SwitchOverviewResponse class.
-    """
-    print("Response from SwitchOverviewResponse: ===========================")
-    with Session(engine) as db_session:
-        overview = SwitchOverviewResponse()
-        overview.session = db_session
-        overview.fabric = "fabric1"
-        overview.refresh()
-        response_dict = overview.response_dict()
-        print()
-        print(f"response_json: {overview.response_json()}")
-        print()
-        print("Model access")
-        print(f"  fabric: {response_dict.get('switchConfig', {}).get('fabric')}")
-        print("  Sync status:")
-        print(f"      in_sync: {response_dict.get('switchConfig', {}).get('in_sync')}")
-        print(f"      out_of_sync: {response_dict.get('switchConfig', {}).get('out_of_sync')}")
-        print("  Health status:")
-        print(f"      Healthy: {response_dict.get('switchHealth', {}).get('Healthy')}")
-        print(f"      Major: {response_dict.get('switchHealth', {}).get('Major')}")
-        print(f"      Minor: {response_dict.get('switchHealth', {}).get('Minor')}")
-        print(f"  HW Versions: {response_dict.get('switchHWVersions')}")
-        print("  Roles:")
-        print(f"     access: {response_dict.get('switchRoles', {}).get('access')}")
-        print(f"     aggregation: {response_dict.get('switchRoles', {}).get('aggregation')}")
-        print(f"  SW Versions: {response_dict.get('switchSWVersions')}")
-        print()
-
-
-def main():
-    """
-    Exercise the SwitchOverview classes.
-    """
-    DATABASE_URL = "sqlite:///./nexus_dashboard.db"  # Replace with your database URL
-    eng = create_engine(DATABASE_URL, echo=False)
-
-    SQLModel.metadata.create_all(eng)
-
-    print_health(eng)
-    print_hw(eng)
-    print_roles(eng)
-    print_sw(eng)
-    print_sync(eng)
-    print_switch_overview_response(eng)
-
-
-if __name__ == "__main__":
-    main()

@@ -7,9 +7,10 @@ import inspect
 import json
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from sqlmodel import Field, Session, SQLModel, create_engine, select
-from ........common.functions.utilities import switch_role_external_to_db, switch_role_db_to_external
+
+from ........common.functions.utilities import switch_role_db_to_external, switch_role_external_to_db
 
 
 class SwitchConfigBase(SQLModel):
@@ -76,6 +77,7 @@ class SwitchRolesBase(SQLModel):
         super_spine (int): The number of switches with the super spine role.
         tor (int): The number of switches with the Top of Rack (TOR) role.
     """
+
     access: int = Field(default=0)
     aggregation: int = Field(default=0)
     border: int = Field(default=0)
@@ -92,7 +94,12 @@ class SwitchRolesBase(SQLModel):
     tor: int = Field(default=0)
 
     class Config:
+        """
+        Model configuration.
+        """
+
         by_alias = True
+
 
 class SwitchRolesDbModel(SwitchRolesBase, table=True):
     """
@@ -546,7 +553,7 @@ class SwitchOverviewRoles:
             if new_key is None:
                 raise ValueError(f"Invalid role: {key}")
             exported[new_key] = value
-        
+
         print(f"ZZZ: {self.class_name}.{method_name}: exported: {exported}")
         return exported
 
@@ -566,7 +573,7 @@ class SwitchOverviewRoles:
     def response_dict(self) -> dict:
         """
         # Summary
-    
+
         Returns the current switch roles data as a dictionary.
 
         The dictionary is returned with alias names, not database field names.
@@ -1149,10 +1156,11 @@ class SwitchOverview:
 
     Utilities for managing switch overview aggregate data.
     """
+
     def __init__(self):
         self._fabric = None
         self._session = None
-    
+
     def initialize_db_table(self):
         """
         Initialize the database tables for the switch overview data.
@@ -1182,7 +1190,7 @@ class SwitchOverview:
         sw.session = self.session
         sw.fabric = self.fabric
         sw.initialize_db_table()
-    
+
     def validate_properties(self):
         """
         Validate the properties of the class.
@@ -1191,14 +1199,14 @@ class SwitchOverview:
             raise ValueError("Fabric name not set.")
         if self._session is None:
             raise ValueError("Session not set")
-        
+
     @property
     def fabric(self) -> str:
         """
         The fabric name.
         """
         return self._fabric
-    
+
     @fabric.setter
     def fabric(self, value: str):
         self._fabric = value
@@ -1209,7 +1217,7 @@ class SwitchOverview:
         Get the session object.
         """
         return self._session
-    
+
     @session.setter
     def session(self, value):
         self._session = value
@@ -1700,25 +1708,24 @@ def print_switch_overview_response(engine):
         overview.session = db_session
         overview.fabric = "fabric1"
         overview.refresh()
-        response_model = overview.response_model()
-        print(f"response_model: {response_model.model_dump_json(indent=4)}")
+        response_dict = overview.response_dict()
         print()
         print(f"response_json: {overview.response_json()}")
         print()
         print("Model access")
-        print(f"  fabric: {response_model.switchConfig.fabric}")
+        print(f"  fabric: {response_dict.get('switchConfig', {}).get('fabric')}")
         print("  Sync status:")
-        print(f"      in_sync: {response_model.switchConfig.in_sync}")
-        print(f"      out_of_sync: {response_model.switchConfig.out_of_sync}")
+        print(f"      in_sync: {response_dict.get('switchConfig', {}).get('in_sync')}")
+        print(f"      out_of_sync: {response_dict.get('switchConfig', {}).get('out_of_sync')}")
         print("  Health status:")
-        print(f"      Healthy: {response_model.switchHealth.Healthy}")
-        print(f"      Major: {response_model.switchHealth.Major}")
-        print(f"      Minor: {response_model.switchHealth.Minor}")
-        print(f"  HW Versions: {response_model.switchHWVersions}")
+        print(f"      Healthy: {response_dict.get('switchHealth', {}).get('Healthy')}")
+        print(f"      Major: {response_dict.get('switchHealth', {}).get('Major')}")
+        print(f"      Minor: {response_dict.get('switchHealth', {}).get('Minor')}")
+        print(f"  HW Versions: {response_dict.get('switchHWVersions')}")
         print("  Roles:")
-        print(f"     access: {response_model.switchRoles.access}")
-        print(f"     aggregation: {response_model.switchRoles.aggregation}")
-        print(f"  SW Versions: {response_model.switchSWVersions}")
+        print(f"     access: {response_dict.get('switchRoles', {}).get('access')}")
+        print(f"     aggregation: {response_dict.get('switchRoles', {}).get('aggregation')}")
+        print(f"  SW Versions: {response_dict.get('switchSWVersions')}")
         print()
 
 

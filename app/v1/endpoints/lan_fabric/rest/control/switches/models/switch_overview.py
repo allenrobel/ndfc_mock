@@ -5,11 +5,11 @@
 # mypy: disable-error-code="call-arg,union-attr"
 import inspect
 import json
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence
 
 from fastapi import HTTPException
 from pydantic import BaseModel
-from sqlmodel import Field, SQLModel, select
+from sqlmodel import Field, Session, SQLModel, select
 
 from ........common.functions.utilities import switch_role_db_to_external, switch_role_external_to_db
 from .......models.fabric import FabricDbModelV1
@@ -303,7 +303,7 @@ class SwitchOverviewHealth:
         switch_health = self.session.exec(statement).first()
         return switch_health.model_dump_json(exclude={"fabric"})
 
-    def response_model(self) -> SwitchHealthDbModel:
+    def response_model(self) -> SwitchHealthDbModel | None:
         """
         Returns the current switch health data for self.fabric as a model.
         """
@@ -337,7 +337,7 @@ class SwitchOverviewHealth:
         self._health = value
 
     @property
-    def session(self):
+    def session(self) -> Session:
         """
         Get the session object.
         """
@@ -651,7 +651,7 @@ class SwitchOverviewRoles:
         self._role = value
 
     @property
-    def session(self):
+    def session(self) -> Session:
         """
         Get the session object.
         """
@@ -812,7 +812,7 @@ class SwitchOverviewSw:
                 response[record.version_name] = record.count
         return json.dumps(response)
 
-    def response_model(self) -> List[SwitchSWVersionsDbModel]:
+    def response_model(self) -> Sequence[SwitchSWVersionsDbModel] | None:
         """
         Returns the current switch software version data for self.fabric as a model.
         """
@@ -844,7 +844,7 @@ class SwitchOverviewSw:
         self._version = value
 
     @property
-    def session(self):
+    def session(self) -> Session:
         """
         Get the session object.
         """
@@ -1005,7 +1005,7 @@ class SwitchOverviewHw:
                 response[record.model] = record.count
         return json.dumps(response)
 
-    def response_model(self) -> List[SwitchHwDbModel]:
+    def response_model(self) -> Sequence[SwitchHwDbModel] | None:
         """
         Returns the current switch hardware model data for self.fabric as a model.
         """
@@ -1037,7 +1037,7 @@ class SwitchOverviewHw:
         self._model = value
 
     @property
-    def session(self):
+    def session(self) -> Session:
         """
         Get the session object.
         """
@@ -1183,7 +1183,7 @@ class SwitchOverviewSync:
         model = self.session.exec(statement).first()
         return model.model_dump_json(exclude={"fabric"})
 
-    def response_model(self) -> SwitchConfigDbModel:
+    def response_model(self) -> SwitchConfigDbModel | None:
         """
         Returns the current switch sync status data as a model.
         """
@@ -1221,7 +1221,7 @@ class SwitchOverviewSync:
         self._sync = value
 
     @property
-    def session(self):
+    def session(self) -> Session:
         """
         Get the session object.
         """
@@ -1329,7 +1329,7 @@ class SwitchOverview:
         self._fabric = value
 
     @property
-    def session(self):
+    def session(self) -> Session:
         """
         Get the session object.
         """
@@ -1520,7 +1520,7 @@ class SwitchOverviewResponse:
         self._fabric = value
 
     @property
-    def session(self):
+    def session(self) -> Session:
         """
         Get the session object.
         """

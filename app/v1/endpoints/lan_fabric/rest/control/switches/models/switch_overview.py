@@ -5,7 +5,7 @@
 # mypy: disable-error-code="call-arg,union-attr"
 import inspect
 import json
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, Optional, Sequence
 
 from fastapi import HTTPException
 from pydantic import BaseModel

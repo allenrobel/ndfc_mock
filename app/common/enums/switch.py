@@ -23,45 +23,45 @@ class SwitchConfigSyncStatusEnum(Enum):
 
 class SwitchRoleEnum(Enum):
     """
-    Choices for switch role
+    Choices for switchRoleEnum field in Switch model.
     """
 
     access: str = "access"
     aggregation: str = "aggregation"
     border: str = "border"
-    borderGateway: str = "borderGateway"
-    borderGatewaySpine: str = "borderGatewaySpine"
-    borderGatewaySuperSpine: str = "borderGatewaySuperSpine"
-    borderSpine: str = "borderSpine"
-    borderSuperSpine: str = "borderSuperSpine"
-    coreRouter: str = "coreRouter"
-    edgeRouter: str = "edgeRouter"
+    border_gateway: str = "borderGateway"
+    border_gateway_spine: str = "borderGatewaySpine"
+    border_gateway_super_spine: str = "borderGatewaySuperSpine"
+    border_spine: str = "borderSpine"
+    border_super_spine: str = "borderSuperSpine"
+    core_router: str = "coreRouter"
+    edge_router: str = "edgeRouter"
     leaf: str = "leaf"
     spine: str = "spine"
-    superSpine: str = "superSpine"
-    tier2Leaf: str = "tier2Leaf"
+    super_spine: str = "superSpine"
+    tier2_leaf: str = "tier2Leaf"
     tor: str = "tor"
 
 
 class SwitchRoleFriendlyEnum(Enum):
     """
-    Switch role friendly names
+    switchRole field in Switch model.
     """
 
     access: str = "access"
     aggregation: str = "aggregation"
     border: str = "border"
-    borderGateway: str = "border gateway"
-    borderGatewaySpine: str = "border gateway spine"
-    borderGatewaySuperSpine: str = "border gateway super spine"
-    borderSpine: str = "border spine"
-    borderSuperSpine: str = "border super spine"
-    coreRouter: str = "core router"
-    edgeRouter: str = "edge router"
+    border_gateway: str = "border gateway"
+    border_gateway_spine: str = "border gateway spine"
+    border_gateway_super_spine: str = "border gateway super spine"
+    border_spine: str = "border spine"
+    border_super_spine: str = "border super spine"
+    core_router: str = "core router"
+    edge_router: str = "edge router"
     leaf: str = "leaf"
     spine: str = "spine"
-    superSpine: str = "super spine"
-    tier2Leaf: str = "tier2 leaf"
+    super_spine: str = "super spine"
+    tier2_leaf: str = "tier2 leaf"
     tor: str = "tor"
 
 

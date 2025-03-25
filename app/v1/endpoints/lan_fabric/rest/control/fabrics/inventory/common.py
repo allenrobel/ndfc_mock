@@ -92,6 +92,8 @@ def build_db_switch(switch: SwitchDiscoverItem, db_fabric: FabricDbModelV1) -> S
         standbySupState=0,
         status="",
         switchDbID=None,
+        switchRole="",
+        switchRoleEnum="",
         swType="",
         swUUID="DCNM-UUID-TEMP",
         swUUIDId=99999,

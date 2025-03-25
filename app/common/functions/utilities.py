@@ -2,6 +2,8 @@ import random
 import string
 from datetime import datetime
 
+from fastapi import HTTPException
+
 
 def get_datetime() -> datetime:
     """
@@ -51,40 +53,71 @@ def random_switch_serial_number() -> str:
     return f"FOX{gen_number(4)}{gen_string(4).upper()}"
 
 
-def map_friendly_switch_role_to_enum_key(role: str) -> str:
+external_role_to_db = {
+    "access": "access",
+    "aggregation": "aggregation",
+    "border": "border",
+    "border gateway": "border_gateway",
+    "border gateway spine": "border_gateway_spine",
+    "border gateway super spine": "border_gateway_super_spine",
+    "border spine": "border_spine",
+    "border super spine": "border_super_spine",
+    "core router": "core_router",
+    "edge router": "edge_router",
+    "leaf": "leaf",
+    "spine": "spine",
+    "super spine": "super_spine",
+    "tier2 leaf": "tier2_leaf",
+    "tor": "tor",
+}
+db_to_external_role = {v: k for k, v in external_role_to_db.items()}
+
+
+def switch_role_db_to_external(role: str) -> str:
     """
     # Summary
 
-    Map a friendly switch role name to a key to use with
-    ../enums/switch.py SwitchRoleFriendlyEnum and SwitchRoleEnum.
+    Map a user switch role name to a database switch role key.
 
     For example:
 
-    "border gateway spine" -> "borderGatewaySpine"
+    "border gateway spine" -> "border_gateway_spine"
 
     # Parameters
 
-    - role: The switch role.
+    - role: The external switch role (e.g. "border gateway spine", "edge router", etc).
 
     # Returns
 
-    The key to use with SwitchRoleFriendlyEnum and SwitchRoleEnum.
+    The key used internally for the role (e.g. "border_gateway_spine", "edge_router", etc).
     """
-    switch_role_map = {
-        "access": "access",
-        "aggregation": "aggregation",
-        "border": "border",
-        "border gateway": "borderGateway",
-        "border gateway spine": "borderGatewaySpine",
-        "border gateway super spine": "borderGatewaySuperSpine",
-        "border spine": "borderSpine",
-        "border super spine": "borderSuperSpine",
-        "core router": "coreRouter",
-        "edge router": "edgeRouter",
-        "leaf": "leaf",
-        "spine": "spine",
-        "super spine": "superSpine",
-        "tier2 leaf": "tier2Leaf",
-        "tor": "tor",
-    }
-    return switch_role_map[role]
+    return_role = db_to_external_role.get(role)
+    if not return_role:
+        msg = f"Invalid role: {role}."
+        raise HTTPException(status_code=500, detail=msg)
+    return return_role
+
+
+def switch_role_external_to_db(role: str) -> str:
+    """
+    # Summary
+
+    Map a user switch role name to a database switch role key.
+
+    For example:
+
+    "border gateway spine" -> "border_gateway_spine"
+
+    # Parameters
+
+    - role: The external switch role (e.g. "border gateway spine", "edge router", etc).
+
+    # Returns
+
+    The key used internally for the role (e.g. "border_gateway_spine", "edge_router", etc).
+    """
+    return_role = external_role_to_db.get(role)
+    if not return_role:
+        msg = f"Invalid role: {role}."
+        raise HTTPException(status_code=500, detail=msg)
+    return return_role

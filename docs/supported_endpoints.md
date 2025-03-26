@@ -130,7 +130,7 @@
 
 - `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/switches/{fabric_name}/overview`
   - `get`
-    - V1 Lan Fabric Rest Control Switches Overview By Fabric Name
+    - V1 Switches Overview Get
 
 ## Templates (v1)
 

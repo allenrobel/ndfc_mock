@@ -1279,7 +1279,9 @@ class SwitchOverview:
         """
         self.validate_properties()
 
+        # pylint: disable=no-member
         db_fabric = self.session.exec(select(FabricDbModelV1).where(FabricDbModelV1.FABRIC_NAME == self.fabric)).first()
+        # pylint: enable=no-member
         if not db_fabric:
             raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
 
@@ -1418,7 +1420,9 @@ class SwitchOverviewResponse:
         Retrieve the switch overview data for self.fabric from the database.
         """
         self.validate_properties()
+        # pylint: disable=no-member
         db_fabric = self.session.exec(select(FabricDbModelV1).where(FabricDbModelV1.FABRIC_NAME == self.fabric)).first()
+        # pylint: enable=no-member
         if not db_fabric:
             raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
 

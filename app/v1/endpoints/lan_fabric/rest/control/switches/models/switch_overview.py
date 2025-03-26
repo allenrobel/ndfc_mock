@@ -1336,7 +1336,7 @@ class SwitchOverview:
         return self._session
 
     @session.setter
-    def session(self, value):
+    def session(self, value: Session):
         self._session = value
 
 
@@ -1535,5 +1535,5 @@ class SwitchOverviewResponse:
         return self._session
 
     @session.setter
-    def session(self, value):
+    def session(self, value: Session):
         self._session = value

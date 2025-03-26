@@ -5,10 +5,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
-from ......common.enums.switch import SwitchRoleFriendlyEnum
-from ......common.functions.utilities import map_friendly_switch_role_to_enum_key
+from ......common.enums.switch import SwitchRoleEnum
+from ......common.functions.utilities import switch_role_external_to_db
 from ......db import get_session
 from .....models.inventory import SwitchDbModel
+from ..control.switches.models.switch_overview import SwitchOverviewRoles
 
 router = APIRouter(
     prefix="/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/topology/role",
@@ -74,6 +75,25 @@ def http_exception_400_invalid_switch(switch_db_id: int) -> HTTPException:
     return HTTPException(status_code=400, detail=f"Invalid switchDbId. switchDbId={switch_db_id}")
 
 
+def update_sw_overview_role(session: Session, fabric_name: str, current_role: str, new_role: str):
+    """
+    # Summary
+
+    Update the switch roles portion of the overview table.
+    """
+    instance = SwitchOverviewRoles()
+    instance.session = session
+    instance.fabric = fabric_name
+    if current_role != "":
+        instance.role = current_role
+        instance.remove()
+    instance = SwitchOverviewRoles()
+    instance.session = session
+    instance.fabric = fabric_name
+    instance.role = new_role
+    instance.add()
+
+
 @router.put(
     "/{switch_db_id}",
     response_model=InternalRoleResponseModel,
@@ -94,22 +114,26 @@ def v1_internal_role_put(
     db_switch = session.exec(select(SwitchDbModel).where(SwitchDbModel.switchDbID == switch_db_id)).first()
     if not db_switch:
         raise http_exception_400_invalid_switch(switch_db_id)
+    role_key = None
     try:
-        role_key = map_friendly_switch_role_to_enum_key(role_from_query_param)
+        role_key = switch_role_external_to_db(role_from_query_param)
     except KeyError as error:
-        msg = f"Invalid role. role={newRole}. "
+        msg = f"Invalid role: {role_key}. "
         msg += "Maybe you need to replace spaces with %20? "
         msg += "For example: border gateway spine -> border%20gateway%20spine"
         raise HTTPException(status_code=400, detail=msg) from error
-    print(f"role_key: {role_key}, SwitchRoleFriendlyEnum[role_key]: {SwitchRoleFriendlyEnum[role_key].value}")
-    db_switch.switchRole = SwitchRoleFriendlyEnum[role_key].value
-    db_switch.switchRoleEnum = role_key
+
+    current_role = db_switch.switchRole
+    new_role = role_from_query_param
+    if current_role == new_role:
+        return build_success_response(db_switch)
+
+    update_sw_overview_role(session, db_switch.fabricName, current_role, new_role)
+
+    db_switch.switchRole = new_role
+    db_switch.switchRoleEnum = SwitchRoleEnum[role_key].value
     session.add(db_switch)
     session.commit()
     session.refresh(db_switch)
-    print(f"db_switch.switchRole: {db_switch.switchRole}")
-    print(f"db_switch.switchRoleEnum: {db_switch.switchRoleEnum}")
-    print(f"db_switch.switchDbID: {db_switch.switchDbID}")
-    print(f"db_switch.serialNumber: {db_switch.serialNumber}")
     response = build_success_response(db_switch)
     return response

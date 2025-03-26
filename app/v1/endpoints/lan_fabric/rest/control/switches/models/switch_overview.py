@@ -3,7 +3,6 @@
 # call-arg for the above issue.
 # union-attr to disable errors due to: inspect.currentframe().f_code.co_name.
 # mypy: disable-error-code="call-arg,union-attr"
-import inspect
 import json
 from typing import Dict, Optional, Sequence
 
@@ -504,22 +503,19 @@ class SwitchOverviewRoles:
         - Increment by 1 the count of the record attribute matching self.role.
         - Add the updated record to the session.
         - Commit the session.
+
+        ## Notes
+
+        - self.role should be in external format. e.g. "border gateway spine"
         """
-        method_name = inspect.currentframe().f_code.co_name
-        print(f"ZZZ: {self.class_name}.{method_name}: ENTERED")
         self.validate_properties()
         statement = select(SwitchRolesDbModel).where(SwitchRolesDbModel.fabric == self.fabric)
         record = self.session.exec(statement).first()
 
-        print(f"ZZZ: {self.class_name}.{method_name}: record: {record}")
-
         for attribute in self.attributes:
             if attribute == self.role:
                 db_attribute = switch_role_external_to_db(attribute)
-                print(f"ZZZ: {self.class_name}.{method_name}: db_attribute: {db_attribute}")
-                print(f"ZZZ: {self.class_name}.{method_name}: record pre : {record}")
                 setattr(record, db_attribute, getattr(record, db_attribute) + 1)
-                print(f"ZZZ: {self.class_name}.{method_name}: record post: {record}")
                 self.session.add(record)
                 break
         self.session.commit()
@@ -546,22 +542,19 @@ class SwitchOverviewRoles:
         - Decrement by 1 the count of the record attribute matching self.role.
         - Add the updated record to the session.
         - Commit the session.
+
+        ## Notes
+
+        - self.role should be in external format. e.g. "border gateway spine"
         """
-        method_name = inspect.currentframe().f_code.co_name
-        print(f"ZZZ: {self.class_name}.{method_name}: ENTERED")
         self.validate_properties()
         statement = select(SwitchRolesDbModel).where(SwitchRolesDbModel.fabric == self.fabric)
         record = self.session.exec(statement).first()
 
-        print(f"ZZZ: {self.class_name}.{method_name}: record: {record}")
-
         for attribute in self.attributes:
             db_attribute = switch_role_external_to_db(attribute)
             if self.role == attribute and getattr(record, db_attribute) > 0:
-                print(f"ZZZ: {self.class_name}.{method_name}: self.role: {self.role}, attribute: {attribute}, db_attribute: {db_attribute}")
-                print(f"ZZZ: {self.class_name}.{method_name}: remove pre : record: {record}")
                 setattr(record, db_attribute, getattr(record, db_attribute) - 1)
-                print(f"ZZZ: {self.class_name}.{method_name}: remove post: record: {record}")
                 self.session.add(record)
                 break
         self.session.commit()
@@ -571,13 +564,7 @@ class SwitchOverviewRoles:
         Convert the database model to a model with keys expected by
         the outside world. e.g. border_gateway_spine -> border gateway spine
         """
-        method_name = inspect.currentframe().f_code.co_name
-        print(f"ZZZ: {self.class_name}.{method_name}: ENTERED")
-
-        print(f"ZZZ: {self.class_name}.{method_name}: model: {model}")
-
         model_dict = model.model_dump()
-        print(f"ZZZ: {self.class_name}.{method_name}: model_dict: {model_dict}")
 
         exported = {}
         for key, value in model_dict.items():
@@ -588,7 +575,6 @@ class SwitchOverviewRoles:
                 raise ValueError(f"Invalid role: {key}")
             exported[new_key] = value
 
-        print(f"ZZZ: {self.class_name}.{method_name}: exported: {exported}")
         return exported
 
     def response_json(self) -> str:
@@ -1488,13 +1474,10 @@ class SwitchOverviewResponse:
             are not valid Python attribute names.  Looked into using Field(alias=...),
             but that didn't work (based on some internet sleuthing).
         """
-        method_name = inspect.currentframe().f_code.co_name
-        print(f"ZZZAAA: {self.class_name}.{method_name}: ENTERED")
         if not self._refreshed:
             raise ValueError("Data not refreshed. Call refresh() first.")
 
         roles_response_dict = self.roles.response_dict()
-        print(f"ZZZ: {self.class_name}.{method_name}: roles_response_dict: {roles_response_dict}")
 
         response = {}
         response["switchConfig"] = self.sync.response_model().model_dump()
@@ -1502,7 +1485,6 @@ class SwitchOverviewResponse:
         response["switchHWVersions"] = self.build_hw_response()
         response["switchRoles"] = roles_response_dict
         response["switchSWVersions"] = self.build_sw_response()
-        print(f"ZZZ: {self.class_name}.{method_name}: response: {response}")
         return response
 
     def response_json(self) -> str:

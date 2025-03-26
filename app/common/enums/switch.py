@@ -70,8 +70,8 @@ class SwitchUnmanageableCauseEnum(Enum):
     Choices for unmanageableCause field in Switch model.
     """
 
-    none = ""
-    Unreachable = "Unreachable"
+    none: str = ""
+    Unreachable: str = "Unreachable"
 
 
 class VpcRoleEnum(Enum):

@@ -4,7 +4,7 @@
 # union-attr to disable errors due to: inspect.currentframe().f_code.co_name.
 # mypy: disable-error-code="call-arg,union-attr"
 import json
-from typing import Dict, Optional, Sequence
+from typing import Any, Dict, Optional, Sequence
 
 from fastapi import HTTPException
 from pydantic import BaseModel
@@ -293,23 +293,38 @@ class SwitchOverviewHealth:
                 break
         self.session.commit()
 
+    def response_dict(self) -> dict[str, Any]:
+        """
+        Returns the current switch health data for self.fabric as a dictionary.
+        """
+        self.validate_properties()
+        statement = select(SwitchHealthDbModel).where(SwitchHealthDbModel.fabric == self.fabric)
+        model = self.session.exec(statement).first()
+        if model is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
+        return model.model_dump(exclude={"fabric"})
+
     def response_json(self) -> str:
         """
         Returns the current switch health data for self.fabric as JSON.
         """
         self.validate_properties()
         statement = select(SwitchHealthDbModel).where(SwitchHealthDbModel.fabric == self.fabric)
-        switch_health = self.session.exec(statement).first()
-        return switch_health.model_dump_json(exclude={"fabric"})
+        model = self.session.exec(statement).first()
+        if model is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
+        return model.model_dump_json(exclude={"fabric"})
 
-    def response_model(self) -> SwitchHealthDbModel | None:
+    def response_model(self) -> SwitchHealthDbModel:
         """
         Returns the current switch health data for self.fabric as a model.
         """
         self.validate_properties()
         statement = select(SwitchHealthDbModel).where(SwitchHealthDbModel.fabric == self.fabric)
-        switch_health = self.session.exec(statement).first()
-        return switch_health
+        model = self.session.exec(statement).first()
+        if model is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
+        return model
 
     @property
     def fabric(self) -> str:
@@ -574,7 +589,6 @@ class SwitchOverviewRoles:
             if new_key is None:
                 raise ValueError(f"Invalid role: {key}")
             exported[new_key] = value
-
         return exported
 
     def response_json(self) -> str:
@@ -588,6 +602,8 @@ class SwitchOverviewRoles:
         self.validate_properties()
         statement = select(SwitchRolesDbModel).where(SwitchRolesDbModel.fabric == self.fabric)
         model = self.session.exec(statement).first()
+        if model is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
         return json.dumps(self.export(model))
 
     def response_dict(self) -> dict:
@@ -605,6 +621,8 @@ class SwitchOverviewRoles:
         self.validate_properties()
         statement = select(SwitchRolesDbModel).where(SwitchRolesDbModel.fabric == self.fabric)
         model = self.session.exec(statement).first()
+        if model is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
         return self.export(model)
 
     @property
@@ -785,6 +803,21 @@ class SwitchOverviewSw:
                     self.session.add(record)
         self.session.commit()
 
+    def response_dict(self) -> dict:
+        """
+        Returns the current switch software version data for self.fabric as a dictionary.
+        """
+        self.validate_properties()
+        statement = select(SwitchSWVersionsDbModel).where(SwitchSWVersionsDbModel.fabric == self.fabric)
+        records = self.session.exec(statement).all()
+        if records is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
+        response = {}
+        for record in records:
+            if record.version_name != "ignore":
+                response[record.version_name] = record.count
+        return response
+
     def response_json(self) -> str:
         """
         Returns the current switch software version data for self.fabric as JSON.
@@ -792,6 +825,8 @@ class SwitchOverviewSw:
         self.validate_properties()
         statement = select(SwitchSWVersionsDbModel).where(SwitchSWVersionsDbModel.fabric == self.fabric)
         records = self.session.exec(statement).all()
+        if records is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
         response = {}
         for record in records:
             if record.version_name != "ignore":
@@ -804,8 +839,10 @@ class SwitchOverviewSw:
         """
         self.validate_properties()
         statement = select(SwitchSWVersionsDbModel).where(SwitchSWVersionsDbModel.fabric == self.fabric)
-        switch_sw_versions = self.session.exec(statement).all()
-        return switch_sw_versions
+        records = self.session.exec(statement).all()
+        if records is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
+        return records
 
     @property
     def fabric(self) -> str:
@@ -978,6 +1015,21 @@ class SwitchOverviewHw:
                     self.session.add(record)
         self.session.commit()
 
+    def response_dict(self) -> dict:
+        """
+        Returns the current switch hardware model data for self.fabric as a dictionary.
+        """
+        self.validate_properties()
+        statement = select(SwitchHwDbModel).where(SwitchHwDbModel.fabric == self.fabric)
+        records = self.session.exec(statement).all()
+        if records is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
+        response = {}
+        for record in records:
+            if record.model != "ignore":
+                response[record.model] = record.count
+        return response
+
     def response_json(self) -> str:
         """
         Returns the current switch hardware model data for self.fabric as JSON.
@@ -985,6 +1037,8 @@ class SwitchOverviewHw:
         self.validate_properties()
         statement = select(SwitchHwDbModel).where(SwitchHwDbModel.fabric == self.fabric)
         records = self.session.exec(statement).all()
+        if records is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
         response = {}
         for record in records:
             if record.model != "ignore":
@@ -998,6 +1052,8 @@ class SwitchOverviewHw:
         self.validate_properties()
         statement = select(SwitchHwDbModel).where(SwitchHwDbModel.fabric == self.fabric)
         records = self.session.exec(statement).all()
+        if records is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
         return records
 
     @property
@@ -1160,6 +1216,17 @@ class SwitchOverviewSync:
                 break
         self.session.commit()
 
+    def response_dict(self) -> dict[str, Any]:
+        """
+        Returns the current switch sync status data as a dictionary.
+        """
+        self.validate_properties()
+        statement = select(SwitchConfigDbModel).where(SwitchConfigDbModel.fabric == self.fabric)
+        model = self.session.exec(statement).first()
+        if model is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
+        return model.model_dump(exclude={"fabric"})
+
     def response_json(self) -> str:
         """
         Returns the current switch sync status data as JSON.
@@ -1167,15 +1234,19 @@ class SwitchOverviewSync:
         self.validate_properties()
         statement = select(SwitchConfigDbModel).where(SwitchConfigDbModel.fabric == self.fabric)
         model = self.session.exec(statement).first()
+        if model is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
         return model.model_dump_json(exclude={"fabric"})
 
-    def response_model(self) -> SwitchConfigDbModel | None:
+    def response_model(self) -> SwitchConfigDbModel:
         """
         Returns the current switch sync status data as a model.
         """
         self.validate_properties()
         statement = select(SwitchConfigDbModel).where(SwitchConfigDbModel.fabric == self.fabric)
         model = self.session.exec(statement).first()
+        if model is None:
+            raise HTTPException(status_code=404, detail=f"Fabric {self.fabric} not found")
         return model
 
     @property
@@ -1477,14 +1548,12 @@ class SwitchOverviewResponse:
         if not self._refreshed:
             raise ValueError("Data not refreshed. Call refresh() first.")
 
-        roles_response_dict = self.roles.response_dict()
-
         response = {}
-        response["switchConfig"] = self.sync.response_model().model_dump()
-        response["switchHealth"] = self.health.response_model().model_dump()
-        response["switchHWVersions"] = self.build_hw_response()
-        response["switchRoles"] = roles_response_dict
-        response["switchSWVersions"] = self.build_sw_response()
+        response["switchConfig"] = self.sync.response_dict()
+        response["switchHealth"] = self.health.response_dict()
+        response["switchHWVersions"] = self.hw.response_dict()
+        response["switchRoles"] = self.roles.response_dict()
+        response["switchSWVersions"] = self.sw.response_dict()
         return response
 
     def response_json(self) -> str:

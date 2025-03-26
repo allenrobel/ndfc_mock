@@ -3,6 +3,7 @@ from sqlmodel import Session
 
 from .......db import get_session
 from ......models.fabric import FabricCreate, FabricDbModelV1, FabricResponseModel
+from ..switches.models.switch_overview import SwitchOverview
 from .common import build_response
 
 router = APIRouter(
@@ -35,10 +36,15 @@ def v1_fabric_post(
     try:
         session.commit()
     except Exception as error:
-        # print(f"Error: {error}")
         session.rollback()
         msg = f"ND Site with name {fabric_name} already exists."
         raise HTTPException(status_code=500, detail=msg) from error
     session.refresh(db_fabric)
+
+    overview = SwitchOverview()
+    overview.fabric = db_fabric.FABRIC_NAME
+    overview.session = session
+    overview.initialize_db_table()
+
     response = build_response(db_fabric)
     return response

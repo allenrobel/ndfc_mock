@@ -14,8 +14,6 @@ class SwitchBase(SQLModel):
     Base representation of a switch.
     """
 
-    model_config = ConfigDict(use_enum_values=True, validate_default=True)
-
     activeSupSlot: int
     availPorts: int
     ccStatus: str
@@ -108,10 +106,8 @@ class SwitchBase(SQLModel):
     swWwn: str | None
     swWwnName: str | None
     switchDbID: int
-    # switchRole: str = Field(default=SwitchRoleFriendlyEnum.leaf)
-    # switchRoleEnum: str = Field(default=SwitchRoleEnum.leaf)
-    switchRole: str = Field(default="")
-    switchRoleEnum: str = Field(default="")
+    switchRole: str = Field(default="spine")
+    switchRoleEnum: str = Field(default="spine")
     sysDescr: str
     systemMode: str = Field(default="Normal")
     uid: int
@@ -133,15 +129,28 @@ class SwitchBase(SQLModel):
     waitForSwitchModeChg: bool
     wwn: str | None
 
+    class Config:
+        """
+        Configuration for the model.
+        """
+
+        use_enum_values = True
+        validate_default = True
+
 
 class SwitchResponseModel(SwitchBase):
     """
     Representation of a switch in a response.
     """
 
-    model_config = ConfigDict(use_enum_values=True)
-
     fexMap: dict
+
+    class Config:
+        """
+        Configuration for the model.
+        """
+
+        use_enum_values = True
 
 
 class SwitchDbModel(SwitchBase, table=True):
@@ -162,8 +171,6 @@ class SwitchDiscoverItem(BaseModel):
     Representation of a switch in a SwitchDiscoverBodyModel.
     """
 
-    model_config = ConfigDict(use_enum_values=True)
-
     deviceIndex: str
     serialNumber: str
     sysName: str
@@ -171,14 +178,27 @@ class SwitchDiscoverItem(BaseModel):
     version: str
     ipaddr: str
 
+    class Config:
+        """
+        Configuration for the model.
+        """
+
+        use_enum_values = True
+
 
 class SwitchDiscoverSuccessResponseModel(BaseModel):
     """
     Representation of a switch discovery success response.
     """
 
-    model_config = ConfigDict(use_enum_values=True)
     status: str
+
+    class Config:
+        """
+        Configuration for the model.
+        """
+
+        use_enum_values = True
 
 
 class SwitchDiscoverBodyModel(BaseModel):
@@ -186,10 +206,15 @@ class SwitchDiscoverBodyModel(BaseModel):
     Representation of a switch discovery request body.
     """
 
-    model_config = ConfigDict(use_enum_values=True)
-
     seedIP: str
     username: str
     password: str
     preserveConfig: bool
     switches: List[SwitchDiscoverItem]
+
+    class Config:
+        """
+        Configuration for the model.
+        """
+
+        use_enum_values = True

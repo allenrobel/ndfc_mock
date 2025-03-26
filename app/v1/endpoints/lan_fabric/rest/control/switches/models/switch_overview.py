@@ -1351,7 +1351,7 @@ class SwitchOverviewResponse:
     ## Methods
     - refresh: Retrieve the switch overview data for self.fabric from the database.
     - response_json: Return the current switch overview data for self.fabric as JSON.
-    - response_model: Return the current switch overview data for self.fabric as a model.
+    - response_dict: Return the current switch overview data for self.fabric as a dictionary.
 
     ## Properties
 
@@ -1372,23 +1372,31 @@ class SwitchOverviewResponse:
         response.fabric = "fabric1"
         response.refresh()
         print(f"response: {response.response_json()}")
-        response_model = response.response_model()
+        response_dict = response.response_dict()
         print("Model access")
-        print(f"  fabric: {response_model.switchConfig.fabric}")
+        print(f"  fabric: {response_dict.get('switchConfig', {}).get('fabric')}")
         print("   Sync status:")
-        print(f"      in_sync: {response_model.switchConfig.in_sync}")
-        print(f"      out_of_sync: {response_model.switchConfig.out_of_sync}")
+        print(f"      in_sync: {response_dict.get('switchConfig', {}).get('in_sync')}")
+        print(f"      out_of_sync: {response_dict.get('switchConfig', {}).get('out_of_sync')}")
         print("   Health status:")
-        print(f"      Healthy: {response_model.switchHealth.Healthy}")
-        print(f"      Major: {response_model.switchHealth.Major}")
-        print(f"      Minor: {response_model.switchHealth.Minor}")
-        print(f"  HW Versions: {response_model.switchHWVersions}")
+        print(f"      Healthy: {response_dict.get('switchHealth', {}).get('Healthy')}")
+        print(f"      Major: {response_dict.get('switchHealth', {}).get('Major')}")
+        print(f"      Minor: {response_dict.get('switchHealth', {}).get('Minor')")
+        print(f"  HW Versions: {response_dict.get('switchHWVersions')}")
         print(f"  Roles:")
-        print(f"     access: {response_model.switchRoles.access}")
-        print(f"     aggregation: {response_model.switchRoles.aggregation}")
-        print(f"  SW Versions: {response_model.switchSWVersions}")
+        print(f"     access: {response_dict.get('switchRoles', {}).get("access")}")
+        print(f"     aggregation: {response_dict.get('switchRoles', {}).get("aggregation")}")
+        print(f"  SW Versions: {response_dict.get('switchSWVersions')}")
         print()
     ```
+
+    ## Notes
+
+    - The response_dict method returns a dictionary because switchRoles is a dictionary,
+      not a model.  switchRoles is a dictionary because the keys used by NDFC have spaces
+      in them (e.g. "border gateway spine"), which are not valid Python attribute names.
+      Looked into using Field(alias=...), but that didn't work (based on some internet
+      sleuthing).
     """
 
     def __init__(self):

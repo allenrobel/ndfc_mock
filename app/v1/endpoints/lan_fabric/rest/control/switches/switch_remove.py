@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-def update_health(db_session: Session, fabric_name: str, health: str):
+def update_health(db_session: Session, fabric_name: str, health: str) -> None:
     """
     # Summary
 
@@ -27,7 +27,7 @@ def update_health(db_session: Session, fabric_name: str, health: str):
     instance.remove()
 
 
-def update_hw(db_session: Session, fabric_name: str, model: str):
+def update_hw(db_session: Session, fabric_name: str, model: str) -> None:
     """
     # Summary
 
@@ -42,7 +42,7 @@ def update_hw(db_session: Session, fabric_name: str, model: str):
     instance.remove()
 
 
-def update_role(db_session: Session, fabric_name: str, role: str):
+def update_role(db_session: Session, fabric_name: str, role: str) -> None:
     """
     # Summary
 
@@ -57,7 +57,7 @@ def update_role(db_session: Session, fabric_name: str, role: str):
     instance.remove()
 
 
-def update_sw(db_session: Session, fabric_name: str, release: str):
+def update_sw(db_session: Session, fabric_name: str, release: str) -> None:
     """
     # Summary
 
@@ -72,7 +72,7 @@ def update_sw(db_session: Session, fabric_name: str, release: str):
     instance.remove()
 
 
-def update_sync(db_session: Session, fabric_name: str, sync: str):
+def update_sync(db_session: Session, fabric_name: str, sync: str) -> None:
     """
     # Summary
 
@@ -86,31 +86,13 @@ def update_sync(db_session: Session, fabric_name: str, sync: str):
     instance.sync = sync.lower().replace("-", "_")
     instance.remove()
 
-
-description = "(v1) Remove the Switch from the given Fabric."
-
-
-@router.delete("/{fabric_name}/switches/{serial_number}", description=description)
-def v1_remove_switch_from_fabric(*, session: Session = Depends(get_session), fabric_name: str, serial_number: str):
-    """
-    # Summary
-
-    Switch DELETE request handler
-
-    ## Path
-
-    /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabricName}/switches/{serialNumber}
-    """
-    db_fabric = session.exec(select(FabricDbModelV1).where(FabricDbModelV1.FABRIC_NAME == fabric_name)).first()
-    if not db_fabric:
-        path = f"{router.prefix}/{fabric_name}/switches/{serial_number}"
-        raise HTTPException(status_code=404, detail=build_404_response(path))
+def remove_switch_from_fabric(session: Session, db_fabric: FabricDbModelV1, serial_number: str) -> bool:
     fabric_id = db_fabric.id
     db_switch = session.exec(select(SwitchDbModel).where(SwitchDbModel.fabricId == fabric_id).where(SwitchDbModel.serialNumber == serial_number)).first()
     if db_switch is None:
-        # NDFC returns 200 as if the switch was actually removed.  We emulate that here.
-        msg = f"The switch(es)={serial_number} have been removed from the fabric={fabric_name}"
-        return msg
+        return False
+
+    fabric_name = db_fabric.FABRIC_NAME
 
     health = db_switch.operStatus
     model = db_switch.model
@@ -125,8 +107,67 @@ def v1_remove_switch_from_fabric(*, session: Session = Depends(get_session), fab
     update_sync(session, fabric_name, sync)
 
     session.delete(db_switch)
-    session.commit()
+    commit = True
+
+description = "(v1) Remove the Switch from the given Fabric."
+
+
+@router.delete("/{fabric_name}/switches/{user_serial_numbers}", description=description)
+def v1_remove_switches_from_fabric(*, session: Session = Depends(get_session), fabric_name: str, user_serial_numbers: str) -> str:
+    """
+    # Summary
+
+    Switch DELETE request handler
+
+    ## Path
+
+    /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabricName}/switches/{serialNumber}
+
+    ## Notes
+
+    -   This endpoint supports the removal of one or more switches from a fabric.
+    -   The serialNumber query parameter (serial_number here) can be a single serial_number,
+        or a comma-separated list of serial_number.
+
+    ## Example responses
+
+    -   The switch(es)=FOX2109PGCS have been removed from the fabric=F1
+    -   The switch(es)=FOX2109PGD1,FOX2109PGCS,FOX2109PGD0,FDO211218HH have been removed from the fabric=F1
+    """
+    db_fabric = session.exec(select(FabricDbModelV1).where(FabricDbModelV1.FABRIC_NAME == fabric_name)).first()
+    if not db_fabric:
+        path = f"{router.prefix}/{fabric_name}/switches/{user_serial_numbers}"
+        raise HTTPException(status_code=404, detail=build_404_response(path))
+    fabric_id = db_fabric.id
+
+    commit = set()
+    serial_numbers = user_serial_numbers.split(",")
+    for serial_number in serial_numbers:
+
+        commit.add(remove_switch_from_fabric(session, db_fabric, serial_number))
+        # db_switch = session.exec(select(SwitchDbModel).where(SwitchDbModel.fabricId == fabric_id).where(SwitchDbModel.serialNumber == serial_number)).first()
+        # if db_switch is None:
+        #     continue
+
+        # health = db_switch.operStatus
+        # model = db_switch.model
+        # release = db_switch.release
+        # role = db_switch.switchRole
+        # sync = db_switch.ccStatus
+
+        # update_health(session, fabric_name, health)
+        # update_hw(session, fabric_name, model)
+        # update_role(session, fabric_name, role)
+        # update_sw(session, fabric_name, release)
+        # update_sync(session, fabric_name, sync)
+
+        # session.delete(db_switch)
+        # commit = True
+
+    if True in commit:
+        session.commit()
     # NDFC response
     # The switch(es)=FOX2109PGCS have been removed from the fabric=F1
-    msg = f"The switch(es)={serial_number} have been removed from the fabric={fabric_name}"
-    return msg
+    # The switch(es)=FOX2109PGD1,FOX2109PGCS,FOX2109PGD0,FDO211218HH have been removed from the fabric=F1
+    # NDFC returns 200 whether or not the switch (or switches) were actually removed.
+    return f"The switch(es)={user_serial_numbers} have been removed from the fabric={fabric_name}"

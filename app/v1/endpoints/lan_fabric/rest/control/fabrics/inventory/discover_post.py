@@ -136,6 +136,9 @@ def v1_inventory_discover_post(*, session: Session = Depends(get_session), fabri
         # For discovered switches, set their initial role to spine
         db_switch.switchRoleEnum = "spine"
         db_switch.switchRole = "spine"
+        db_switch.ccStatus = "In-Sync"
+        db_switch.operStatus = "Healthy"
+        db_switch.fabricId = fabric_id
         session.add(db_switch)
     session.commit()
     # Update the switch overview tables

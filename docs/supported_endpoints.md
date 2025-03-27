@@ -132,6 +132,10 @@
   - `get`
     - V1 Switches Overview Get
 
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/switches/{serial_number}`
+  - `delete`
+    - V1 Remove Switch From Fabric
+
 ## Templates (v1)
 
 - `/appcenter/cisco/ndfc/api/v1/configtemplate/rest/config/templates/{template_name}`

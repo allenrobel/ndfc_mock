@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from ........common.enums.switch import SwitchRoleEnum, SwitchRoleFriendlyEnum
-from ........common.functions.utilities import switch_role_db_to_external, switch_role_external_to_db
+from ........common.functions.utilities import switch_role_external_to_db
 from ........db import get_session
 from .......models.inventory import SwitchDbModel
 from ...switches.models.switch_overview import SwitchOverviewRoles
@@ -57,14 +57,17 @@ def update_sw_overview_role(session: Session, fabric_name: str, current_role: st
     # Summary
 
     Update the switch roles portion of the overview table.
+
+    current_role should be in external format e.g. "border gateway", not "border_gateway".
+    new_role should be in external format e.g. "border gateway", not "border_gateway".
     """
     instance = SwitchOverviewRoles()
     instance.session = session
     instance.fabric = fabric_name
     if current_role != "":
-        instance.role = switch_role_db_to_external(current_role)
+        instance.role = current_role
         instance.remove()
-    instance.role = switch_role_db_to_external(new_role)
+    instance.role = new_role
     instance.add()
 
 

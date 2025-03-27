@@ -256,8 +256,8 @@ class SwitchOverviewHealth:
             if self.health == attribute:
                 setattr(record, attribute, getattr(record, attribute) + 1)
                 self.session.add(record)
+                self.session.commit()
                 break
-        self.session.commit()
 
     def delete(self):
         """
@@ -290,8 +290,8 @@ class SwitchOverviewHealth:
             if self.health == attribute and getattr(record, attribute) > 0:
                 setattr(record, attribute, getattr(record, attribute) - 1)
                 self.session.add(record)
+                self.session.commit()
                 break
-        self.session.commit()
 
     def response_dict(self) -> dict[str, Any]:
         """
@@ -467,23 +467,6 @@ class SwitchOverviewRoles:
             "super spine",
             "tor",
         }
-        self.external_to_db = {
-            "access": "access",
-            "aggregation": "aggregation",
-            "border": "border",
-            "border gateway": "border_gateway",
-            "border gateway spine": "border_gateway_spine",
-            "border gateway super spine": "border_gateway_super_spine",
-            "border spine": "border_spine",
-            "border super spine": "border_super_spine",
-            "core router": "core_router",
-            "edge router": "edge_router",
-            "leaf": "leaf",
-            "spine": "spine",
-            "super spine": "super_spine",
-            "tor": "tor",
-        }
-        self.db_to_external = {v: k for k, v in self.external_to_db.items()}
 
     def initialize_db_table(self):
         """
@@ -712,7 +695,7 @@ class SwitchOverviewSw:
         self._session = None
         self._model_init = SwitchSWVersionsDbModel(version_name="ignore", count=0)
 
-    def initialize_db_table(self):
+    def initialize_db_table(self) -> None:
         """
         Initializes the switch software versions database table.
         """
@@ -729,7 +712,7 @@ class SwitchOverviewSw:
         if commit:
             self.session.commit()
 
-    def validate_properties(self):
+    def validate_properties(self) -> None:
         """
         Validate the properties of the class.
         """
@@ -738,7 +721,7 @@ class SwitchOverviewSw:
         if self._session is None:
             raise ValueError("Session not set")
 
-    def add(self):
+    def add(self) -> None:
         """
         # Summary
 
@@ -761,10 +744,10 @@ class SwitchOverviewSw:
                 if record.version_name == self.version:
                     record.count += 1
                     self.session.add(record)
+                    self.session.commit()
                     break
-        self.session.commit()
 
-    def delete(self):
+    def delete(self) -> None:
         """
         # Summary
 
@@ -779,7 +762,7 @@ class SwitchOverviewSw:
             self.session.delete(record)
             self.session.commit()
 
-    def remove(self):
+    def remove(self) -> None:
         """
         # Summary
 
@@ -793,15 +776,18 @@ class SwitchOverviewSw:
 
         if self.version not in [record.version_name for record in records]:
             return
-
+        commit = False
         for record in records:
             if record.version_name == self.version and record.count > 0:
                 record.count -= 1
                 if record.count == 0:
+                    commit = True
                     self.session.delete(record)
                 else:
+                    commit = True
                     self.session.add(record)
-        self.session.commit()
+        if commit is True:
+            self.session.commit()
 
     def response_dict(self) -> dict:
         """
@@ -924,7 +910,7 @@ class SwitchOverviewHw:
         self._session = None
         self._model_init = SwitchHwDbModel(model="ignore", count=0)
 
-    def initialize_db_table(self):
+    def initialize_db_table(self) -> None:
         """
         Initializes the switch hardware versions database table.
         """
@@ -941,7 +927,7 @@ class SwitchOverviewHw:
         if commit:
             self.session.commit()
 
-    def validate_properties(self):
+    def validate_properties(self) -> None:
         """
         Validate the properties of the class.
         """
@@ -950,7 +936,7 @@ class SwitchOverviewHw:
         if self._session is None:
             raise ValueError("Session not set")
 
-    def add(self):
+    def add(self) -> None:
         """
         # Summary
 
@@ -973,10 +959,10 @@ class SwitchOverviewHw:
                 if record.model == self.model:
                     record.count += 1
                     self.session.add(record)
+                    self.session.commit()
                     break
-        self.session.commit()
 
-    def delete(self):
+    def delete(self) -> None:
         """
         # Summary
 
@@ -991,7 +977,7 @@ class SwitchOverviewHw:
             self.session.delete(record)
             self.session.commit()
 
-    def remove(self):
+    def remove(self) -> None:
         """
         # Summary
 
@@ -1006,14 +992,17 @@ class SwitchOverviewHw:
         if self.model not in [record.model for record in records]:
             return
 
+        commit = False
         for record in records:
             if record.model == self.model and record.count > 0:
                 record.count -= 1
+                commit = True
                 if record.count == 0:
                     self.session.delete(record)
                 else:
                     self.session.add(record)
-        self.session.commit()
+        if commit is True:
+            self.session.commit()
 
     def response_dict(self) -> dict:
         """
@@ -1045,7 +1034,7 @@ class SwitchOverviewHw:
                 response[record.model] = record.count
         return json.dumps(response)
 
-    def response_model(self) -> Sequence[SwitchHwDbModel] | None:
+    def response_model(self) -> Sequence[SwitchHwDbModel]:
         """
         Returns the current switch hardware model data for self.fabric as a model.
         """
@@ -1137,7 +1126,7 @@ class SwitchOverviewSync:
         self._model_init = SwitchConfigDbModel(in_sync=0, out_of_sync=0)
         self.attributes = {"in_sync", "out_of_sync"}
 
-    def initialize_db_table(self):
+    def initialize_db_table(self) -> None:
         """
         Initializes the switch configuration synchronization database table.
         """
@@ -1154,7 +1143,7 @@ class SwitchOverviewSync:
         if commit:
             self.session.commit()
 
-    def validate_properties(self):
+    def validate_properties(self) -> None:
         """
         Validate the properties of the class.
         """
@@ -1163,7 +1152,7 @@ class SwitchOverviewSync:
         if self._session is None:
             raise ValueError("Session not set")
 
-    def add(self):
+    def add(self) -> None:
         """
         # Summary
 
@@ -1179,10 +1168,10 @@ class SwitchOverviewSync:
             if attribute == self.sync:
                 setattr(record, attribute, getattr(record, attribute) + 1)
                 self.session.add(record)
+                self.session.commit()
                 break
-        self.session.commit()
 
-    def delete(self):
+    def delete(self) -> None:
         """
         # Summary
 
@@ -1197,7 +1186,7 @@ class SwitchOverviewSync:
             self.session.delete(record)
             self.session.commit()
 
-    def remove(self):
+    def remove(self) -> None:
         """
         # Summary
 
@@ -1213,8 +1202,8 @@ class SwitchOverviewSync:
             if self.sync == attribute and getattr(record, attribute) > 0:
                 setattr(record, attribute, getattr(record, attribute) - 1)
                 self.session.add(record)
+                self.session.commit()
                 break
-        self.session.commit()
 
     def response_dict(self) -> dict[str, Any]:
         """

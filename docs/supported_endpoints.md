@@ -132,9 +132,9 @@
   - `get`
     - V1 Switches Overview Get
 
-- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabric_name}/switches/{serial_number}`
+- `/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{fabricName}/switches/{serialNumbers}`
   - `delete`
-    - V1 Remove Switch From Fabric
+    - (v1) Remove the switch(es), specified by serialNumbers, a comma-separated list of switch serial numbers, from the fabric specified by fabricName.
 
 ## Templates (v1)
 

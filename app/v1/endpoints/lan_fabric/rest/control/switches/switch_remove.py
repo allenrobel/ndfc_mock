@@ -140,11 +140,13 @@ def remove_switch_from_fabric(session: Session, db_fabric: FabricDbModelV1, seri
     return True
 
 
-description = "(v1) Remove the Switch from the given Fabric."
+description = "(v1) Remove the switch(es), "
+description += "specified by serialNumbers, a comma-separated list of "
+description += "switch serial numbers, from the fabric specified by fabricName."
 
 
-@router.delete("/{fabric_name}/switches/{user_serial_numbers}", description=description)
-def v1_remove_switches_from_fabric(*, session: Session = Depends(get_session), fabric_name: str, user_serial_numbers: str) -> str:
+@router.delete("/{fabricName}/switches/{serialNumbers}", description=description, summary=description)
+def v1_remove_switches_from_fabric(*, session: Session = Depends(get_session), fabricName: str, serialNumbers: str) -> str:
     """
     # Summary
 
@@ -165,34 +167,15 @@ def v1_remove_switches_from_fabric(*, session: Session = Depends(get_session), f
     -   The switch(es)=FOX2109PGCS have been removed from the fabric=F1
     -   The switch(es)=FOX2109PGD1,FOX2109PGCS,FOX2109PGD0,FDO211218HH have been removed from the fabric=F1
     """
-    db_fabric = session.exec(select(FabricDbModelV1).where(FabricDbModelV1.FABRIC_NAME == fabric_name)).first()
+    db_fabric = session.exec(select(FabricDbModelV1).where(FabricDbModelV1.FABRIC_NAME == fabricName)).first()
     if not db_fabric:
-        path = f"{router.prefix}/{fabric_name}/switches/{user_serial_numbers}"
+        path = f"{router.prefix}/{fabricName}/switches/{serialNumbers}"
         raise HTTPException(status_code=404, detail=build_404_response(path))
 
     commit = set()
-    serial_numbers = user_serial_numbers.split(",")
+    serial_numbers = serialNumbers.split(",")
     for serial_number in serial_numbers:
-
         commit.add(remove_switch_from_fabric(session, db_fabric, serial_number))
-        # db_switch = session.exec(select(SwitchDbModel).where(SwitchDbModel.fabricId == fabric_id).where(SwitchDbModel.serialNumber == serial_number)).first()
-        # if db_switch is None:
-        #     continue
-
-        # health = db_switch.operStatus
-        # model = db_switch.model
-        # release = db_switch.release
-        # role = db_switch.switchRole
-        # sync = db_switch.ccStatus
-
-        # update_health(session, fabric_name, health)
-        # update_hw(session, fabric_name, model)
-        # update_role(session, fabric_name, role)
-        # update_sw(session, fabric_name, release)
-        # update_sync(session, fabric_name, sync)
-
-        # session.delete(db_switch)
-        # commit = True
 
     if True in commit:
         session.commit()
@@ -200,4 +183,4 @@ def v1_remove_switches_from_fabric(*, session: Session = Depends(get_session), f
     # The switch(es)=FOX2109PGCS have been removed from the fabric=F1
     # The switch(es)=FOX2109PGD1,FOX2109PGCS,FOX2109PGD0,FDO211218HH have been removed from the fabric=F1
     # NDFC returns 200 whether or not the switch (or switches) were actually removed.
-    return f"The switch(es)={user_serial_numbers} have been removed from the fabric={fabric_name}"
+    return f"The switch(es)={serialNumbers} have been removed from the fabric={fabricName}"

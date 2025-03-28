@@ -86,13 +86,43 @@ def update_sync(db_session: Session, fabric_name: str, sync: str) -> None:
     instance.sync = sync.lower().replace("-", "_")
     instance.remove()
 
+
 def remove_switch_from_fabric(session: Session, db_fabric: FabricDbModelV1, serial_number: str) -> bool:
+    """
+    # Summary
+
+    Remove one switch (specified by switch serial_number) from the fabric
+    contained in db_fabric.
+
+    ## Parameters
+
+    session: Session
+        The database session.
+    db_fabric: FabricDbModelV1
+        The fabric from which to remove the switch.
+    serial_number: str
+        The serial number of the switch to remove.
+
+    ## Returns
+
+    ### bool
+
+    - True if the switch was removed and a session commit is required
+    - False otherwise.
+
+    ## Raises
+
+    None
+    """
     fabric_id = db_fabric.id
     db_switch = session.exec(select(SwitchDbModel).where(SwitchDbModel.fabricId == fabric_id).where(SwitchDbModel.serialNumber == serial_number)).first()
     if db_switch is None:
         return False
 
     fabric_name = db_fabric.FABRIC_NAME
+
+    if fabric_name is None:
+        return False
 
     health = db_switch.operStatus
     model = db_switch.model
@@ -107,7 +137,8 @@ def remove_switch_from_fabric(session: Session, db_fabric: FabricDbModelV1, seri
     update_sync(session, fabric_name, sync)
 
     session.delete(db_switch)
-    commit = True
+    return True
+
 
 description = "(v1) Remove the Switch from the given Fabric."
 
@@ -138,7 +169,6 @@ def v1_remove_switches_from_fabric(*, session: Session = Depends(get_session), f
     if not db_fabric:
         path = f"{router.prefix}/{fabric_name}/switches/{user_serial_numbers}"
         raise HTTPException(status_code=404, detail=build_404_response(path))
-    fabric_id = db_fabric.id
 
     commit = set()
     serial_numbers = user_serial_numbers.split(",")
